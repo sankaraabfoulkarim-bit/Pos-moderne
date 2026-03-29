@@ -898,7 +898,7 @@ window.addEventListener('load', checkApiStatus);
 <div id="page-landing" class="page active">
   <div class="lbg"></div>
   <nav class="lnav">
-    <div class="logo" id="landing-logo" style="cursor:default;user-select:none">
+    <div class="logo">
       <svg class="logo-icon"><use href="#logo-sym"/></svg>
       <span class="logo-text"><strong>DIGITALE</strong> <em>SOLUTION</em></span>
     </div>
@@ -1412,6 +1412,33 @@ window.addEventListener('load', checkApiStatus);
           <button class="btn-g" onclick="openCashierLogin()">🔑 Connexion caissier</button>
         </div>
 
+        <!-- FIREBASE TEMPS RÉEL -->
+        <div class="sc" style="grid-column:1/-1">
+          <h4>🔥 Firebase — Synchronisation temps réel</h4>
+          <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:4px">
+            Collez ici votre <strong>firebaseConfig</strong> depuis la console Firebase pour activer la sync temps réel entre vendeurs et caissiers.
+          </p>
+          <p style="font-size:.78rem;color:var(--text-dim);margin-bottom:16px">
+            Console Firebase → Paramètres du projet → Vos applications → Web → Config
+          </p>
+          <div id="fb-status-bar" style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:10px 14px;border-radius:var(--rsm);background:var(--surface2);border:1px solid var(--border);font-size:.83rem">
+            <span id="fb-status-dot" style="width:10px;height:10px;border-radius:50%;background:#888;flex-shrink:0"></span>
+            <span id="fb-status-txt">Vérification...</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="fg"><label>API Key</label><input id="fb-apiKey" placeholder="AIzaSy..."/></div>
+            <div class="fg"><label>Auth Domain</label><input id="fb-authDomain" placeholder="mon-projet.firebaseapp.com"/></div>
+            <div class="fg"><label>Project ID</label><input id="fb-projectId" placeholder="mon-projet"/></div>
+            <div class="fg"><label>Storage Bucket</label><input id="fb-storageBucket" placeholder="mon-projet.appspot.com"/></div>
+            <div class="fg"><label>Messaging Sender ID</label><input id="fb-messagingSenderId" placeholder="123456789"/></div>
+            <div class="fg"><label>App ID</label><input id="fb-appId" placeholder="1:123:web:abc"/></div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:4px;flex-wrap:wrap">
+            <button class="btn-p" onclick="saveFirebaseConfig()">💾 Enregistrer &amp; Connecter</button>
+            <button class="btn-g" onclick="testFirebaseConnection()">🔍 Tester la connexion</button>
+            <button class="btn-d sm" onclick="clearFirebaseConfig()">🗑️ Effacer</button>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -2003,37 +2030,6 @@ window.addEventListener('load', checkApiStatus);
 
     <!-- DEVELOPER / SUPABASE -->
     <div id="as-developer" class="adm-section">
-
-      <!-- ══ FIREBASE — CONFIGURATION ══ -->
-      <div class="adm-card" style="margin-bottom:20px;border-color:rgba(255,160,0,0.35)">
-        <div class="adm-card-hdr" style="background:rgba(255,160,0,0.06)">
-          <h3>🔥 Firebase — Synchronisation temps réel</h3>
-          <span id="fb-status-badge" style="font-size:.75rem;color:#64748B">Vérification...</span>
-        </div>
-        <div class="adm-card-body" style="padding:20px">
-          <p style="font-size:.82rem;color:#64748B;margin-bottom:4px">
-            Collez ici votre <strong>firebaseConfig</strong> depuis la console Firebase pour activer la sync temps réel multi-appareils.
-          </p>
-          <p style="font-size:.75rem;color:#475569;margin-bottom:16px">Console Firebase → Paramètres du projet → Vos applications → Web → Config</p>
-          <div id="fb-status-bar" style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:10px 14px;border-radius:8px;background:#0A0E16;border:1px solid rgba(255,255,255,0.08);font-size:.83rem;color:#CBD5E1">
-            <span id="fb-status-dot" style="width:10px;height:10px;border-radius:50%;background:#888;flex-shrink:0"></span>
-            <span id="fb-status-txt">Vérification...</span>
-          </div>
-          <div class="adm-grid2" style="margin-bottom:12px">
-            <div class="adm-fg"><label>API Key</label><input id="fb-apiKey" placeholder="AIzaSy..." style="background:#0A0E16;border:1px solid rgba(255,255,255,0.08);border-radius:7px;color:#E2E8F0;padding:9px 12px;font-size:.83rem;width:100%"/></div>
-            <div class="adm-fg"><label>Auth Domain</label><input id="fb-authDomain" placeholder="mon-projet.firebaseapp.com" style="background:#0A0E16;border:1px solid rgba(255,255,255,0.08);border-radius:7px;color:#E2E8F0;padding:9px 12px;font-size:.83rem;width:100%"/></div>
-            <div class="adm-fg"><label>Project ID</label><input id="fb-projectId" placeholder="mon-projet" style="background:#0A0E16;border:1px solid rgba(255,255,255,0.08);border-radius:7px;color:#E2E8F0;padding:9px 12px;font-size:.83rem;width:100%"/></div>
-            <div class="adm-fg"><label>Storage Bucket</label><input id="fb-storageBucket" placeholder="mon-projet.appspot.com" style="background:#0A0E16;border:1px solid rgba(255,255,255,0.08);border-radius:7px;color:#E2E8F0;padding:9px 12px;font-size:.83rem;width:100%"/></div>
-            <div class="adm-fg"><label>Messaging Sender ID</label><input id="fb-messagingSenderId" placeholder="123456789" style="background:#0A0E16;border:1px solid rgba(255,255,255,0.08);border-radius:7px;color:#E2E8F0;padding:9px 12px;font-size:.83rem;width:100%"/></div>
-            <div class="adm-fg"><label>App ID</label><input id="fb-appId" placeholder="1:123:web:abc" style="background:#0A0E16;border:1px solid rgba(255,255,255,0.08);border-radius:7px;color:#E2E8F0;padding:9px 12px;font-size:.83rem;width:100%"/></div>
-          </div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button class="btn-p" onclick="saveFirebaseConfig()">💾 Enregistrer &amp; Connecter</button>
-            <button class="btn-g sm" onclick="testFirebaseConnection()">🔍 Tester</button>
-            <button onclick="clearFirebaseConfig()" style="background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.25);color:#E74C3C;padding:7px 14px;border-radius:7px;font-size:.82rem;cursor:pointer">🗑️ Effacer</button>
-          </div>
-        </div>
-      </div>
 
       <!-- ══ GESTION DES PINS (nouveau) ══ -->
       <div class="adm-card" style="margin-bottom:20px;border-color:rgba(232,115,12,0.3)">
@@ -4183,39 +4179,38 @@ function registerMerchant(e) {
   const btn = e.target.querySelector('button[type="submit"]');
   if (btn) { btn.disabled = true; btn.textContent = 'Création...'; }
 
-  API.post('register', {
-    nom_commerce: document.getElementById('reg-nom').value.trim(),
-    proprietaire: document.getElementById('reg-proprio').value.trim(),
-    telephone:    document.getElementById('reg-tel').value.trim(),
-    ville:        document.getElementById('reg-ville').value.trim(),
-    password: p,
-    type: document.getElementById('reg-type').value
-  }).then(data => {
-    // Sauvegarder localement
-    const merchants = DB.get('merchants');
-    merchants.push(data.merchant);
-    DB.set('merchants', merchants);
-    if (data.config) {
-      const configs = DB.get('configs');
-      configs.push(data.config);
-      DB.set('configs', configs);
-    }
-    sessionStorage.setItem('ds_m', JSON.stringify(data.merchant));
+  try {
+    const merchant = Auth.register({
+      nom_commerce: document.getElementById('reg-nom').value.trim(),
+      proprietaire: document.getElementById('reg-proprio').value.trim(),
+      telephone:    document.getElementById('reg-tel').value.trim(),
+      ville:        document.getElementById('reg-ville').value.trim(),
+      password: p,
+      type: document.getElementById('reg-type').value
+    });
+
+    // Ouvrir la session
+    sessionStorage.setItem('ds_m', JSON.stringify(merchant));
+    localStorage.setItem('ds_session_m', JSON.stringify(merchant));
+
     showPage('page-app');
+    renderDashboard();
     showToast('🎉 Bienvenue sur Digitale Solution !', 'success');
-    // Initialiser les sous-collections Firebase pour ce nouveau marchand
-    fbInitMerchant(data.merchant.id);
-    // Démarrer la sync temps réel
-    startFirebase();
-  }).catch(err => {
+
+    // Pousser le nouveau marchand dans Firebase si connecté
+    if (_fbDb) {
+      fbInitMerchant(merchant.id);
+      startFirebase();
+    }
+  } catch(err) {
     er.textContent = err.message;
     er.classList.remove('hidden');
-  }).finally(() => {
+  } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Créer mon compte →'; }
-  });
+  }
 }
 
-// Connexion via API backend
+// Connexion locale (localStorage + Firebase)
 async function loginMerchant(e) {
   e.preventDefault();
   const er = document.getElementById('login-err'); er.classList.add('hidden');
@@ -4225,48 +4220,22 @@ async function loginMerchant(e) {
   const fbStatus = document.getElementById('fb-login-status');
 
   if (btn) { btn.disabled = true; btn.textContent = 'Connexion...'; }
-  if (fbStatus) { fbStatus.textContent = '🔄 Vérification en cours...'; fbStatus.style.display = 'block'; }
+  if (fbStatus) { fbStatus.textContent = '🔄 Vérification...'; fbStatus.style.display = 'block'; }
 
   try {
-    // 1. Appel API login — fonctionne sur tous les navigateurs
-    const data = await API.post('login', { telephone: tel, password: pwd });
+    const merchant = Auth.login(tel, pwd);
 
-    // 2. Sauvegarder toutes les données localement
-    const merchant = data.merchant;
-    const mData    = data.data;
-
-    if (!merchant || !merchant.id) {
-      throw new Error('Réponse serveur invalide — réessayez.');
-    }
-
-    // Mettre à jour merchants local
-    const merchants = DB.get('merchants');
-    const idx = merchants.findIndex(m => m.id === merchant.id);
-    if (idx !== -1) merchants[idx] = merchant; else merchants.push(merchant);
-    DB.set('merchants', merchants);
-
-    // Remplacer données du marchand
-    if (mData) {
-      ['products', 'sales', 'clients', 'configs'].forEach(col => {
-        if (mData[col]) {
-          const all = DB.get(col).filter(r => r.merchant_id !== merchant.id);
-          DB.set(col, [...all, ...mData[col]]);
-        }
-      });
-    }
-
-    // 3. Ouvrir session
-    sessionStorage.setItem('ds_m', JSON.stringify(merchant));
-    localStorage.setItem('ds_session_m', JSON.stringify(merchant));
     showPage('page-app');
-    showToast('✅ Connecté !', 'success');
-    // Badge notifications stock
+    renderDashboard();
+    showToast('✅ Connecté — bienvenue ' + merchant.proprietaire + ' !', 'success');
+
+    // Badge stock
     if (typeof StockNotif !== 'undefined') StockNotif._updateBadge(merchant.id);
-    // Démarrer la sync Firebase temps réel
-    startFirebase();
-    // Init notifications push
+    // Sync Firebase temps réel
+    if (_fbDb) startFirebase();
+    // Notifications push
     _initPushOnLogin();
-    // Programmer rapport WhatsApp auto
+    // Rapport WhatsApp auto
     if (merchant.telephone) WAReport.scheduleDaily(merchant.telephone);
 
   } catch(err) {
@@ -4560,7 +4529,7 @@ function adminSection(name){
   document.querySelectorAll('.adm-ni').forEach(n=>n.classList.remove('active'));
   document.getElementById('as-'+name)?.classList.add('active');
   document.querySelector('[data-as="'+name+'"]')?.classList.add('active');
-  const titles={overview:'Vue d\'ensemble',merchants:'Gestion des commerces',payments:'Demandes de paiement',plans:'Plans & Tarifs',config:'Configuration',developer:'Développeur — Firebase & Supabase',activity:'Journal d\'activité'};
+  const titles={overview:'Vue d\'ensemble',merchants:'Gestion des commerces',payments:'Demandes de paiement',plans:'Plans & Tarifs',config:'Configuration',developer:'Développeur — Supabase',activity:'Journal d\'activité'};
   document.getElementById('adm-title').textContent = titles[name]||name;
   const renders={overview:renderAdminOverview,merchants:renderAdminMerchants,payments:renderAdminPayments,plans:renderAdminPlans,config:renderAdminConfig,developer:renderAdminDeveloper,activity:renderAdminActivity};
   renders[name]?.();
@@ -5337,7 +5306,6 @@ function loadMerchantDataFromFirebase() {}
 
 // ---- ADMIN DEVELOPER SECTION ----
 function renderAdminDeveloper() {
-  loadFbConfigToForm();
   renderAdminDeveloper_sbStatus();
   if (typeof renderPinMgmtList    === 'function') renderPinMgmtList();
   if (typeof renderAdminSubAlerts === 'function') renderAdminSubAlerts();
@@ -7327,111 +7295,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-<!-- ====================== MODAL ACCÈS DÉVELOPPEUR (triple clic logo) ====================== -->
-<div id="mo-dev-pin" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:99999;align-items:center;justify-content:center">
-  <div style="background:#0D1117;border:1px solid rgba(232,115,12,.35);border-radius:16px;padding:32px 28px;width:100%;max-width:360px;margin:20px;text-align:center">
-    <div style="font-size:2rem;margin-bottom:10px">🔐</div>
-    <h3 style="color:#E2E8F0;font-size:1rem;font-weight:700;margin-bottom:6px">Accès Développeur</h3>
-    <p style="font-size:.8rem;color:#475569;margin-bottom:20px">Entrez le code PIN développeur</p>
-    <div style="display:flex;justify-content:center;gap:10px;margin-bottom:20px">
-      <input id="dev-pin-d1" type="password" maxlength="1" inputmode="numeric"
-        style="width:48px;height:56px;text-align:center;font-size:1.4rem;font-weight:700;background:#0A0E16;border:2px solid rgba(232,115,12,.4);border-radius:10px;color:#E8730C;outline:none"
-        oninput="devPinNext(this,'dev-pin-d2')" onkeydown="devPinKey(event,this,null,'dev-pin-d2')"/>
-      <input id="dev-pin-d2" type="password" maxlength="1" inputmode="numeric"
-        style="width:48px;height:56px;text-align:center;font-size:1.4rem;font-weight:700;background:#0A0E16;border:2px solid rgba(232,115,12,.4);border-radius:10px;color:#E8730C;outline:none"
-        oninput="devPinNext(this,'dev-pin-d3')" onkeydown="devPinKey(event,this,'dev-pin-d1','dev-pin-d3')"/>
-      <input id="dev-pin-d3" type="password" maxlength="1" inputmode="numeric"
-        style="width:48px;height:56px;text-align:center;font-size:1.4rem;font-weight:700;background:#0A0E16;border:2px solid rgba(232,115,12,.4);border-radius:10px;color:#E8730C;outline:none"
-        oninput="devPinNext(this,'dev-pin-d4')" onkeydown="devPinKey(event,this,'dev-pin-d2','dev-pin-d4')"/>
-      <input id="dev-pin-d4" type="password" maxlength="1" inputmode="numeric"
-        style="width:48px;height:56px;text-align:center;font-size:1.4rem;font-weight:700;background:#0A0E16;border:2px solid rgba(232,115,12,.4);border-radius:10px;color:#E8730C;outline:none"
-        oninput="devPinNext(this,'dev-pin-d5')" onkeydown="devPinKey(event,this,'dev-pin-d3','dev-pin-d5')"/>
-      <input id="dev-pin-d5" type="password" maxlength="1" inputmode="numeric"
-        style="width:48px;height:56px;text-align:center;font-size:1.4rem;font-weight:700;background:#0A0E16;border:2px solid rgba(232,115,12,.4);border-radius:10px;color:#E8730C;outline:none"
-        oninput="devPinNext(this,'dev-pin-d6')" onkeydown="devPinKey(event,this,'dev-pin-d4','dev-pin-d6')"/>
-      <input id="dev-pin-d6" type="password" maxlength="1" inputmode="numeric"
-        style="width:48px;height:56px;text-align:center;font-size:1.4rem;font-weight:700;background:#0A0E16;border:2px solid rgba(232,115,12,.4);border-radius:10px;color:#E8730C;outline:none"
-        oninput="devPinSubmit()" onkeydown="devPinKey(event,this,'dev-pin-d5',null)"/>
-    </div>
-    <div id="dev-pin-err" style="color:#E74C3C;font-size:.8rem;margin-bottom:14px;min-height:18px"></div>
-    <div style="display:flex;gap:10px">
-      <button onclick="closeDevPinModal()" style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#94A3B8;padding:10px;border-radius:8px;cursor:pointer;font-size:.85rem">Annuler</button>
-      <button onclick="devPinSubmit()" style="flex:2;background:#E8730C;border:none;color:white;padding:10px;border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem">🔓 Accéder</button>
-    </div>
-  </div>
-</div>
-
-<script>
-// ══════════════════════════════════════════════════
-//  TRIPLE CLIC LOGO → ACCÈS ADMIN DÉVELOPPEUR
-// ══════════════════════════════════════════════════
-(function(){
-  let _clicks = 0, _timer = null;
-  document.addEventListener('DOMContentLoaded', function(){
-    const logo = document.getElementById('landing-logo');
-    if(!logo) return;
-    logo.addEventListener('click', function(){
-      _clicks++;
-      clearTimeout(_timer);
-      if(_clicks >= 3){
-        _clicks = 0;
-        openDevPinModal();
-      } else {
-        _timer = setTimeout(function(){ _clicks = 0; }, 600);
-      }
-    });
-  });
-})();
-
-function openDevPinModal(){
-  ['dev-pin-d1','dev-pin-d2','dev-pin-d3','dev-pin-d4','dev-pin-d5','dev-pin-d6']
-    .forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
-  document.getElementById('dev-pin-err').textContent = '';
-  const mo = document.getElementById('mo-dev-pin');
-  mo.style.display = 'flex';
-  setTimeout(()=>{ document.getElementById('dev-pin-d1')?.focus(); }, 80);
-}
-
-function closeDevPinModal(){
-  document.getElementById('mo-dev-pin').style.display = 'none';
-}
-
-function devPinNext(el, nextId){
-  if(el.value.length === 1 && nextId){
-    document.getElementById(nextId)?.focus();
-  }
-}
-
-function devPinKey(e, el, prevId, nextId){
-  if(e.key === 'Backspace' && el.value === '' && prevId){
-    document.getElementById(prevId)?.focus();
-  }
-  if(e.key === 'Enter'){ devPinSubmit(); }
-}
-
-function devPinSubmit(){
-  const pin = ['dev-pin-d1','dev-pin-d2','dev-pin-d3','dev-pin-d4','dev-pin-d5','dev-pin-d6']
-    .map(id => document.getElementById(id)?.value || '').join('');
-  if(pin.length < 6){
-    document.getElementById('dev-pin-err').textContent = '⚠️ Entrez les 6 chiffres du PIN';
-    return;
-  }
-  if(pin === '761278'){
-    closeDevPinModal();
-    // Connecter directement en tant qu'admin et aller dans Développeur
-    sessionStorage.setItem('dsa_session','1');
-    showPage('page-admin');
-    adminSection('developer');
-    startAdminClock();
-    loadFbConfigToForm();
-    ADB.addActivity('login','Accès développeur via triple clic logo');
-  } else {
-    document.getElementById('dev-pin-err').textContent = '❌ PIN incorrect';
-    ['dev-pin-d1','dev-pin-d2','dev-pin-d3','dev-pin-d4','dev-pin-d5','dev-pin-d6']
-      .forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
-    document.getElementById('dev-pin-d1')?.focus();
-  }
-}
-</script>
 </body>
 </html>
