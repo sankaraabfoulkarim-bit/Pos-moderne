@@ -5658,8 +5658,11 @@ function initFirestoreWith(cfg) {
     }
     firebase.initializeApp(cfg);
     _fbDb = firebase.firestore();
-    _fbDb.enablePersistence({ synchronizeTabs: false }).catch(e => {
-      if (e.code !== 'failed-precondition' && e.code !== 'unimplemented') {
+    _fbDb.enablePersistence({ synchronizeTabs: true }).catch(e => {
+      if (e.code === 'failed-precondition') {
+        // Plusieurs onglets ouverts — mode dégradé acceptable, sync réseau toujours active
+        console.info('[DS] Persistance multi-onglet désactivée (onglet secondaire)');
+      } else if (e.code !== 'unimplemented') {
         console.warn('[DS] Firebase persistance:', e.code);
       }
     });
@@ -5790,8 +5793,14 @@ function startFirebase() {
   if (!m || !_fbDb) return;
   const mid = m.id;
 
-  // Éviter les doublons si déjà actif
-  if (_fbListeners[mid]) return;
+  // Forcer la reconnexion réseau (utile après un refresh ou retour en ligne)
+  _fbDb.enableNetwork().catch(() => {});
+
+  // Si des listeners existent déjà pour ce marchand, les détacher avant de recréer
+  if (_fbListeners[mid]) {
+    _fbListeners[mid].forEach(unsub => { try { unsub(); } catch(e) {} });
+    delete _fbListeners[mid];
+  }
   _fbListeners[mid] = [];
 
   const onErr = (col) => (e) => {
