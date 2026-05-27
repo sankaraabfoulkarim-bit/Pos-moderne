@@ -2,7 +2,11 @@
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=5,viewport-fit=cover"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#0A0E12"/>
 <title>Digitale Solution</title>
 
 <!-- ====================== PWA META TAGS ====================== -->
@@ -27,6 +31,8 @@
 <!-- ====================== FIREBASE SDK ====================== -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-app-compat.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-firestore-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-auth-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-storage-compat.min.js"></script>
 <style>
 /* ================================w.============================
    DIGITALE SOLUTION — CSS
@@ -79,6 +85,9 @@
 
 /* ---- RESET ---- */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+button,input,select,textarea{font-family:inherit;touch-action:manipulation}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+a{-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
 body{font-family:var(--fb);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;line-height:1.6;transition:background .3s,color .3s}
 h1,h2,h3,h4,h5{font-family:var(--fh);line-height:1.2}
@@ -259,6 +268,35 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 .kpi-val{font-family:var(--fh);font-size:2rem;font-weight:800;color:var(--text);margin-bottom:4px;line-height:1}
 .kpi.acc .kpi-val{color:var(--accent)}
 .kpi-sub{font-size:.75rem;color:var(--text-dim)}
+
+/* ── KPI PÉRIODE : CA / Ventes / Marge ─────────────────────── */
+.period-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+@media(max-width:700px){.period-grid{grid-template-columns:1fr}}
+.pcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:18px 16px;position:relative;overflow:hidden}
+.pcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--rlg) var(--rlg) 0 0;background:var(--accent)}
+.pcard.green::before{background:var(--success)}
+.pcard.blue::before{background:#4FC3F7}
+.pcard.warn::before{background:var(--warning)}
+.pcard.danger::before{background:var(--danger)}
+.pcard-lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-weight:700;margin-bottom:10px}
+.pcard-tabs{display:flex;gap:3px;background:var(--surface2);border-radius:8px;padding:3px;margin-bottom:12px}
+.pcard-tab{flex:1;text-align:center;padding:5px 2px;border-radius:6px;font-size:.65rem;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--text-muted);transition:all var(--tr)}
+.pcard-tab.active{background:var(--accent);color:var(--bg)}
+.pcard-tab.active.green{background:var(--success)}
+.pcard-tab.active.blue{background:#4FC3F7;color:#000}
+.pcard-val{font-size:1.45rem;font-weight:800;font-family:var(--fh);color:var(--text);line-height:1;margin-bottom:4px}
+.pcard-count{font-size:.78rem;color:var(--text-muted);margin-bottom:6px}
+.pcard-evol{display:inline-flex;align-items:center;gap:4px;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:100px;margin-top:6px}
+.pcard-evol.up{background:rgba(46,204,113,.12);color:var(--success)}
+.pcard-evol.down{background:rgba(231,76,60,.12);color:var(--danger)}
+.pcard-evol.flat{background:rgba(100,116,139,.1);color:var(--text-dim)}
+.sparkline{display:flex;align-items:flex-end;gap:2px;height:32px;margin-top:10px}
+.spark-bar{flex:1;border-radius:2px 2px 0 0;min-height:2px;transition:height .4s}
+.marge-row{display:flex;align-items:center;gap:14px;margin-top:4px}
+.marge-ring{display:flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;border:3px solid var(--success);font-size:1.1rem;font-weight:800;color:var(--success);font-family:var(--fh);flex-shrink:0}
+.marge-ring.warn{border-color:var(--warning);color:var(--warning)}
+.marge-ring.danger{border-color:var(--danger);color:var(--danger)}
+.marge-ring.none{border-color:var(--border);color:var(--text-dim);font-size:.62rem;text-align:center;line-height:1.2}
 .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .dash-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--card-shadow)}
 .dc-hdr{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border)}
@@ -590,10 +628,433 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 #pwa-install-btn:hover{transform:translateX(-50%) translateY(-2px);box-shadow:0 8px 24px rgba(232,115,12,.4)}
 @keyframes floatUp{from{opacity:0;bottom:0}to{opacity:1;bottom:24px}}
 
-/* RESPONSIVE */
-@media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.sett-grid{grid-template-columns:1fr}.feats{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:900px){.sidebar{position:fixed;left:-100%;height:100vh;transition:left var(--tr)}.sidebar.mob-open{left:0}.mob-menu{display:flex}.lnav{padding:16px 20px}.auth-r{display:none}.auth-l{width:100%}.pos-layout{grid-template-columns:1fr;grid-template-rows:1fr auto}.pos-cart{max-height:55vh}.dash-grid{grid-template-columns:1fr}}
-@media(max-width:640px){.hero{padding:60px 20px 50px}.feats{grid-template-columns:1fr}.section{padding:16px 14px}.topbar{padding:12px 14px}.kpi-grid{grid-template-columns:1fr 1fr}.hero-cta{flex-direction:column;align-items:center}.fr{grid-template-columns:1fr}}
+/* ============================================================
+   RESPONSIVE — SYSTÈME COMPLET MOBILE-FIRST
+   Breakpoints : 480 / 640 / 768 / 900 / 1100 / 1200
+   ============================================================ */
+
+/* ── Utilitaires base ───────────────────────────────────────── */
+img,svg,video{max-width:100%;height:auto}
+table{table-layout:auto}
+
+/* ── Safe-area (iOS notch / Dynamic Island) ─────────────────── */
+@supports(padding:max(0px)){
+  .topbar{padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+  .sidebar{padding-bottom:env(safe-area-inset-bottom)}
+  .mob-bottom-nav{padding-bottom:max(8px,env(safe-area-inset-bottom))}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ≤ 1200px  — tablettes larges / petits laptops
+   ═══════════════════════════════════════════════════════════════ */
+@media(max-width:1200px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .sett-grid{grid-template-columns:1fr}
+  .feats{grid-template-columns:repeat(2,1fr)}
+  .period-grid{grid-template-columns:repeat(3,1fr)}
+  .dash-grid{grid-template-columns:1fr 1fr}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ≤ 1100px  — tablettes
+   ═══════════════════════════════════════════════════════════════ */
+@media(max-width:1100px){
+  :root{--sw:200px}
+  .section{padding:22px 20px}
+  .topbar{padding:12px 20px}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ≤ 900px  — tablettes portrait / grands mobiles
+   ═══════════════════════════════════════════════════════════════ */
+@media(max-width:900px){
+  /* Sidebar : drawer coulissant */
+  .sidebar{
+    position:fixed;left:-100%;height:100vh;transition:left .28s cubic-bezier(.4,0,.2,1);
+    z-index:200;width:var(--sw)!important;box-shadow:4px 0 32px rgba(0,0,0,.4)
+  }
+  .sidebar.mob-open{left:0}
+  /* Overlay sombre derrière la sidebar */
+  .sidebar-overlay{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);
+    z-index:199;backdrop-filter:blur(2px)
+  }
+  .sidebar.mob-open ~ .sidebar-overlay,
+  .sidebar-overlay.active{display:block}
+
+  /* Bouton hamburger visible */
+  .mob-menu{display:flex!important}
+
+  /* Page app en colonne */
+  #page-app.active{flex-direction:column}
+  .main{min-height:0;flex:1}
+
+  /* Topbar */
+  .topbar{padding:10px 16px;min-height:56px}
+  .tb-l h2{font-size:.95rem}
+  .theme-pills{display:none} /* caché sur mobile, accessible dans settings */
+  .conn-label{display:none} /* juste le dot */
+
+  /* Section padding */
+  .section{padding:16px 14px}
+
+  /* Landing */
+  .lnav{padding:14px 20px}
+  .nav-acts .btn-p,.nav-acts .btn-g{padding:7px 14px;font-size:.82rem}
+  .auth-r{display:none}
+  .auth-l{width:100%}
+  .auth-li{padding-top:12px}
+
+  /* Grilles dashboard */
+  .kpi-grid{grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+  .kpi{padding:16px}
+  .kpi-val{font-size:1.6rem}
+  .period-grid{grid-template-columns:1fr}
+  .dash-grid{grid-template-columns:1fr}
+  .welcome{padding:18px 16px;flex-direction:column;gap:12px;align-items:flex-start}
+  .welcome h3{font-size:1.1rem}
+  .w-ico{display:none}
+
+  /* POS */
+  .pos-layout{grid-template-columns:1fr;grid-template-rows:1fr auto}
+  .pos-cart{max-height:52vh;border-top:1px solid var(--border);border-left:none}
+
+  /* Vente rapide */
+  .qr-layout{grid-template-columns:1fr;grid-template-rows:1fr auto}
+  .qr-right{max-height:52vh;border-top:1px solid var(--border)}
+
+  /* Caisse */
+  .caisse-grid{grid-template-columns:1fr}
+
+  /* Tables : scroll horizontal */
+  .dt-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r)}
+  .dt{min-width:520px}
+  .stbar{flex-wrap:wrap;gap:8px}
+  .stbar select{width:100%}
+
+  /* Settings */
+  .sett-grid{grid-template-columns:1fr}
+  .fr{grid-template-columns:1fr}
+
+  /* Modals */
+  .mo{align-items:flex-end;padding:0}
+  .modal{border-radius:var(--rlg) var(--rlg) 0 0;max-height:92vh;overflow-y:auto;max-width:100%!important;animation:mInUp .28s cubic-bezier(.4,0,.2,1)}
+  @keyframes mInUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}
+  .mhdr{padding:16px 20px}
+  .mbody{padding:16px 20px}
+  .mftr{padding:12px 20px}
+
+  /* Analytics */
+  .kpi-grid.an-kpis{grid-template-columns:1fr 1fr}
+
+  /* Admin sidebar */
+  .adm-sb{display:none}
+  .adm-sb.mob-open{display:flex;position:fixed;z-index:300;height:100vh;left:0;top:0}
+  .adm-main{margin-left:0!important;width:100%!important}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ≤ 768px  — mobiles larges
+   ═══════════════════════════════════════════════════════════════ */
+@media(max-width:768px){
+  /* Grilles */
+  .kpi-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .kpi{padding:14px 12px}
+  .kpi-val{font-size:1.4rem}
+  .kpi-lbl{font-size:.68rem}
+  .period-grid{grid-template-columns:1fr;gap:10px}
+
+  /* Welcome banner */
+  .welcome{padding:14px 14px}
+
+  /* Tables */
+  .dt th,.dt td{padding:10px 12px;font-size:.8rem}
+  .tacts{flex-wrap:wrap;gap:4px}
+  .tbtn{padding:4px 8px;font-size:.72rem}
+
+  /* Formulaires */
+  .fg input,.fg select,.fg textarea{padding:10px 12px;font-size:.88rem}
+
+  /* POS produits grid */
+  .pos-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))!important;gap:8px!important}
+  .ppc{padding:10px 8px!important}
+  .ppc-name{font-size:.78rem!important}
+  .ppc-price{font-size:.82rem!important}
+
+  /* Caisse */
+  .caisse-fond-val{font-size:1.4rem}
+
+  /* Settings cards */
+  .sc{padding:18px 16px}
+
+  /* Cancel motifs */
+  .cancel-motifs{grid-template-columns:1fr}
+
+  /* Period card marge ring */
+  .marge-ring{width:44px;height:44px;font-size:.9rem}
+  .pcard-val{font-size:1.25rem}
+
+  /* Toast */
+  .toast{bottom:16px;right:16px;left:16px;max-width:none}
+
+  /* Annulation modal */
+  .mo{padding:0}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ≤ 640px  — mobiles standards
+   ═══════════════════════════════════════════════════════════════ */
+@media(max-width:640px){
+  /* Landing */
+  .hero{padding:48px 16px 40px}
+  .hero h1{font-size:clamp(1.7rem,8vw,2.4rem)}
+  .hero-sub{font-size:.9rem}
+  .hero-cta{flex-direction:column;align-items:center;gap:10px}
+  .hero-cta .btn-p,.hero-cta .btn-g{width:100%;max-width:280px;justify-content:center}
+  .hero-stats{flex-direction:column;width:100%}
+  .hdiv{width:100%;height:1px}
+  .hstat{padding:14px 20px}
+  .feats{grid-template-columns:1fr;border-top:none}
+  .feat{border-right:none;border-bottom:1px solid var(--border);padding:28px 20px}
+  .feat:last-child{border-bottom:none}
+
+  /* Auth */
+  .auth-l{padding:24px 20px}
+  .auth-li h2{font-size:1.5rem}
+  .fr{grid-template-columns:1fr}
+
+  /* App topbar */
+  .topbar{padding:10px 14px;min-height:52px;gap:8px}
+  .tb-l h2{font-size:.88rem;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cb-name{display:none} /* cache nom du commerce dans le badge */
+  .cb-ico{margin-right:0}
+
+  /* Section */
+  .section{padding:12px 12px}
+
+  /* Dashboard KPIs */
+  .kpi-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .kpi{padding:12px 10px}
+  .kpi-val{font-size:1.2rem}
+  .kpi-lbl{font-size:.62rem;margin-bottom:4px}
+  .kpi-sub{font-size:.68rem}
+
+  /* Period cards */
+  .pcard{padding:14px 12px}
+  .pcard-lbl{font-size:.62rem}
+  .pcard-val{font-size:1.15rem}
+  .pcard-tabs{margin-bottom:8px}
+  .pcard-tab{font-size:.6rem;padding:4px 2px}
+
+  /* Recent sales list */
+  .ri{padding:10px 12px}
+  .ri-name{font-size:.82rem}
+  .ri-date{font-size:.7rem}
+  .ri-amt{font-size:.85rem}
+  .dash-card .dc-hdr{padding:14px 14px}
+  .dash-card .dc-hdr h4{font-size:.82rem}
+
+  /* Tableaux données */
+  .dt th,.dt td{padding:8px 10px;font-size:.75rem}
+  /* Masquer colonnes non critiques */
+  .dt .hide-mob{display:none}
+
+  /* Vente rapide clavier */
+  .qr-key{padding:14px 0;font-size:1.1rem}
+  .qr-display{font-size:1.8rem;min-height:56px;padding:12px 14px}
+
+  /* Modals */
+  .mhdr h3{font-size:.92rem}
+  .mbody{padding:14px 16px}
+  .mftr{padding:10px 16px;gap:8px}
+  .mftr .btn-p,.mftr .btn-g{padding:10px 14px;font-size:.85rem}
+
+  /* Settings */
+  .sc{padding:16px 14px}
+  .sc h4{font-size:.9rem;margin-bottom:14px;padding-bottom:10px}
+
+  /* Welcome */
+  .welcome{padding:12px 14px;margin-bottom:16px}
+  .welcome h3{font-size:.95rem}
+  .welcome p{font-size:.78rem}
+
+  /* KPI analytique */
+  .kpi-grid.an-kpis{grid-template-columns:1fr 1fr}
+
+  /* Analytics period */
+  .an-chart{height:120px!important}
+
+  /* Caisse report table */
+  .rapport-table td{padding:8px 10px;font-size:.82rem}
+
+  /* Toast */
+  .toast{bottom:12px;right:10px;left:10px;padding:10px 14px;font-size:.82rem}
+
+  /* Lnav mobile */
+  .lnav{padding:12px 16px}
+  .lnav .theme-switcher{display:none}
+
+  /* Bottom nav bar sur mobile ─── */
+  .mob-bottom-nav{
+    display:flex!important;position:fixed;bottom:0;left:0;right:0;
+    background:var(--surface);border-top:1px solid var(--border);
+    z-index:150;padding:6px 0 8px;
+    box-shadow:0 -4px 20px rgba(0,0,0,.2)
+  }
+  .mob-bottom-nav .mbn-item{
+    flex:1;display:flex;flex-direction:column;align-items:center;
+    gap:2px;padding:6px 2px;color:var(--text-muted);font-size:.58rem;
+    font-weight:600;cursor:pointer;transition:color .15s;border:none;background:none;
+    text-transform:uppercase;letter-spacing:.04em
+  }
+  .mob-bottom-nav .mbn-item.active{color:var(--accent)}
+  .mob-bottom-nav .mbn-ico{font-size:1.3rem;line-height:1}
+  /* Décaler le contenu principal pour la nav bar */
+  .main{padding-bottom:64px}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ≤ 480px  — petits mobiles (SE, 375px)
+   ═══════════════════════════════════════════════════════════════ */
+@media(max-width:480px){
+  /* Landing */
+  .hero h1{font-size:1.6rem}
+  .hero-badge{font-size:.72rem;padding:4px 14px}
+
+  /* KPI 1 colonne sur très petit écran */
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .kpi-val{font-size:1.1rem}
+
+  /* POS grid 2 colonnes minimum */
+  .pos-grid{grid-template-columns:repeat(2,1fr)!important}
+
+  /* Buttons */
+  .btn-p.xl,.btn-g.xl{padding:12px 20px;font-size:.92rem}
+
+  /* Tables : encore plus compact */
+  .dt th,.dt td{padding:7px 8px;font-size:.72rem}
+
+  /* Annulations */
+  .cancel-stat-hdr{flex-direction:column;align-items:flex-start;gap:8px}
+  .cancel-kpis{grid-template-columns:1fr 1fr 1fr}
+
+  /* Form rows always 1 col */
+  .fr{grid-template-columns:1fr!important}
+
+  /* Section ultra compact */
+  .section{padding:10px 10px}
+
+  /* Marge ring smaller */
+  .marge-ring{width:38px;height:38px;font-size:.78rem}
+  .pcard-val{font-size:1rem}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MOB-BOTTOM-NAV : caché par défaut (montré seulement ≤640px)
+   ═══════════════════════════════════════════════════════════════ */
+.mob-bottom-nav{display:none}
+
+/* ═══════════════════════════════════════════════════════════════
+   OVERLAY SIDEBAR (injection JS)
+   ═══════════════════════════════════════════════════════════════ */
+.sb-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.55);z-index:199;
+  backdrop-filter:blur(2px)
+}
+.sb-overlay.show{display:block}
+
+/* ═══════════════════════════════════════════════════════════════
+   TABLES SCROLL WRAPPER (à appliquer via JS)
+   ═══════════════════════════════════════════════════════════════ */
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;border-radius:var(--r)}
+.tbl-scroll .dt{min-width:480px}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOPBAR : overflow propre
+   ═══════════════════════════════════════════════════════════════ */
+.topbar{flex-wrap:nowrap;overflow:hidden}
+.tb-r{flex-shrink:0;gap:6px}
+.tb-l{flex:1;min-width:0;overflow:hidden}
+
+/* ═══════════════════════════════════════════════════════════════
+   STBAR (barre recherche + filtres)
+   ═══════════════════════════════════════════════════════════════ */
+@media(max-width:640px){
+  .stbar{flex-direction:column;align-items:stretch}
+  .stbar .si{width:100%}
+  .stbar>div{display:flex;gap:8px;flex-wrap:wrap}
+  .stbar select,.stbar .btn-p,.stbar .btn-g{flex:1;min-width:0}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MODAL : toujours centrée sur desktop
+   ═══════════════════════════════════════════════════════════════ */
+@media(min-width:901px){
+  .mo{align-items:center;padding:20px}
+  .modal{animation:mIn .2s ease;border-radius:var(--rlg)}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN PANEL responsive
+   ═══════════════════════════════════════════════════════════════ */
+@media(max-width:900px){
+  .adm-sb{display:none;position:fixed;left:0;top:0;height:100vh;z-index:400;width:220px}
+  .adm-sb.show{display:flex}
+  .adm-main{width:100%;padding-left:0!important}
+  .adm-topbar{padding:12px 16px}
+  .adm-kpis{grid-template-columns:repeat(2,1fr)!important}
+  .adm-grid2{grid-template-columns:1fr!important}
+  .adm-card-body .adm-grid2{grid-template-columns:1fr!important}
+  /* Overflow tables admin */
+  .adm-card-body{overflow-x:auto}
+  .adm-card-body table{min-width:560px}
+}
+@media(max-width:640px){
+  .adm-kpis{grid-template-columns:repeat(2,1fr)!important;gap:10px}
+  .adm-kpi{padding:14px 10px}
+  .adm-kpi-val{font-size:1.6rem}
+  #page-admin-login{padding:20px}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANALYTICS section responsive
+   ═══════════════════════════════════════════════════════════════ */
+@media(max-width:900px){
+  #s-analytics .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  #s-analytics .dash-grid{grid-template-columns:1fr}
+  #s-analytics .welcome{flex-direction:column;gap:10px;align-items:flex-start}
+  #s-analytics .welcome>div:last-child{display:flex;flex-wrap:wrap;gap:8px;width:100%}
+  #s-analytics #analytics-range{flex:1;min-width:0}
+  #an-projection{grid-template-columns:repeat(2,1fr)!important}
+}
+@media(max-width:640px){
+  #s-analytics .kpi-grid{grid-template-columns:1fr 1fr}
+  #an-projection{grid-template-columns:1fr 1fr!important}
+  #s-analytics .welcome>div:last-child .btn-p,
+  #s-analytics .welcome>div:last-child .btn-g{padding:6px 10px;font-size:.75rem}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   POS section responsive — grille produits
+   ═══════════════════════════════════════════════════════════════ */
+@media(max-width:640px){
+  .pos-cat{overflow-y:auto;max-height:55vh}
+  .pos-cart{max-height:45vh}
+  .cart-hdr h3{font-size:.9rem}
+  .cart-list{max-height:calc(45vh - 160px)}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PERIOD CARDS : tabs plus petits sur mobile
+   ═══════════════════════════════════════════════════════════════ */
+@media(max-width:640px){
+  .period-grid{gap:8px}
+  .pcard::before{height:2px}
+  .sparkline{height:22px}
+  .spark-bar{max-height:22px}
+}
+
 
 /* ============================================================
    ADMIN PANEL CSS
@@ -998,6 +1459,10 @@ window.addEventListener('load', checkApiStatus);
           <button type="submit" class="btn-p full">Se connecter →</button>
         </form>
         <div class="demo-hint"><span>💡 Démo rapide :</span><button class="btn-g sm" onclick="demoLogin()">Accès démo</button></div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn-g sm" style="flex:1;font-size:.75rem" onclick="resumeWithDeviceCode()">📱 Code multi-appareils</button>
+          <button class="btn-g sm" style="flex:1;font-size:.75rem" onclick="openAccountRecovery()">🔑 Récupérer compte</button>
+        </div>
         <p class="auth-foot">Pas de compte ? <a onclick="showPage('page-register')">Créer mon commerce</a></p>
       </div>
     </div>
@@ -1007,6 +1472,8 @@ window.addEventListener('load', checkApiStatus);
 
 <!-- ====================== APP ====================== -->
 <div id="page-app" class="page">
+  <!-- Overlay sidebar mobile -->
+  <div class="sb-overlay" id="sb-overlay" onclick="closeSidebar()"></div>
   <!-- SIDEBAR -->
   <div class="sidebar" id="sidebar">
     <div class="sb-hdr">
@@ -1046,28 +1513,29 @@ window.addEventListener('load', checkApiStatus);
   <div class="main">
     <div class="topbar">
       <div class="tb-l">
-        <button class="mob-menu" onclick="toggleSidebar()">☰</button>
-        <h2 id="tb-title">Dashboard</h2>
+        <button class="mob-menu" onclick="toggleSidebar()" aria-label="Menu" style="background:none;border:none;color:var(--text-muted);font-size:1.4rem;cursor:pointer;padding:4px;line-height:1;display:none">☰</button>
+        <h2 id="tb-title" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px">Dashboard</h2>
       </div>
-      <div class="tb-r">
-        <span id="lic-exp-warn"></span>
+      <div class="tb-r" style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+        <span id="lic-exp-warn" style="font-size:.72rem"></span>
         <!-- Badge file d'attente (caisse) -->
-        <button id="queue-badge-btn" onclick="openQueueModal()" style="display:none;position:relative;background:var(--accent);color:#fff;border:none;border-radius:var(--rsm);padding:7px 14px;font-size:.82rem;font-weight:700;cursor:pointer;gap:6px;align-items:center">
-          🧾 File d'attente <span id="queue-badge-count" style="background:rgba(0,0,0,.3);border-radius:100px;padding:1px 7px;font-size:.75rem;margin-left:4px">0</span>
+        <button id="queue-badge-btn" onclick="openQueueModal()" style="display:none;position:relative;background:var(--accent);color:#fff;border:none;border-radius:var(--rsm);padding:6px 10px;font-size:.78rem;font-weight:700;cursor:pointer">
+          🧾 <span id="queue-badge-count" style="background:rgba(0,0,0,.3);border-radius:100px;padding:1px 6px;font-size:.72rem;margin-left:2px">0</span>
         </button>
-        <!-- Indicateur de connexion / mode offline -->
-        <div id="conn-indicator" class="online" title="Statut de la connexion">
+        <!-- Indicateur connexion -->
+        <div id="conn-indicator" class="online" title="Statut connexion" style="display:flex;align-items:center;gap:5px">
           <span class="conn-dot"></span>
-          <span id="conn-label">En ligne</span>
+          <span id="conn-label" class="conn-label" style="font-size:.75rem">En ligne</span>
         </div>
-        <div class="theme-pills" id="app-theme-pills">
-          <div class="tp active" data-t="dark" title="Sombre" onclick="setTheme('dark',this)"></div>
-          <div class="tp" data-t="light" title="Clair" onclick="setTheme('light',this)"></div>
-          <div class="tp" data-t="neon" title="Néon" onclick="setTheme('neon',this)"></div>
-          <div class="tp" data-t="ocean" title="Océan" onclick="setTheme('ocean',this)"></div>
+        <!-- Thèmes (masqués sur mobile, accessibles dans settings) -->
+        <div class="theme-pills" id="app-theme-pills" style="display:flex">
+          <div class="tp active" data-t="dark"  title="Sombre" onclick="setTheme('dark',this)"></div>
+          <div class="tp"        data-t="light" title="Clair"  onclick="setTheme('light',this)"></div>
+          <div class="tp"        data-t="neon"  title="Néon"   onclick="setTheme('neon',this)"></div>
+          <div class="tp"        data-t="ocean" title="Océan"  onclick="setTheme('ocean',this)"></div>
         </div>
-        <div class="cb"><span id="cb-ico">🏪</span><span id="cb-name">Commerce</span></div>
-        <button class="btn-p sm" onclick="showSection('pos')">+ Vente</button>
+        <div class="cb" style="display:flex;align-items:center;gap:6px"><span id="cb-ico">🏪</span><span id="cb-name" class="cb-name">Commerce</span></div>
+        <button class="btn-p sm" onclick="showSection('pos')" style="white-space:nowrap">+ Vente</button>
       </div>
     </div>
     <div id="lic-exp" class="lic-exp-banner hidden">⚠️ Licence expirée. <strong>Renouvelez votre abonnement</strong> pour continuer. <button class="btn-p sm" onclick="renewLicense()">Renouveler</button></div>
@@ -1104,6 +1572,58 @@ window.addEventListener('load', checkApiStatus);
         <div class="kpi"><div class="kpi-lbl">Produits</div><div class="kpi-val" id="k-p">0</div><div class="kpi-sub">En catalogue</div></div>
         <div class="kpi"><div class="kpi-lbl">Clients</div><div class="kpi-val" id="k-c">0</div><div class="kpi-sub">Enregistrés</div></div>
       </div>
+
+      <!-- ═══ BLOCS PÉRIODE : CA + Ventes + Marge ══════════════ -->
+      <div class="period-grid">
+
+        <!-- Carte 1 : CA journalier / hebdo / mensuel -->
+        <div class="pcard" id="pcard-ca">
+          <div class="pcard-lbl">💰 Chiffre d'affaires</div>
+          <div class="pcard-tabs">
+            <button class="pcard-tab active" id="catab-j" onclick="setPeriodTab('ca','j')">Jour</button>
+            <button class="pcard-tab" id="catab-s" onclick="setPeriodTab('ca','s')">Semaine</button>
+            <button class="pcard-tab" id="catab-m" onclick="setPeriodTab('ca','m')">Mois</button>
+          </div>
+          <div class="pcard-val" id="pval-ca">—</div>
+          <div class="pcard-count" id="pcount-ca"></div>
+          <div id="pevol-ca"></div>
+          <div class="sparkline" id="spark-ca"></div>
+        </div>
+
+        <!-- Carte 2 : Nombre de ventes journalier / hebdo / mensuel -->
+        <div class="pcard blue" id="pcard-ventes">
+          <div class="pcard-lbl">🛒 Nombre de ventes</div>
+          <div class="pcard-tabs">
+            <button class="pcard-tab active blue" id="vtab-j" onclick="setPeriodTab('ventes','j')">Jour</button>
+            <button class="pcard-tab" id="vtab-s" onclick="setPeriodTab('ventes','s')">Semaine</button>
+            <button class="pcard-tab" id="vtab-m" onclick="setPeriodTab('ventes','m')">Mois</button>
+          </div>
+          <div class="pcard-val" id="pval-ventes" style="color:#4FC3F7">—</div>
+          <div class="pcard-count" id="pcount-ventes"></div>
+          <div id="pevol-ventes"></div>
+          <div class="sparkline" id="spark-ventes"></div>
+        </div>
+
+        <!-- Carte 3 : Marge bénéficiaire de la journée -->
+        <div class="pcard green" id="pcard-marge">
+          <div class="pcard-lbl">📈 Marge bénéficiaire</div>
+          <div class="pcard-tabs">
+            <button class="pcard-tab active green" id="mtab-j" onclick="setPeriodTab('marge','j')">Jour</button>
+            <button class="pcard-tab" id="mtab-s" onclick="setPeriodTab('marge','s')">Semaine</button>
+            <button class="pcard-tab" id="mtab-m" onclick="setPeriodTab('marge','m')">Mois</button>
+          </div>
+          <div class="marge-row">
+            <div class="marge-ring none" id="marge-ring">N/A</div>
+            <div>
+              <div class="pcard-val" id="pval-marge" style="color:var(--success)">—</div>
+              <div class="pcard-count" id="pcount-marge"></div>
+            </div>
+          </div>
+          <div id="pevol-marge" style="margin-top:6px"></div>
+        </div>
+
+      </div>
+      <!-- ═══ FIN BLOCS PÉRIODE ════════════════════════════════ -->
       <div class="dash-grid">
         <div class="dash-card"><div class="dc-hdr"><h4>Dernières ventes</h4><button class="btn-g sm" onclick="reqPin('sales')">Voir tout</button></div><div id="d-sales"><p class="empty">Aucune vente.</p></div></div>
         <div class="dash-card"><div class="dc-hdr"><h4>Top produits</h4></div><div id="d-top"><p class="empty">Aucun produit vendu.</p></div></div>
@@ -1277,10 +1797,10 @@ window.addEventListener('load', checkApiStatus);
         <div class="kpi" style="border-color:rgba(243,156,18,.3)"><div class="kpi-lbl">Stock faible</div><div class="kpi-val" style="color:var(--warning)" id="stk-kpi-low">0</div><div class="kpi-sub">≤ 5 unités</div></div>
         <div class="kpi" style="border-color:rgba(46,204,113,.3)"><div class="kpi-lbl">Valeur stock</div><div class="kpi-val acc" id="stk-kpi-val">0</div><div class="kpi-sub">Estimation</div></div>
       </div>
-      <table class="dt">
+      <div class="tbl-scroll"><table class="dt">
         <thead><tr><th>Produit</th><th>Catégorie</th><th>Prix</th><th>Stock actuel</th><th>Statut</th><th>Valeur</th><th>Actions</th></tr></thead>
         <tbody id="stk-tbody"><tr><td colspan="7" class="empty">Aucun produit.</td></tr></tbody>
-      </table>
+      </table></div>
     </section>
 
     <!-- PRODUITS -->
@@ -1289,7 +1809,7 @@ window.addEventListener('load', checkApiStatus);
         <input class="si" id="prod-srch" placeholder="🔍 Rechercher..." oninput="renderProducts()"/>
         <button class="btn-p" onclick="openProductModal()">+ Nouveau produit</button>
       </div>
-      <table class="dt"><thead><tr><th>Produit</th><th>Prix</th><th>Stock</th><th>Actions</th></tr></thead><tbody id="prod-tbody"><tr><td colspan="4" class="empty">Aucun produit.</td></tr></tbody></table>
+      <div class="tbl-scroll"><table class="dt"><thead><tr><th>Produit</th><th>Prix</th><th>Stock</th><th>Actions</th></tr></thead><tbody id="prod-tbody"><tr><td colspan="4" class="empty">Aucun produit.</td></tr></tbody></table>
     </section>
 
     <!-- CLIENTS -->
@@ -1298,7 +1818,7 @@ window.addEventListener('load', checkApiStatus);
         <input class="si" id="cli-srch" placeholder="🔍 Rechercher..." oninput="renderClients()"/>
         <button class="btn-p" onclick="openClientModal()">+ Nouveau client</button>
       </div>
-      <table class="dt"><thead><tr><th>Nom</th><th>WhatsApp</th><th>Achats</th><th>Total dépensé</th><th>Actions</th></tr></thead><tbody id="cli-tbody"><tr><td colspan="5" class="empty">Aucun client.</td></tr></tbody></table>
+      <div class="tbl-scroll"><table class="dt"><thead><tr><th>Nom</th><th>WhatsApp</th><th>Achats</th><th>Total dépensé</th><th>Actions</th></tr></thead><tbody id="cli-tbody"><tr><td colspan="5" class="empty">Aucun client.</td></tr></tbody></table>
     </section>
 
     <!-- VENTES -->
@@ -1313,10 +1833,10 @@ window.addEventListener('load', checkApiStatus);
         <button class="sale-tab"        data-tab="done"    onclick="setSaleTab('done',this)">✅ Validées <span id="tab-cnt-done"  class="bdg">0</span></button>
         <button class="sale-tab tab-cancelled" data-tab="cancelled" onclick="setSaleTab('cancelled',this)">🚫 Annulées <span id="tab-cnt-cancelled" class="bdg" style="background:var(--danger)">0</span></button>
       </div>
-      <table class="dt">
+      <div class="tbl-scroll"><table class="dt">
         <thead><tr><th>#</th><th>Client</th><th>WhatsApp</th><th>Total</th><th>Date / Motif</th><th>Actions</th></tr></thead>
         <tbody id="sale-tbody"><tr><td colspan="6" class="empty">Aucune vente.</td></tr></tbody>
-      </table>
+      </table></div>
     </section>
 
     <!-- VENTES CAISSIER (sans PIN) -->
@@ -1328,10 +1848,10 @@ window.addEventListener('load', checkApiStatus);
         </div>
         <span id="mysales-total" style="font-size:.82rem;color:var(--text-muted)"></span>
       </div>
-      <table class="dt">
+      <div class="tbl-scroll"><table class="dt">
         <thead><tr><th>#</th><th>Client</th><th>Articles</th><th>Total</th><th>Date</th><th>Action</th></tr></thead>
         <tbody id="mysales-tbody"><tr><td colspan="6" class="empty">Aucune vente.</td></tr></tbody>
-      </table>
+      </table></div>
     </section>
 
     <!-- PARAMÈTRES -->
@@ -1422,6 +1942,31 @@ window.addEventListener('load', checkApiStatus);
           <button class="btn-g" onclick="openCashierLogin()">🔑 Connexion caissier</button>
         </div>
 
+        <!-- MULTI-APPAREILS -->
+        <div class="sc">
+          <h4>📱 Accès multi-appareils <span style="font-size:.7rem;background:rgba(232,115,12,.15);color:var(--accent);padding:2px 8px;border-radius:100px;margin-left:6px">Firebase</span></h4>
+          <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:16px">Générez un code temporaire (5 min) pour reprendre votre session sur un autre appareil sans mot de passe.</p>
+          <button class="btn-p" onclick="generateDeviceCode()">📲 Générer un code d'accès</button>
+        </div>
+
+        <!-- LIVE FEED -->
+        <div class="sc">
+          <h4>🔴 Tableau de bord temps réel <span style="font-size:.7rem;background:rgba(232,115,12,.15);color:var(--accent);padding:2px 8px;border-radius:100px;margin-left:6px">Firebase</span></h4>
+          <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:16px">Affichez un panneau flottant avec les dernières ventes en temps réel, mis à jour automatiquement depuis Firebase.</p>
+          <button class="btn-p" onclick="toggleLiveSalesFeed()">👁️ Activer le feed live</button>
+        </div>
+
+        <!-- BACKUP FIREBASE -->
+        <div class="sc">
+          <h4>💾 Sauvegarde & Restauration <span style="font-size:.7rem;background:rgba(46,204,113,.12);color:var(--success);padding:2px 8px;border-radius:100px;margin-left:6px">Firebase</span></h4>
+          <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:16px">Créez un backup complet de vos données dans Firebase + téléchargement JSON. Restaurez depuis un fichier JSON.</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn-p" onclick="createFirebaseBackup()">📥 Créer un backup</button>
+            <button class="btn-g" onclick="document.getElementById('restore-file-input').click()">📤 Restaurer</button>
+            <input type="file" id="restore-file-input" accept=".json" style="display:none" onchange="restoreFirebaseBackup(this.files[0])"/>
+          </div>
+        </div>
+
         <!-- FIN PARAMÈTRES -->
       </div>
     </section>
@@ -1486,8 +2031,28 @@ window.addEventListener('load', checkApiStatus);
       <div id="cashiers-list" style="display:flex;flex-direction:column;gap:10px"></div>
     </section>
 
-  </div>
-</div>
+  </div><!-- /main -->
+
+  <!-- ── BOTTOM NAV BAR (mobile ≤640px) ── -->
+  <nav class="mob-bottom-nav" id="mob-bottom-nav">
+    <button class="mbn-item" id="mbn-dashboard" onclick="mobNav('dashboard')">
+      <span class="mbn-ico">🏠</span><span>Accueil</span>
+    </button>
+    <button class="mbn-item" id="mbn-pos" onclick="mobNav('pos')">
+      <span class="mbn-ico">🛍️</span><span>Caisse</span>
+    </button>
+    <button class="mbn-item" id="mbn-sales" onclick="mobNav('sales')">
+      <span class="mbn-ico">🧾</span><span>Ventes</span>
+    </button>
+    <button class="mbn-item" id="mbn-analytics" onclick="mobNav('analytics')">
+      <span class="mbn-ico">📈</span><span>Stats</span>
+    </button>
+    <button class="mbn-item" id="mbn-menu" onclick="toggleSidebar()">
+      <span class="mbn-ico">☰</span><span>Menu</span>
+    </button>
+  </nav>
+
+</div><!-- /page-app -->
 
 <!-- MODAL CAISSIER -->
 <div id="mo-cashier" class="mo hidden" onclick="closeMoOv(event,'mo-cashier')">
@@ -2551,15 +3116,20 @@ const StockNotif = {
   },
 
   push(mid, { type, icon, title, detail }) {
-    const list = this._load(mid);
-    list.unshift({
+    const item = {
       id:     'n_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
       type, icon, title, detail: detail || '',
       unread: true,
       ts:     new Date().toISOString()
-    });
+    };
+    const list = this._load(mid);
+    list.unshift(item);
     this._save(mid, list);
     this._updateBadge(mid);
+    // Sync Firebase (si connecté)
+    if (typeof fbSet === 'function' && typeof _fbDb !== 'undefined' && _fbDb) {
+      fbSet(mid, 'notifs', item.id, item);
+    }
   },
 
   markAllRead(mid) {
@@ -2736,13 +3306,56 @@ function showSection(name) {
       else warn.style.display='none';
     }
   }
-  document.getElementById('sidebar').classList.remove('mob-open');
+  // Fermer la sidebar mobile + overlay
+  document.getElementById('sidebar')?.classList.remove('mob-open');
+  document.getElementById('sb-overlay')?.classList.remove('show');
+  document.body.style.overflow = '';
+  // Sync bottom nav
+  _syncBottomNav('s-' + name);
   ({dashboard:renderDashboard,pos:renderPOS,quick:renderQuick,caisse:renderCaisse,products:renderProducts,stock:renderStock,clients:renderClients,sales:renderSales,settings:renderSettings,mysales:renderMySales,analytics:renderAnalytics,cashiers:renderCashiers})[name]?.();
   if (typeof updateSubTicker === 'function') updateSubTicker();
 }
 function toggleSidebar() {
+  const sb  = document.getElementById('sidebar');
+  const ov  = document.getElementById('sb-overlay');
+  if (window.innerWidth <= 900) {
+    const isOpen = sb.classList.toggle('mob-open');
+    if (ov) ov.classList.toggle('show', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  } else {
+    sb.classList.toggle('coll');
+  }
+}
+
+function closeSidebar() {
   const sb = document.getElementById('sidebar');
-  window.innerWidth <= 900 ? sb.classList.toggle('mob-open') : sb.classList.toggle('coll');
+  const ov = document.getElementById('sb-overlay');
+  sb?.classList.remove('mob-open');
+  ov?.classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// Navigation via bottom bar
+function mobNav(section) {
+  showSection('s-' + section);
+  closeSidebar();
+  // Mettre à jour l'état actif de la bottom nav
+  document.querySelectorAll('.mbn-item').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  const activeBtn = document.getElementById('mbn-' + section);
+  if (activeBtn) activeBtn.classList.add('active');
+}
+
+// Synchronise la bottom nav avec la section active
+function _syncBottomNav(sectionId) {
+  const map = { 's-dashboard':'dashboard','s-pos':'pos','s-sales':'sales','s-analytics':'analytics' };
+  document.querySelectorAll('.mbn-item').forEach(b => b.classList.remove('active'));
+  const key = map[sectionId];
+  if (key) {
+    const btn = document.getElementById('mbn-' + key);
+    if (btn) btn.classList.add('active');
+  }
 }
 
 // ---- LICENCE ----
@@ -2810,32 +3423,183 @@ function saveMerchantInfo() {
 // [replaced by admin version below]
 
 // ---- DASHBOARD ----
+
+// État des onglets de période (global pour chaque carte)
+const _periodTab = { ca: 'j', ventes: 'j', marge: 'j' };
+
+function setPeriodTab(card, period) {
+  _periodTab[card] = period;
+  // Mettre à jour les tabs actifs
+  ['j','s','m'].forEach(p => {
+    const prefix = card === 'ca' ? 'catab' : card === 'ventes' ? 'vtab' : 'mtab';
+    const el = document.getElementById(prefix + '-' + p);
+    if (!el) return;
+    el.classList.toggle('active', p === period);
+    if (card === 'ventes') el.classList.toggle('blue', p === period);
+    if (card === 'marge')  el.classList.toggle('green', p === period);
+  });
+  _renderPeriodCard(card);
+}
+
+function _renderPeriodCard(card) {
+  const m = Auth.current(); if (!m) return;
+  const dev        = getConfig()?.devise || 'FCFA';
+  const allSales   = DB.forM('sales', m.id).filter(s => s.statut !== 'cancelled');
+  const prods      = DB.forM('products', m.id);
+  const period     = _periodTab[card];
+  const now        = new Date();
+
+  // ── Dates de filtre
+  const todayStr   = now.toISOString().slice(0,10);
+  const monthStr   = now.toISOString().slice(0,7);
+  const weekStart  = new Date(now); weekStart.setDate(now.getDate() - ((now.getDay()+6)%7)); weekStart.setHours(0,0,0,0);
+
+  // Période courante
+  const cur = allSales.filter(s => {
+    if (period === 'j') return s.created_at?.slice(0,10) === todayStr;
+    if (period === 's') return new Date(s.created_at) >= weekStart;
+    return s.created_at?.slice(0,7) === monthStr;
+  });
+
+  // Période précédente (pour évolution)
+  const yest     = new Date(now); yest.setDate(now.getDate()-1);
+  const prevWeekStart = new Date(weekStart); prevWeekStart.setDate(weekStart.getDate()-7);
+  const prevWeekEnd   = new Date(weekStart);
+  const prevMonth = new Date(now.getFullYear(), now.getMonth()-1, 1).toISOString().slice(0,7);
+
+  const prev = allSales.filter(s => {
+    if (period === 'j') return s.created_at?.slice(0,10) === yest.toISOString().slice(0,10);
+    if (period === 's') return new Date(s.created_at)>=prevWeekStart && new Date(s.created_at)<prevWeekEnd;
+    return s.created_at?.slice(0,7) === prevMonth;
+  });
+
+  const caCur  = cur.reduce((a,b)=>a+(b.total||0),0);
+  const caPrev = prev.reduce((a,b)=>a+(b.total||0),0);
+  const nbCur  = cur.length;
+  const nbPrev = prev.length;
+
+  const periodLbl = period==='j' ? "aujourd'hui" : period==='s' ? 'cette semaine' : 'ce mois';
+  const periodCmpLbl = period==='j' ? 'hier' : period==='s' ? 'semaine dernière' : 'mois dernier';
+
+  function evolHtml(cur, prev) {
+    if (!prev) return `<span class="pcard-evol flat">— Première période</span>`;
+    const pct = Math.round(((cur-prev)/prev)*100);
+    if (pct > 0)  return `<span class="pcard-evol up">▲ +${pct}% vs ${periodCmpLbl}</span>`;
+    if (pct < 0)  return `<span class="pcard-evol down">▼ ${pct}% vs ${periodCmpLbl}</span>`;
+    return `<span class="pcard-evol flat">= Stable vs ${periodCmpLbl}</span>`;
+  }
+
+  // ── Sparkline (7 derniers jours)
+  function sparkHtml(type, color) {
+    const bars = [];
+    for (let i=6; i>=0; i--) {
+      const d = new Date(now); d.setDate(now.getDate()-i);
+      const ds = d.toISOString().slice(0,10);
+      const daySales = allSales.filter(s => s.created_at?.slice(0,10) === ds);
+      const val = type === 'ventes' ? daySales.length : daySales.reduce((a,b)=>a+(b.total||0),0);
+      bars.push(val);
+    }
+    const maxV = Math.max(...bars, 1);
+    return bars.map((v,i) => {
+      const h = Math.max(3, Math.round((v/maxV)*30));
+      const isToday = i === 6;
+      return `<div class="spark-bar ${isToday?'today':''}" style="height:${h}px;background:${color};opacity:${isToday?1:.4}"></div>`;
+    }).join('');
+  }
+
+  const set = (id, val) => { const e=document.getElementById(id); if(e) e.innerHTML=val; };
+
+  if (card === 'ca') {
+    set('pval-ca',   fmtMoney(caCur, dev));
+    set('pcount-ca', nbCur + ' vente' + (nbCur!==1?'s':'') + ' · panier moy. ' + fmtMoney(nbCur?Math.round(caCur/nbCur):0, dev));
+    set('pevol-ca',  evolHtml(caCur, caPrev));
+    set('spark-ca',  sparkHtml('ca', 'var(--accent)'));
+  }
+
+  if (card === 'ventes') {
+    set('pval-ventes',   nbCur.toString());
+    set('pcount-ventes', fmtMoney(caCur,dev) + ' encaissé');
+    set('pevol-ventes',  evolHtml(nbCur, nbPrev));
+    set('spark-ventes',  sparkHtml('ventes', '#4FC3F7'));
+  }
+
+  if (card === 'marge') {
+    // Calcul marge : cherche prix d'achat (cout) sur les produits
+    let revenu=0, cout=0, hasCout=false;
+    cur.forEach(s => {
+      (s.items||[]).forEach(i => {
+        const p   = prods.find(x=>x.nom===i.nom||x.id===i.product_id);
+        const qty = i.qty||1;
+        revenu += (i.prix||0)*qty;
+        if (p?.cout) { cout += p.cout*qty; hasCout=true; }
+      });
+    });
+    const benefice = revenu - cout;
+    const pct      = hasCout && revenu>0 ? Math.round((benefice/revenu)*100) : null;
+    const ringClass= pct===null?'none':pct>=30?'':'warn'+(pct>=10?'':' danger');
+    const ringTxt  = pct===null ? 'Ajout\ncoûts' : pct+'%';
+    const color    = pct===null?'var(--text-dim)':pct>=30?'var(--success)':pct>=10?'var(--warning)':'var(--danger)';
+
+    const ring = document.getElementById('marge-ring');
+    if (ring) {
+      ring.className = 'marge-ring' + (pct===null?' none':pct<30?' warn':'') + (pct!==null&&pct<10?' danger':'');
+      ring.textContent = pct===null ? 'Prix\nachat' : pct+'%';
+      ring.style.color = color; ring.style.borderColor = color;
+    }
+    set('pval-marge',   hasCout ? fmtMoney(benefice,dev) : '—');
+    set('pcount-marge', hasCout ? `CA ${fmtMoney(revenu,dev)} · Coût ${fmtMoney(cout,dev)}` : `${fmtMoney(caCur,dev)} CA · Ajoutez un prix d'achat`);
+    // Évolution bénéfice vs période précédente
+    let rPrev=0,cPrev2=0,hcPrev=false;
+    prev.forEach(s=>{
+      (s.items||[]).forEach(i=>{
+        const p=prods.find(x=>x.nom===i.nom||x.id===i.product_id);const qty=i.qty||1;
+        rPrev+=(i.prix||0)*qty;if(p?.cout){cPrev2+=p.cout*qty;hcPrev=true;}
+      });
+    });
+    const benPrev = rPrev - cPrev2;
+    set('pevol-marge', hasCout ? evolHtml(benefice, hcPrev?benPrev:0) : `<span class="pcard-evol flat">Complétez les prix d'achat →</span>`);
+  }
+}
+
 function renderDashboard() {
   const m = Auth.current(); if (!m) return;
   const sales = DB.forM('sales', m.id), prods = DB.forM('products', m.id), clis = DB.forM('clients', m.id);
   const cfg = getConfig(), dev = cfg.devise || 'FCFA';
   const validSales = sales.filter(s => s.statut !== 'cancelled');
   const ca = validSales.reduce((s, v) => s + (v.total || 0), 0);
+
+  // ── KPIs globaux (totaux)
   document.getElementById('k-ca').textContent = fmtMoney(ca, dev);
-  document.getElementById('k-v').textContent = validSales.length;
-  document.getElementById('k-p').textContent = prods.length;
-  document.getElementById('k-c').textContent = clis.length;
-  document.getElementById('w-msg').textContent = cfg.message_accueil || 'Bienvenue, ' + m.proprietaire + ' !';
+  document.getElementById('k-v').textContent  = validSales.length;
+  document.getElementById('k-p').textContent  = prods.length;
+  document.getElementById('k-c').textContent  = clis.length;
+
+  // ── Message d'accueil
+  document.getElementById('w-msg').textContent  = cfg.message_accueil || 'Bienvenue, ' + m.proprietaire + ' !';
   document.getElementById('w-date').textContent = new Date().toLocaleDateString('fr-FR', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  // ── Cartes de période (CA, Ventes, Marge)
+  ['ca','ventes','marge'].forEach(card => _renderPeriodCard(card));
+
+  // ── Dernières ventes
   const recent = [...validSales].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5);
   document.getElementById('d-sales').innerHTML = recent.length ? recent.map(s =>
-    '<div class="ri"><div><div class="ri-name">' + s.client_nom + '</div><div class="ri-date">' + new Date(s.created_at).toLocaleDateString('fr-FR') + '</div></div><div class="ri-amt">' + fmtMoney(s.total, dev) + '</div></div>'
+    '<div class="ri"><div><div class="ri-name">' + (s.client_nom||'—') + '</div><div class="ri-date">' + new Date(s.created_at).toLocaleDateString('fr-FR') + '</div></div><div class="ri-amt">' + fmtMoney(s.total, dev) + '</div></div>'
   ).join('') : '<p class="empty">Aucune vente.</p>';
+
+  // ── Top produits
   const ps = {};
-  validSales.forEach(s => (s.items || []).forEach(i => { if (!ps[i.nom]) ps[i.nom] = {t:0,q:0}; ps[i.nom].t += i.prix * i.qty; ps[i.nom].q += i.qty; }));
+  validSales.forEach(s => (s.items || []).forEach(i => { if (!ps[i.nom]) ps[i.nom] = {t:0,q:0}; ps[i.nom].t += (i.prix||0)*(i.qty||1); ps[i.nom].q += i.qty||1; }));
   const top = Object.entries(ps).sort((a, b) => b[1].t - a[1].t).slice(0, 5);
   document.getElementById('d-top').innerHTML = top.length ? top.map(([n, d]) =>
     '<div class="ri"><div><div class="ri-name">' + n + '</div><div class="ri-date">' + d.q + ' vendu(s)</div></div><div class="ri-amt">' + fmtMoney(d.t, dev) + '</div></div>'
   ).join('') : '<p class="empty">Aucun produit vendu.</p>';
-  // Notifications stock — afficher puis marquer comme lues
+
+  // ── Notifications stock
   StockNotif.render(m.id);
   setTimeout(() => { StockNotif.markAllRead(m.id); StockNotif._updateBadge(m.id); }, 1500);
-  // Stats annulations
+
+  // ── Stats annulations
   renderCancelStats();
 }
 
@@ -2899,7 +3663,7 @@ function renderProducts() {
   const dev = getConfig().devise || 'FCFA';
   document.getElementById('prod-tbody').innerHTML = f.length ? f.map(p => {
     const sb = p.stock === null ? '<span class="sbdg s-ok">∞</span>' : p.stock === 0 ? '<span class="sbdg s-zero">Rupture</span>' : p.stock <= 5 ? '<span class="sbdg s-low">' + p.stock + '</span>' : '<span class="sbdg s-ok">' + p.stock + '</span>';
-    return '<tr><td><strong>' + p.nom + '</strong>' + (p.categorie ? '<br/><small style="color:var(--text-dim)">' + p.categorie + '</small>' : '') + '</td><td><strong style="color:var(--accent)">' + fmtMoney(p.prix, dev) + '</strong></td><td>' + sb + '</td><td><div class="tacts"><button class="tbtn" data-edit-pid="' + p.id + '">✏️ Modifier</button><button class="tbtn d" data-del-pid="' + p.id + '">🗑️</button></div></td></tr>';
+    return '<tr><td><strong>' + p.nom + '</strong>' + (p.categorie ? '<br/><small style="color:var(--text-dim)">' + p.categorie + '</small>' : '') + '</td><td><strong style="color:var(--accent)">' + fmtMoney(p.prix, dev) + '</strong></td><td>' + sb + '</td><td><div class="tacts"><button class="tbtn" data-edit-pid="' + p.id + '">✏️ Modifier</button>' + (p.photo_url ? '<a class="tbtn" href="' + p.photo_url + '" target="_blank">📷</a>' : '<button class="tbtn" onclick="openProductPhotoModal(\'' + p.id + '\')">📷</button>') + '<button class="tbtn d" data-del-pid="' + p.id + '">🗑️</button></div></td></tr>';
   }).join('') : '<tr><td colspan="4" class="empty">Aucun produit trouvé.</td></tr>';
   // Bind events
   document.querySelectorAll('[data-edit-pid]').forEach(btn => {
@@ -4317,7 +5081,14 @@ function registerMerchant(e) {
     // Pousser le nouveau marchand dans Firebase si connecté
     if (_fbDb) {
       fbInitMerchant(merchant.id);
+      // Créer le doc marchand dans Firestore
+      _fbDb.collection('merchants').doc(merchant.id).set({
+        ...merchant, created_at: merchant.created_at || new Date().toISOString()
+      }, { merge: true }).catch(() => {});
       startFirebase();
+      // Créer le compte Firebase Auth
+      const fbEmail = merchant.telephone.replace(/\D/g,'') + '@digitalesolution.app';
+      fbSignInWithEmail(fbEmail, p).catch(() => {});
     }
   } catch(err) {
     er.textContent = err.message;
@@ -4349,7 +5120,18 @@ async function loginMerchant(e) {
     // Badge stock
     if (typeof StockNotif !== 'undefined') StockNotif._updateBadge(merchant.id);
     // Sync Firebase temps réel
-    if (_fbDb) startFirebase();
+    if (_fbDb) {
+      startFirebase();
+      // Connexion Firebase Auth avec email dérivé du téléphone
+      const fbEmail = tel.replace(/\D/g, '') + '@digitalesolution.app';
+      fbSignInWithEmail(fbEmail, pwd).then(user => {
+        if (fbStatus) fbStatus.textContent = '✅ Firebase connecté';
+        setTimeout(() => { if (fbStatus) fbStatus.style.display = 'none'; }, 2000);
+      }).catch(() => {
+        // Auth Firebase optionnelle — l'app fonctionne sans
+        if (fbStatus) fbStatus.style.display = 'none';
+      });
+    }
     // Notifications push
     _initPushOnLogin();
     // Rapport WhatsApp auto
@@ -4398,6 +5180,7 @@ function demoLogin() {
 function logout() {
   const m = Auth.current();
   if (m) stopFirebase(m.id);
+  fbSignOut();
   Auth.logout();
   cart = [];
   pinUnlocked = false;
@@ -5372,26 +6155,24 @@ async function testSupabaseConnection() {
 
 async function syncAllToSupabase() {
   const btn = document.querySelector('[onclick="syncAllToSupabase()"]');
-  if (btn) { btn.disabled = true; btn.textContent = '⏳ Sync...'; }
-  showAdminSbFeedback('⏳ Préparation des données...', 'info');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Sync Firebase...'; }
+  showAdminSbFeedback('⏳ Synchronisation vers Firebase en cours...', 'info');
   try {
-    const data = {
-      merchants: DB.get('merchants') || [],
-      products:  DB.get('products')  || [],
-      sales:     DB.get('sales')     || [],
-      clients:   DB.get('clients')   || [],
-      configs:   DB.get('configs')   || [],
-    };
-    const total = Object.values(data).reduce((s, a) => s + a.length, 0);
-    showAdminSbFeedback('⏳ Envoi de ' + total + ' documents...', 'info');
-    const result = await API.admin('sync_all', { data });
-    const details = Object.entries(result.results || {}).map(([k,v]) => k+':'+v).join(' | ');
-    showAdminSbFeedback('✅ Sync complète — ' + details, 'success');
-    ADB.addActivity('supabase_sync', 'Sync globale Supabase — ' + total + ' docs');
+    if (!_fbDb) throw new Error('Firebase non connecté. Configurez d\'abord Firebase dans le panel dev.');
+    const merchants = DB.get('merchants') || [];
+    let total = 0;
+    for (const m of merchants) {
+      await fbSyncAll(m.id);
+      // Sync le doc marchand lui-même
+      await _fbDb.collection('merchants').doc(m.id).set({ ...m }, { merge: true }).catch(() => {});
+      total++;
+    }
+    showAdminSbFeedback(`✅ Firebase sync — ${total} marchand(s) synchronisé(s)`, 'success');
+    ADB.addActivity('firebase_sync', `Sync globale Firebase — ${total} marchands`);
   } catch(e) {
     showAdminSbFeedback('❌ ' + e.message, 'error');
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = '☁️ Sync global → Supabase'; }
+    if (btn) { btn.disabled = false; btn.textContent = '☁️ Sync global → Firebase'; }
   }
 }
 
@@ -5637,7 +6418,9 @@ function getFirebaseConfig() {
   };
 }
 
-let _fbDb = null;
+let _fbDb   = null;
+let _fbAuth = null;
+let _fbStorage = null;
 let _fbOffline = false;
 
 // Intercepte les logs Firebase pour supprimer le bruit "Connection failed"
@@ -5649,37 +6432,99 @@ let _fbOffline = false;
   console.error = (...a) => { if (typeof a[0] === 'string' && FB_NOISE.test(a[0])) return; _origError(...a); };
 })();
 
-// ── Initialise Firestore avec une config donnée
+// ── Initialise Firebase complet (Firestore + Auth + Storage)
 function initFirestoreWith(cfg) {
   try {
-    // Réinitialiser si déjà une app Firebase
     if (firebase.apps.length) {
       firebase.apps[0].delete().catch(() => {});
     }
     firebase.initializeApp(cfg);
-    _fbDb = firebase.firestore();
+    _fbDb      = firebase.firestore();
+    _fbAuth    = firebase.auth();
+    _fbStorage = typeof firebase.storage === 'function' ? firebase.storage() : null;
+
+    // Persistance offline
     _fbDb.enablePersistence({ synchronizeTabs: true }).catch(e => {
       if (e.code === 'failed-precondition') {
-        // Plusieurs onglets ouverts — mode dégradé acceptable, sync réseau toujours active
         console.info('[DS] Persistance multi-onglet désactivée (onglet secondaire)');
       } else if (e.code !== 'unimplemented') {
         console.warn('[DS] Firebase persistance:', e.code);
       }
     });
     _fbDb.enableNetwork().catch(() => {});
-    window.addEventListener('online', () => {
-      if (_fbOffline) { _fbOffline = false; _fbDb?.enableNetwork().catch(() => {}); }
+
+    // Auth state — sync marchand local ↔ Firebase
+    _fbAuth.onAuthStateChanged(user => {
+      if (user) {
+        console.log('[FB Auth] Connecté :', user.email || user.uid);
+        _fbSyncUserProfile(user);
+      } else {
+        console.log('[FB Auth] Déconnecté');
+      }
     });
-    window.addEventListener('offline', () => {
-      _fbOffline = true; _fbDb?.disableNetwork().catch(() => {});
-    });
-    console.log('[DS] ✅ Firestore prêt —', cfg.projectId);
+
+    window.addEventListener('online',  () => { if (_fbOffline) { _fbOffline = false; _fbDb?.enableNetwork().catch(() => {}); } });
+    window.addEventListener('offline', () => { _fbOffline = true; _fbDb?.disableNetwork().catch(() => {}); });
+
+    console.log('[DS] ✅ Firebase complet prêt —', cfg.projectId);
     return true;
   } catch(e) {
     console.warn('[DS] Firebase init échoué:', e.message);
-    _fbDb = null;
+    _fbDb = null; _fbAuth = null; _fbStorage = null;
     return false;
   }
+}
+
+// ── Sync profil utilisateur local ↔ Firestore
+async function _fbSyncUserProfile(user) {
+  if (!_fbDb || !user) return;
+  const m = Auth.current(); if (!m) return;
+  try {
+    const ref = _fbDb.collection('merchants').doc(m.id);
+    const snap = await ref.get();
+    if (!snap.exists) {
+      // Première fois — push local vers Firebase
+      await ref.set({ ...m, fb_uid: user.uid, synced_at: new Date().toISOString() }, { merge: true });
+    } else {
+      // Récupérer la date d'expiration Firebase (source de vérité abonnement)
+      const remote = snap.data();
+      if (remote.licence_expiry && remote.licence_expiry !== m.licence_expiry) {
+        Auth.refresh({ licence_expiry: remote.licence_expiry, licence: remote.licence });
+        console.log('[FB] Licence mise à jour depuis Firebase :', remote.licence_expiry);
+      }
+    }
+  } catch(e) { console.warn('[FB] _fbSyncUserProfile:', e.message); }
+}
+
+// ── Connexion anonyme Firebase (permet Firestore même sans email/password)
+async function _fbSignInAnon() {
+  if (!_fbAuth) return;
+  try {
+    if (!_fbAuth.currentUser) {
+      await _fbAuth.signInAnonymously();
+      console.log('[FB Auth] Connexion anonyme OK');
+    }
+  } catch(e) { console.warn('[FB Auth] Connexion anonyme échouée:', e.message); }
+}
+
+// ── Connexion Firebase avec email (propriétaire)
+async function fbSignInWithEmail(email, password) {
+  if (!_fbAuth) return null;
+  try {
+    const cred = await _fbAuth.signInWithEmailAndPassword(email, password);
+    return cred.user;
+  } catch(e) {
+    if (e.code === 'auth/user-not-found') {
+      const cred = await _fbAuth.createUserWithEmailAndPassword(email, password);
+      return cred.user;
+    }
+    throw e;
+  }
+}
+
+// ── Déconnexion Firebase Auth
+function fbSignOut() {
+  _fbAuth?.signOut().catch(() => {});
 }
 
 // ── Init au chargement de la page
@@ -5793,10 +6638,12 @@ function startFirebase() {
   if (!m || !_fbDb) return;
   const mid = m.id;
 
-  // Forcer la reconnexion réseau (utile après un refresh ou retour en ligne)
+  // Connexion anonyme pour garantir l'accès Firestore
+  _fbSignInAnon();
+
+  // Forcer la reconnexion réseau
   _fbDb.enableNetwork().catch(() => {});
 
-  // Si des listeners existent déjà pour ce marchand, les détacher avant de recréer
   if (_fbListeners[mid]) {
     _fbListeners[mid].forEach(unsub => { try { unsub(); } catch(e) {} });
     delete _fbListeners[mid];
@@ -5804,49 +6651,41 @@ function startFirebase() {
   _fbListeners[mid] = [];
 
   const onErr = (col) => (e) => {
-    // Silencieux si hors ligne — Firestore continue en cache
     if (_fbOffline || e.code === 'unavailable') return;
     console.warn('[DS] Sync "' + col + '":', e.code || e.message);
   };
 
+  const base = () => _fbDb.collection('merchants').doc(mid);
+
   // ── Products
-  const unsubProds = _fbDb.collection('merchants').doc(mid).collection('products')
+  const unsubProds = base().collection('products')
     .onSnapshot(snap => {
-      const prods = snap.docs.map(d => ({ ...d.data(), id: d.id, merchant_id: mid }))
-                            .filter(p => p.id !== '_init');
+      const prods = snap.docs.map(d => ({ ...d.data(), id: d.id, merchant_id: mid })).filter(p => p.id !== '_init');
       const all = DB.get('products').filter(r => r.merchant_id !== mid);
       DB.set('products', [...all, ...prods]);
-      // Rafraîchir la vue si active
-      const sec = document.querySelector('.section.active')?.id?.replace('s-', '');
-      if (sec === 'products') renderProducts();
-      if (sec === 'pos')      renderPOS();
-      if (sec === 'stock')    renderStock();
+      const sec = _activeSec(); if (sec === 'products') renderProducts(); if (sec === 'pos') renderPOS(); if (sec === 'stock') renderStock();
     }, onErr('products'));
 
   // ── Sales
-  const unsubSales = _fbDb.collection('merchants').doc(mid).collection('sales')
+  const unsubSales = base().collection('sales')
     .onSnapshot(snap => {
-      const sales = snap.docs.map(d => ({ ...d.data(), id: d.id, merchant_id: mid }))
-                            .filter(s => s.id !== '_init');
+      const sales = snap.docs.map(d => ({ ...d.data(), id: d.id, merchant_id: mid })).filter(s => s.id !== '_init');
       const all = DB.get('sales').filter(r => r.merchant_id !== mid);
       DB.set('sales', [...all, ...sales]);
-      const sec = document.querySelector('.section.active')?.id?.replace('s-', '');
-      if (sec === 'sales')     renderSales();
-      if (sec === 'dashboard') renderDashboard();
+      const sec = _activeSec(); if (sec === 'sales') renderSales(); if (sec === 'dashboard') renderDashboard(); if (sec === 'analytics') renderAnalytics();
     }, onErr('sales'));
 
   // ── Clients
-  const unsubClients = _fbDb.collection('merchants').doc(mid).collection('clients')
+  const unsubClients = base().collection('clients')
     .onSnapshot(snap => {
       const clients = snap.docs.map(d => ({ ...d.data(), id: d.id, merchant_id: mid }));
       const all = DB.get('clients').filter(r => r.merchant_id !== mid);
       DB.set('clients', [...all, ...clients]);
-      const sec = document.querySelector('.section.active')?.id?.replace('s-', '');
-      if (sec === 'clients') renderClients();
+      const sec = _activeSec(); if (sec === 'clients') renderClients();
     }, onErr('clients'));
 
   // ── Configs
-  const unsubConfigs = _fbDb.collection('merchants').doc(mid).collection('configs')
+  const unsubConfigs = base().collection('configs')
     .onSnapshot(snap => {
       if (snap.empty) return;
       const configs = snap.docs.map(d => ({ ...d.data(), id: d.id, merchant_id: mid }));
@@ -5854,8 +6693,39 @@ function startFirebase() {
       DB.set('configs', [...all, ...configs]);
     }, onErr('configs'));
 
-  _fbListeners[mid] = [unsubProds, unsubSales, unsubClients, unsubConfigs];
-  console.log('[Firebase] ✅ Sync temps réel démarré pour:', m.nom_commerce);
+  // ── Caissiers
+  const unsubCashiers = base().collection('cashiers')
+    .onSnapshot(snap => {
+      const cashiers = snap.docs.map(d => ({ ...d.data(), id: d.id, merchant_id: mid }));
+      const all = DB.get('cashiers').filter(r => r.merchant_id !== mid);
+      DB.set('cashiers', [...all, ...cashiers]);
+      const sec = _activeSec(); if (sec === 'cashiers') renderCashiers();
+    }, onErr('cashiers'));
+
+  // ── Dettes
+  const unsubDettes = base().collection('dettes')
+    .onSnapshot(snap => {
+      const dettes = snap.docs.map(d => ({ ...d.data(), id: d.id }));
+      localStorage.setItem('ds_dettes_' + mid, JSON.stringify(dettes));
+      const sec = _activeSec(); if (sec === 'analytics') renderAnalytics();
+    }, onErr('dettes'));
+
+  // ── Notifications stock (temps réel)
+  const unsubNotifs = base().collection('notifs')
+    .orderBy('ts', 'desc').limit(50)
+    .onSnapshot(snap => {
+      const notifs = snap.docs.map(d => ({ ...d.data(), id: d.id }));
+      localStorage.setItem('ds_stock_notifs_' + mid, JSON.stringify(notifs));
+      StockNotif._updateBadge(mid);
+      const sec = _activeSec(); if (sec === 'dashboard') renderDashboard();
+    }, onErr('notifs'));
+
+  _fbListeners[mid] = [unsubProds, unsubSales, unsubClients, unsubConfigs, unsubCashiers, unsubDettes, unsubNotifs];
+  console.log('[Firebase] ✅ Sync temps réel complète démarrée pour:', m.nom_commerce);
+}
+
+function _activeSec() {
+  return document.querySelector('.section.active')?.id?.replace('s-', '') || '';
 }
 
 // ── Arrête les listeners d'un marchand (à la déconnexion)
@@ -5872,7 +6742,6 @@ function fbSet(mid, collection, docId, data) {
   _fbDb.collection('merchants').doc(mid).collection(collection).doc(docId)
     .set(data, { merge: true })
     .catch(e => {
-      // Silencieux si hors ligne — les données sont en cache local Firebase
       if (_fbOffline || e.code === 'unavailable') return;
       console.warn('[DS] fbSet', collection + '/' + docId + ':', e.message);
     });
@@ -5901,16 +6770,390 @@ function fbDelete(mid, collection, docId) {
     });
 }
 
+// ── Sync batch : toute une collection locale → Firestore
+async function fbSyncCollection(mid, col, items) {
+  if (!_fbDb || !items?.length) return;
+  const base = _fbDb.collection('merchants').doc(mid).collection(col);
+  const CHUNK = 400; // Firestore batch max 500
+  for (let i = 0; i < items.length; i += CHUNK) {
+    const batch = _fbDb.batch();
+    items.slice(i, i + CHUNK).forEach(item => {
+      const id = item.id || ('id_' + Date.now() + '_' + Math.random().toString(36).slice(2,6));
+      batch.set(base.doc(id), { ...item, merchant_id: mid }, { merge: true });
+    });
+    await batch.commit().catch(e => console.warn('[DS] fbSyncCollection batch:', e.message));
+  }
+}
+
+// ── Sync TOUTES les collections locales d'un marchand → Firestore
+async function fbSyncAll(mid) {
+  if (!_fbDb) { showToast('⚠️ Firebase non connecté', 'error'); return; }
+  showToast('⏳ Synchronisation Firebase en cours...', 'success');
+  const cols = ['products','sales','clients','configs'];
+  for (const col of cols) {
+    const items = DB.get(col).filter(r => r.merchant_id === mid);
+    await fbSyncCollection(mid, col, items);
+  }
+  // Dettes
+  try {
+    const dettes = JSON.parse(localStorage.getItem('ds_dettes_' + mid) || '[]');
+    if (dettes.length) await fbSyncCollection(mid, 'dettes', dettes);
+  } catch(e) {}
+  showToast('✅ Sync Firebase complète !', 'success');
+  console.log('[DS] Sync complète pour:', mid);
+}
+
 // ── Crée les sous-collections init lors de l'inscription
 function fbInitMerchant(mid) {
   if (!_fbDb) return;
   const init = { _init: true, created_at: new Date().toISOString() };
-  ['products', 'sales', 'clients', 'configs'].forEach(col => {
+  ['products', 'sales', 'clients', 'configs', 'cashiers', 'dettes', 'notifs'].forEach(col => {
     _fbDb.collection('merchants').doc(mid).collection(col).doc('_init').set(init).catch(() => {});
   });
 }
 
-// Note: startFirebase() est défini plus haut — listeners onSnapshot actifs
+// ── Écrit une notification dans Firestore
+function fbPushNotif(mid, notif) {
+  if (!_fbDb) return;
+  const id = 'n_' + Date.now().toString(36);
+  fbSet(mid, 'notifs', id, { ...notif, ts: new Date().toISOString(), read: false });
+}
+
+// ── Marque toutes les notifs comme lues dans Firestore
+function fbMarkNotifsRead(mid) {
+  if (!_fbDb) return;
+  _fbDb.collection('merchants').doc(mid).collection('notifs')
+    .where('read','==',false).get()
+    .then(snap => {
+      const batch = _fbDb.batch();
+      snap.forEach(doc => batch.update(doc.ref, { read: true }));
+      return batch.commit();
+    }).catch(() => {});
+}
+
+// ============================================================
+// RESPONSIVE INIT — mobile/tablet adaptive behaviours
+// ============================================================
+(function initResponsive() {
+
+  // ── Affiche/masque le bouton hamburger selon la largeur
+  function updateHamburger() {
+    const btn = document.querySelector('.mob-menu');
+    if (!btn) return;
+    btn.style.display = window.innerWidth <= 900 ? 'flex' : 'none';
+  }
+
+  // ── Affiche/masque les pills de thème sur mobile
+  function updateThemePills() {
+    const pills = document.getElementById('app-theme-pills');
+    if (pills) pills.style.display = window.innerWidth <= 900 ? 'none' : 'flex';
+  }
+
+  // ── Corrige la hauteur de la bottom nav en cas de barre d'adresse mobile
+  function fixViewportHeight() {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', vh + 'px');
+  }
+
+  // ── Ferme la sidebar si on passe en mode desktop
+  function handleResize() {
+    updateHamburger();
+    updateThemePills();
+    fixViewportHeight();
+    if (window.innerWidth > 900) {
+      closeSidebar();
+    }
+  }
+
+  window.addEventListener('resize', handleResize);
+  window.addEventListener('orientationchange', () => setTimeout(fixViewportHeight, 200));
+  handleResize();
+
+  // ── Swipe droit = ouvrir sidebar / swipe gauche = fermer (sur mobile)
+  let _touchStartX = 0, _touchStartY = 0;
+  document.addEventListener('touchstart', e => {
+    _touchStartX = e.touches[0].clientX;
+    _touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+
+  document.addEventListener('touchend', e => {
+    if (window.innerWidth > 900) return;
+    const dx = e.changedTouches[0].clientX - _touchStartX;
+    const dy = Math.abs(e.changedTouches[0].clientY - _touchStartY);
+    if (dy > 60) return; // swipe vertical ignoré
+    const sb = document.getElementById('sidebar');
+    // Swipe droite depuis le bord gauche → ouvrir
+    if (dx > 55 && _touchStartX < 30 && !sb?.classList.contains('mob-open')) {
+      toggleSidebar();
+    }
+    // Swipe gauche → fermer
+    if (dx < -55 && sb?.classList.contains('mob-open')) {
+      closeSidebar();
+    }
+  }, { passive: true });
+
+  // ── Initialiser la bottom nav active au dashboard
+  setTimeout(() => {
+    const mbn = document.getElementById('mbn-dashboard');
+    if (mbn) mbn.classList.add('active');
+  }, 100);
+
+  // ── Empêcher le zoom sur double-tap sur les boutons (iOS)
+  let _lastTap = 0;
+  document.addEventListener('touchend', e => {
+    const now = Date.now();
+    if (now - _lastTap < 300 && e.target.tagName === 'BUTTON') e.preventDefault();
+    _lastTap = now;
+  }, { passive: false });
+
+})();
+
+
+// ============================================================
+// ✨ FONCTIONNALITÉ 1 — RÉCUPÉRATION DE COMPTE VIA FIREBASE
+// ============================================================
+async function openAccountRecovery() {
+  const tel = prompt('Entrez votre numéro de téléphone pour récupérer votre compte :');
+  if (!tel) return;
+  const clean = tel.replace(/\D/g,'');
+  if (!_fbDb) { showToast('⚠️ Firebase requis pour la récupération de compte', 'error'); return; }
+  try {
+    const snap = await _fbDb.collection('merchants')
+      .where('telephone','==',clean).limit(1).get();
+    if (snap.empty) { showToast('❌ Aucun compte trouvé pour ce numéro', 'error'); return; }
+    const data = snap.docs[0].data();
+    const mid  = snap.docs[0].id;
+    // Restaurer en localStorage
+    const merchants = DB.get('merchants');
+    if (!merchants.find(m => m.id === mid)) {
+      merchants.push({ ...data, id: mid });
+      DB.set('merchants', merchants);
+    }
+    // Restaurer configs / products / clients / sales
+    for (const col of ['configs','products','clients','sales']) {
+      const colSnap = await _fbDb.collection('merchants').doc(mid).collection(col).get();
+      const items = colSnap.docs.map(d => ({ ...d.data(), id: d.id, merchant_id: mid })).filter(x => x.id !== '_init');
+      const all = DB.get(col).filter(r => r.merchant_id !== mid);
+      DB.set(col, [...all, ...items]);
+    }
+    showToast(`✅ Compte "${data.nom_commerce}" restauré ! Reconnectez-vous.`, 'success');
+    document.getElementById('login-tel').value = clean;
+    showPage('page-login');
+  } catch(e) {
+    showToast('❌ Récupération échouée : ' + e.message, 'error');
+  }
+}
+
+// ============================================================
+// ✨ FONCTIONNALITÉ 2 — PHOTO PRODUIT FIREBASE STORAGE
+// ============================================================
+async function uploadProductPhoto(file, mid, productId) {
+  if (!_fbStorage) { showToast('⚠️ Firebase Storage non configuré', 'error'); return null; }
+  if (!file) return null;
+  try {
+    showToast('⏳ Upload de la photo...', 'success');
+    const ref  = _fbStorage.ref(`merchants/${mid}/products/${productId}_${Date.now()}.jpg`);
+    const snap = await ref.put(file);
+    const url  = await snap.ref.getDownloadURL();
+    showToast('✅ Photo uploadée', 'success');
+    return url;
+  } catch(e) {
+    showToast('❌ Upload échoué : ' + e.message, 'error');
+    return null;
+  }
+}
+
+function openProductPhotoModal(productId) {
+  const m = Auth.current(); if (!m) return;
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = 'image/*'; input.capture = 'environment';
+  input.onchange = async () => {
+    const file = input.files[0]; if (!file) return;
+    const url = await uploadProductPhoto(file, m.id, productId);
+    if (!url) return;
+    // Mettre à jour le produit local + Firebase
+    const prods = DB.get('products');
+    const idx   = prods.findIndex(p => p.id === productId && p.merchant_id === m.id);
+    if (idx !== -1) {
+      prods[idx].photo_url = url;
+      DB.set('products', prods);
+      fbUpdate(m.id, 'products', productId, { photo_url: url });
+      renderProducts();
+      showToast('📸 Photo du produit mise à jour', 'success');
+    }
+  };
+  input.click();
+}
+
+// ============================================================
+// ✨ FONCTIONNALITÉ 3 — MULTI-DEVICE : SESSION FIREBASE
+// ============================================================
+// Permet de reprendre la session sur un autre appareil via QR ou code
+async function generateDeviceCode() {
+  const m = Auth.current(); if (!m) return;
+  if (!_fbDb) { showToast('⚠️ Firebase requis', 'error'); return; }
+  const code = Math.random().toString(36).slice(2, 8).toUpperCase();
+  const expiry = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 min
+  try {
+    await _fbDb.collection('device_codes').doc(code).set({
+      merchant_id: m.id, nom_commerce: m.nom_commerce,
+      telephone: m.telephone, expiry, used: false,
+      created_at: new Date().toISOString()
+    });
+    // Afficher le code dans un modal
+    const html = `<div style="position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9999;display:flex;align-items:center;justify-content:center" onclick="this.remove()">
+      <div style="background:var(--surface);border-radius:24px;padding:32px;text-align:center;max-width:320px;width:90%">
+        <div style="font-size:.85rem;color:var(--text-muted);margin-bottom:8px">Code d'accès multi-appareil</div>
+        <div style="font-size:3.5rem;font-weight:900;font-family:var(--fh);color:var(--accent);letter-spacing:.15em;margin:16px 0">${code}</div>
+        <div style="font-size:.78rem;color:var(--text-dim);margin-bottom:20px">Valable 5 minutes · Tapez ce code sur l'autre appareil</div>
+        <div style="font-size:.75rem;color:var(--text-muted)">Allez sur l'écran de connexion → "Reprendre avec code"</div>
+        <button onclick="this.closest('div').parentElement.remove()" style="margin-top:16px;background:var(--surface2);border:none;border-radius:10px;padding:10px 24px;color:var(--text);cursor:pointer">Fermer</button>
+      </div>
+    </div>`;
+    document.body.insertAdjacentHTML('beforeend', html);
+  } catch(e) {
+    showToast('❌ Erreur : ' + e.message, 'error');
+  }
+}
+
+async function resumeWithDeviceCode() {
+  if (!_fbDb) { showToast('⚠️ Firebase requis', 'error'); return; }
+  const code = prompt('Entrez le code d\'accès affiché sur l\'autre appareil :')?.trim().toUpperCase();
+  if (!code) return;
+  try {
+    const docRef = _fbDb.collection('device_codes').doc(code);
+    const snap   = await docRef.get();
+    if (!snap.exists) { showToast('❌ Code invalide', 'error'); return; }
+    const data = snap.data();
+    if (data.used || new Date(data.expiry) < new Date()) { showToast('❌ Code expiré ou déjà utilisé', 'error'); return; }
+    // Invalider le code
+    await docRef.update({ used: true });
+    // Restaurer les données depuis Firebase
+    const mid = data.merchant_id;
+    const mSnap = await _fbDb.collection('merchants').doc(mid).get();
+    if (!mSnap.exists) { showToast('❌ Données introuvables', 'error'); return; }
+    const merchant = { ...mSnap.data(), id: mid };
+    // Restaurer local
+    for (const col of ['products','clients','sales','configs']) {
+      const cs = await _fbDb.collection('merchants').doc(mid).collection(col).get();
+      const items = cs.docs.map(d => ({ ...d.data(), id: d.id, merchant_id: mid })).filter(x => x.id !== '_init');
+      const all = DB.get(col).filter(r => r.merchant_id !== mid);
+      DB.set(col, [...all, ...items]);
+    }
+    sessionStorage.setItem('ds_m', JSON.stringify(merchant));
+    localStorage.setItem('ds_session_m', JSON.stringify(merchant));
+    showPage('page-app');
+    renderDashboard();
+    if (_fbDb) startFirebase();
+    showToast(`✅ Session reprise pour ${merchant.nom_commerce} !`, 'success');
+  } catch(e) {
+    showToast('❌ Erreur : ' + e.message, 'error');
+  }
+}
+
+// ============================================================
+// ✨ FONCTIONNALITÉ 4 — LIVE SALES FEED (tableau temps réel)
+// ============================================================
+let _liveFeedActive = false;
+let _liveFeedUnsub  = null;
+
+function toggleLiveSalesFeed() {
+  const m = Auth.current(); if (!m) return;
+  if (!_fbDb) { showToast('⚠️ Firebase requis', 'error'); return; }
+  if (_liveFeedActive) {
+    _liveFeedUnsub?.(); _liveFeedActive = false;
+    document.getElementById('live-feed-panel')?.remove();
+    showToast('⏹️ Feed temps réel arrêté', 'success');
+    return;
+  }
+  _liveFeedActive = true;
+  // Créer le panel flottant
+  const panel = document.createElement('div');
+  panel.id = 'live-feed-panel';
+  panel.style.cssText = 'position:fixed;bottom:72px;right:12px;width:280px;max-height:380px;background:var(--surface);border:1px solid var(--border-accent);border-radius:16px;z-index:800;overflow:hidden;box-shadow:var(--shadow-a)';
+  panel.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--border);background:var(--surface2)">
+      <span style="font-size:.82rem;font-weight:700">🔴 LIVE — Ventes en cours</span>
+      <button onclick="toggleLiveSalesFeed()" style="background:none;border:none;color:var(--text-muted);font-size:1rem;cursor:pointer">✕</button>
+    </div>
+    <div id="live-feed-list" style="overflow-y:auto;max-height:320px;padding:6px 0"></div>`;
+  document.body.appendChild(panel);
+
+  const mid = m.id;
+  _liveFeedUnsub = _fbDb.collection('merchants').doc(mid).collection('sales')
+    .orderBy('created_at', 'desc').limit(15)
+    .onSnapshot(snap => {
+      const dev = getConfig()?.devise || 'FCFA';
+      const el  = document.getElementById('live-feed-list');
+      if (!el) return;
+      el.innerHTML = snap.docs
+        .map(d => d.data())
+        .filter(s => s.id !== '_init' && s.statut !== 'cancelled')
+        .map(s => {
+          const t   = new Date(s.created_at);
+          const age = Math.floor((Date.now() - t.getTime()) / 60000);
+          const isNew = age < 2;
+          return `<div style="padding:8px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;${isNew ? 'background:rgba(232,115,12,.07)' : ''}">
+            <div>
+              <div style="font-size:.8rem;font-weight:600">${s.client_nom || 'Client'}</div>
+              <div style="font-size:.68rem;color:var(--text-muted)">${age < 1 ? 'À l\'instant' : age + ' min'} ${isNew ? '🟢' : ''}</div>
+            </div>
+            <strong style="color:var(--accent);font-size:.85rem">${fmtMoney(s.total || 0, dev)}</strong>
+          </div>`;
+        }).join('') || '<div style="padding:16px;text-align:center;color:var(--text-dim);font-size:.8rem">Aucune vente récente</div>';
+    });
+  showToast('🔴 Feed temps réel activé', 'success');
+}
+
+// ============================================================
+// ✨ FONCTIONNALITÉ 5 — BACKUP & RESTORE FIREBASE COMPLET
+// ============================================================
+async function createFirebaseBackup() {
+  const m = Auth.current(); if (!m) return;
+  if (!_fbDb) { showToast('⚠️ Firebase requis', 'error'); return; }
+  showToast('⏳ Création du backup Firebase...', 'success');
+  try {
+    const backup = { created_at: new Date().toISOString(), merchant_id: m.id, nom_commerce: m.nom_commerce, data: {} };
+    for (const col of ['products','clients','sales','configs']) {
+      const snap = await _fbDb.collection('merchants').doc(m.id).collection(col).get();
+      backup.data[col] = snap.docs.map(d => ({ ...d.data(), id: d.id })).filter(x => x.id !== '_init');
+    }
+    // Sauvegarder dans Firestore
+    const backupId = 'backup_' + Date.now().toString(36);
+    await _fbDb.collection('merchants').doc(m.id).collection('backups').doc(backupId).set(backup);
+    // Télécharger aussi en JSON
+    const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = `backup_${m.nom_commerce.replace(/\s/g,'_')}_${new Date().toISOString().slice(0,10)}.json`;
+    a.click(); URL.revokeObjectURL(url);
+    showToast(`✅ Backup créé (${backupId}) et téléchargé`, 'success');
+  } catch(e) {
+    showToast('❌ Backup échoué : ' + e.message, 'error');
+  }
+}
+
+async function restoreFirebaseBackup(file) {
+  const m = Auth.current(); if (!m) return;
+  if (!file) return;
+  try {
+    const text    = await file.text();
+    const backup  = JSON.parse(text);
+    if (!backup.data || backup.merchant_id !== m.id) {
+      if (!confirm('Ce backup appartient à un autre compte. Restaurer quand même ?')) return;
+    }
+    if (!confirm(`Restaurer le backup du ${new Date(backup.created_at).toLocaleString('fr-FR')} ? Cela remplacera les données locales.`)) return;
+    for (const [col, items] of Object.entries(backup.data || {})) {
+      const all = DB.get(col).filter(r => r.merchant_id !== m.id);
+      DB.set(col, [...all, ...items.map(i => ({ ...i, merchant_id: m.id }))]);
+      if (_fbDb) await fbSyncCollection(m.id, col, items);
+    }
+    renderDashboard(); renderProducts();
+    showToast('✅ Backup restauré avec succès !', 'success');
+  } catch(e) {
+    showToast('❌ Restauration échouée : ' + e.message, 'error');
+  }
+}
 
 // ============================================================
 // PWA — Service Worker Registration
