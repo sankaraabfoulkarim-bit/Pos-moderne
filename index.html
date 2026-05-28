@@ -290,13 +290,56 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 .pcard-evol.up{background:rgba(46,204,113,.12);color:var(--success)}
 .pcard-evol.down{background:rgba(231,76,60,.12);color:var(--danger)}
 .pcard-evol.flat{background:rgba(100,116,139,.1);color:var(--text-dim)}
-.sparkline{display:flex;align-items:flex-end;gap:2px;height:32px;margin-top:10px}
+.pcard.danger::before{background:var(--danger)}
+@media(max-width:700px){
+  .period-grid{grid-template-columns:1fr}
+  #pcard-marge{grid-column:span 1!important}
+}
+@media(min-width:701px){
+  #pcard-marge{grid-column:span 3}
+}
 .spark-bar{flex:1;border-radius:2px 2px 0 0;min-height:2px;transition:height .4s}
 .marge-row{display:flex;align-items:center;gap:14px;margin-top:4px}
 .marge-ring{display:flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;border:3px solid var(--success);font-size:1.1rem;font-weight:800;color:var(--success);font-family:var(--fh);flex-shrink:0}
 .marge-ring.warn{border-color:var(--warning);color:var(--warning)}
 .marge-ring.danger{border-color:var(--danger);color:var(--danger)}
 .marge-ring.none{border-color:var(--border);color:var(--text-dim);font-size:.62rem;text-align:center;line-height:1.2}
+
+/* ── DÉPENSES ─────────────────────────────────────────────── */
+.exp-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+@media(max-width:900px){.exp-kpis{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.exp-kpis{grid-template-columns:1fr 1fr}}
+.exp-kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;text-align:center}
+.exp-kpi-val{font-size:1.4rem;font-weight:800;font-family:var(--fh);margin-bottom:4px}
+.exp-kpi-lbl{font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em}
+.exp-form{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:20px;margin-bottom:20px}
+.exp-form h4{font-size:.9rem;font-weight:700;margin-bottom:14px;color:var(--text-muted)}
+.exp-form-row{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end}
+@media(max-width:640px){.exp-form-row{grid-template-columns:1fr 1fr;gap:8px}}
+@media(max-width:640px){.exp-form-row .btn-p{grid-column:span 2}}
+.exp-cat-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.exp-chip{padding:5px 12px;border-radius:100px;font-size:.75rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text-muted);transition:all .15s}
+.exp-chip.active{border-color:var(--accent);background:rgba(232,115,12,.12);color:var(--accent)}
+.exp-list-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);transition:background .12s}
+.exp-list-item:hover{background:var(--surface2)}
+.exp-list-item:last-child{border-bottom:none}
+.exp-cat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.exp-item-info{flex:1;min-width:0}
+.exp-item-label{font-size:.88rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.exp-item-meta{font-size:.72rem;color:var(--text-muted);margin-top:2px}
+.exp-item-amt{font-size:.95rem;font-weight:800;font-family:var(--fh);color:var(--danger);flex-shrink:0}
+.exp-bar-wrap{background:var(--surface2);border-radius:4px;height:6px;margin-top:6px;overflow:hidden}
+.exp-bar-fill{height:100%;border-radius:4px;transition:width .5s ease}
+/* Marge détail panel */
+.marge-detail{background:var(--surface2);border-radius:var(--rsm);padding:12px 14px;margin-top:10px;display:none}
+.marge-detail.show{display:block}
+.marge-detail-row{display:flex;justify-content:space-between;padding:5px 0;font-size:.8rem;border-bottom:1px solid var(--border)}
+.marge-detail-row:last-child{border-bottom:none;font-weight:700;font-size:.85rem;padding-top:8px}
+/* Pcard étendue pour marge + dépenses */
+.pcard-marge-ext .marge-row{margin-top:2px}
+.net-profit-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:100px;font-size:.8rem;font-weight:700;margin-top:8px}
+.net-profit-badge.pos{background:rgba(46,204,113,.12);color:var(--success)}
+.net-profit-badge.neg{background:rgba(231,76,60,.12);color:var(--danger)}
 .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .dash-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--card-shadow)}
 .dc-hdr{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border)}
@@ -1497,6 +1540,7 @@ window.addEventListener('load', checkApiStatus);
       <div class="nav-grp-lbl nav-grp-owner">🔐 Propriétaire</div>
       <button class="ni" onclick="reqPin('dashboard')" data-s="dashboard"><span class="ni-ico">📊</span><span class="nl">Dashboard</span><span class="ni-lock">🔒</span><span class="ni-notif-dot" id="nav-notif-dot" style="display:none"></span></button>
       <button class="ni" onclick="reqPin('analytics')" data-s="analytics"><span class="ni-ico">📈</span><span class="nl">Analytique</span><span class="ni-lock">🔒</span></button>
+      <button class="ni" onclick="reqPin('expenses')"  data-s="expenses"> <span class="ni-ico">💸</span><span class="nl">Dépenses</span><span class="ni-lock">🔒</span></button>
       <button class="ni" onclick="reqPin('cashiers')"  data-s="cashiers"> <span class="ni-ico">👤</span><span class="nl">Caissiers</span><span class="ni-lock">🔒</span></button>
       <button class="ni" onclick="reqPin('stock')"     data-s="stock">    <span class="ni-ico">🏭</span><span class="nl">Gestion Stock</span><span class="ni-lock">🔒</span></button>
       <button class="ni" onclick="reqPin('clients')"   data-s="clients">  <span class="ni-ico">👥</span><span class="nl">Clients</span><span class="ni-lock">🔒</span></button>
@@ -1590,7 +1634,7 @@ window.addEventListener('load', checkApiStatus);
           <div class="sparkline" id="spark-ca"></div>
         </div>
 
-        <!-- Carte 2 : Nombre de ventes journalier / hebdo / mensuel -->
+        <!-- Carte 2 : Nombre de ventes -->
         <div class="pcard blue" id="pcard-ventes">
           <div class="pcard-lbl">🛒 Nombre de ventes</div>
           <div class="pcard-tabs">
@@ -1604,22 +1648,36 @@ window.addEventListener('load', checkApiStatus);
           <div class="sparkline" id="spark-ventes"></div>
         </div>
 
-        <!-- Carte 3 : Marge bénéficiaire de la journée -->
-        <div class="pcard green" id="pcard-marge">
-          <div class="pcard-lbl">📈 Marge bénéficiaire</div>
+        <!-- Carte 3 : Dépenses -->
+        <div class="pcard danger" id="pcard-dep" style="cursor:pointer" onclick="showSection('expenses')">
+          <div class="pcard-lbl">💸 Dépenses <span style="font-size:.6rem;font-weight:400;color:var(--text-dim)">→ Voir tout</span></div>
           <div class="pcard-tabs">
+            <button class="pcard-tab active" id="dtab-j" onclick="event.stopPropagation();setPeriodTab('dep','j')">Jour</button>
+            <button class="pcard-tab" id="dtab-s" onclick="event.stopPropagation();setPeriodTab('dep','s')">Semaine</button>
+            <button class="pcard-tab" id="dtab-m" onclick="event.stopPropagation();setPeriodTab('dep','m')">Mois</button>
+          </div>
+          <div class="pcard-val" id="pval-dep" style="color:var(--danger)">—</div>
+          <div class="pcard-count" id="pcount-dep"></div>
+          <div id="pevol-dep"></div>
+          <div class="sparkline" id="spark-dep"></div>
+        </div>
+
+        <!-- Carte 4 : Marge bénéficiaire nette -->
+        <div class="pcard green pcard-marge-ext" id="pcard-marge" style="grid-column:span 3">
+          <div class="pcard-lbl">📈 Marge bénéficiaire &amp; Résultat net</div>
+          <div class="pcard-tabs" style="max-width:220px">
             <button class="pcard-tab active green" id="mtab-j" onclick="setPeriodTab('marge','j')">Jour</button>
             <button class="pcard-tab" id="mtab-s" onclick="setPeriodTab('marge','s')">Semaine</button>
             <button class="pcard-tab" id="mtab-m" onclick="setPeriodTab('marge','m')">Mois</button>
           </div>
           <div class="marge-row">
-            <div class="marge-ring none" id="marge-ring">N/A</div>
-            <div>
+            <div class="marge-ring none" id="marge-ring">?</div>
+            <div style="flex:1;min-width:0">
               <div class="pcard-val" id="pval-marge" style="color:var(--success)">—</div>
-              <div class="pcard-count" id="pcount-marge"></div>
+              <div class="pcard-count" id="pcount-marge" style="margin-top:4px"></div>
             </div>
           </div>
-          <div id="pevol-marge" style="margin-top:6px"></div>
+          <div id="pevol-marge" style="margin-top:8px"></div>
         </div>
 
       </div>
@@ -2029,6 +2087,105 @@ window.addEventListener('load', checkApiStatus);
         <button class="btn-p" onclick="openCashierModal(null)">+ Nouveau caissier</button>
       </div>
       <div id="cashiers-list" style="display:flex;flex-direction:column;gap:10px"></div>
+    </section>
+
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         SECTION DÉPENSES
+    ════════════════════════════════════════════════════════════ -->
+    <section id="s-expenses" class="section">
+
+      <!-- En-tête -->
+      <div class="welcome">
+        <div><h3>💸 Gestion des dépenses</h3><p id="exp-period-lbl">Chargement...</p></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <select id="exp-range" onchange="renderExpenses()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:6px 10px;font-size:.82rem">
+            <option value="today">Aujourd'hui</option>
+            <option value="week">Cette semaine</option>
+            <option value="month" selected>Ce mois</option>
+            <option value="year">Cette année</option>
+            <option value="all">Tout</option>
+          </select>
+          <button class="btn-p sm" onclick="openExpenseModal()">+ Ajouter</button>
+          <button class="btn-g sm" onclick="exportExpensesCSV()">📊 CSV</button>
+        </div>
+      </div>
+
+      <!-- KPIs dépenses -->
+      <div class="exp-kpis">
+        <div class="exp-kpi">
+          <div class="exp-kpi-val" id="exp-kpi-total" style="color:var(--danger)">0</div>
+          <div class="exp-kpi-lbl">Total dépenses</div>
+        </div>
+        <div class="exp-kpi">
+          <div class="exp-kpi-val" id="exp-kpi-count" style="color:var(--accent)">0</div>
+          <div class="exp-kpi-lbl">Nombre de dépenses</div>
+        </div>
+        <div class="exp-kpi">
+          <div class="exp-kpi-val" id="exp-kpi-avg" style="color:var(--warning)">0</div>
+          <div class="exp-kpi-lbl">Dépense moyenne</div>
+        </div>
+        <div class="exp-kpi">
+          <div class="exp-kpi-val" id="exp-kpi-net" style="color:var(--success)">0</div>
+          <div class="exp-kpi-lbl">Résultat net (CA−Dép)</div>
+        </div>
+      </div>
+
+      <!-- Formulaire d'ajout rapide -->
+      <div class="exp-form" id="exp-quick-form">
+        <h4>➕ Ajout rapide d'une dépense</h4>
+        <!-- Catégories chips -->
+        <div class="exp-cat-chips" id="exp-cat-chips"></div>
+        <div class="exp-form-row">
+          <div class="fg" style="margin:0">
+            <label style="font-size:.72rem;color:var(--text-muted);margin-bottom:4px;display:block">Description *</label>
+            <input id="exp-desc" placeholder="Ex: Achat carburant" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);padding:9px 12px;color:var(--text);font-size:.88rem"/>
+          </div>
+          <div class="fg" style="margin:0">
+            <label style="font-size:.72rem;color:var(--text-muted);margin-bottom:4px;display:block">Montant *</label>
+            <input id="exp-amount" type="number" min="0" placeholder="0" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);padding:9px 12px;color:var(--text);font-size:.88rem"/>
+          </div>
+          <div class="fg" style="margin:0">
+            <label style="font-size:.72rem;color:var(--text-muted);margin-bottom:4px;display:block">Date</label>
+            <input id="exp-date" type="date" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);padding:9px 12px;color:var(--text);font-size:.88rem"/>
+          </div>
+          <button class="btn-p" onclick="saveExpense()" style="height:40px;white-space:nowrap;align-self:end">Enregistrer</button>
+        </div>
+      </div>
+
+      <!-- Graphique barres par catégorie -->
+      <div class="dash-card" style="margin-bottom:20px">
+        <div class="dc-hdr" style="display:flex;justify-content:space-between;align-items:center">
+          <h4>🏷️ Répartition par catégorie</h4>
+          <span id="exp-top-cat" style="font-size:.78rem;color:var(--text-muted)"></span>
+        </div>
+        <div id="exp-cat-chart" style="padding:0 4px 4px"></div>
+      </div>
+
+      <!-- Graphique évolution 7 derniers jours -->
+      <div class="dash-card" style="margin-bottom:20px">
+        <div class="dc-hdr"><h4>📊 Évolution des dépenses (7 jours)</h4></div>
+        <div id="exp-sparkline" style="display:flex;align-items:flex-end;gap:4px;height:80px;padding:12px 16px 0"></div>
+        <div id="exp-sparkline-lbl" style="display:flex;gap:4px;padding:4px 16px 12px;font-size:.6rem;color:var(--text-dim)"></div>
+      </div>
+
+      <!-- Liste des dépenses -->
+      <div class="dash-card">
+        <div class="dc-hdr" style="display:flex;justify-content:space-between;align-items:center">
+          <h4>📋 Liste des dépenses</h4>
+          <div style="display:flex;gap:6px;align-items:center">
+            <input id="exp-search" placeholder="🔍 Rechercher..." oninput="renderExpenses()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);padding:5px 10px;color:var(--text);font-size:.8rem;width:160px"/>
+            <select id="exp-filter-cat" onchange="renderExpenses()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:5px 8px;font-size:.8rem">
+              <option value="">Toutes catégories</option>
+            </select>
+          </div>
+        </div>
+        <div id="exp-list">
+          <p class="empty" style="padding:24px">Aucune dépense enregistrée.</p>
+        </div>
+      </div>
+
     </section>
 
   </div><!-- /main -->
@@ -3294,7 +3451,7 @@ function showSection(name) {
   document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
   document.getElementById('s-' + name)?.classList.add('active');
   document.querySelector('[data-s="' + name + '"]')?.classList.add('active');
-  const titles = {dashboard:'Dashboard',pos:'Point de Vente',quick:'Vente Rapide',caisse:'Caisse',products:'Produits',stock:'Gestion Stock',clients:'Clients',sales:'Ventes',settings:'Paramètres',analytics:'Analytique',cashiers:'Caissiers'};
+  const titles = {dashboard:'Dashboard',pos:'Point de Vente',quick:'Vente Rapide',caisse:'Caisse',products:'Produits',stock:'Gestion Stock',clients:'Clients',sales:'Ventes',settings:'Paramètres',analytics:'Analytique',cashiers:'Caissiers',expenses:'Dépenses'};
   document.getElementById('tb-title').textContent = titles[name] || name;
   // Update expiry warning in topbar
   const curM = Auth.current();
@@ -3312,7 +3469,7 @@ function showSection(name) {
   document.body.style.overflow = '';
   // Sync bottom nav
   _syncBottomNav('s-' + name);
-  ({dashboard:renderDashboard,pos:renderPOS,quick:renderQuick,caisse:renderCaisse,products:renderProducts,stock:renderStock,clients:renderClients,sales:renderSales,settings:renderSettings,mysales:renderMySales,analytics:renderAnalytics,cashiers:renderCashiers})[name]?.();
+  ({dashboard:renderDashboard,pos:renderPOS,quick:renderQuick,caisse:renderCaisse,products:renderProducts,stock:renderStock,clients:renderClients,sales:renderSales,settings:renderSettings,mysales:renderMySales,analytics:renderAnalytics,cashiers:renderCashiers,expenses:renderExpenses})[name]?.();
   if (typeof updateSubTicker === 'function') updateSubTicker();
 }
 function toggleSidebar() {
@@ -3425,18 +3582,17 @@ function saveMerchantInfo() {
 // ---- DASHBOARD ----
 
 // État des onglets de période (global pour chaque carte)
-const _periodTab = { ca: 'j', ventes: 'j', marge: 'j' };
+const _periodTab = { ca: 'j', ventes: 'j', marge: 'j', dep: 'j' };
 
 function setPeriodTab(card, period) {
   _periodTab[card] = period;
-  // Mettre à jour les tabs actifs
+  const prefix = card==='ca'?'catab':card==='ventes'?'vtab':card==='marge'?'mtab':'dtab';
   ['j','s','m'].forEach(p => {
-    const prefix = card === 'ca' ? 'catab' : card === 'ventes' ? 'vtab' : 'mtab';
     const el = document.getElementById(prefix + '-' + p);
     if (!el) return;
-    el.classList.toggle('active', p === period);
-    if (card === 'ventes') el.classList.toggle('blue', p === period);
-    if (card === 'marge')  el.classList.toggle('green', p === period);
+    el.classList.toggle('active', p===period);
+    if (card==='ventes') el.classList.toggle('blue', p===period);
+    if (card==='marge')  el.classList.toggle('green', p===period);
   });
   _renderPeriodCard(card);
 }
@@ -3523,43 +3679,340 @@ function _renderPeriodCard(card) {
     set('spark-ventes',  sparkHtml('ventes', '#4FC3F7'));
   }
 
+  if (card === 'dep') {
+    const allExp   = _getExpenses(m.id);
+    const expCur   = allExp.filter(e => {
+      const d = e.date || e.created_at?.slice(0,10) || '';
+      if (period==='j') return d === todayStr;
+      if (period==='s') return new Date(d) >= weekStart;
+      return d.slice(0,7) === monthStr;
+    });
+    const expPrev  = allExp.filter(e => {
+      const d = e.date || e.created_at?.slice(0,10) || '';
+      const dy = yest.toISOString().slice(0,10);
+      if (period==='j') return d === dy;
+      if (period==='s') return new Date(d)>=prevWeekStart && new Date(d)<prevWeekEnd;
+      return d.slice(0,7) === prevMonth;
+    });
+    const depTotal  = expCur.reduce((a,b)=>a+(b.amount||0),0);
+    const depPrev   = expPrev.reduce((a,b)=>a+(b.amount||0),0);
+    const topCat    = Object.entries(expCur.reduce((acc,e)=>{acc[e.cat_label||'Divers']=(acc[e.cat_label||'Divers']||0)+e.amount;return acc;},{})).sort((a,b)=>b[1]-a[1])[0];
+
+    set('pval-dep',   fmtMoney(depTotal, dev));
+    set('pcount-dep', expCur.length + ' dépense(s)' + (topCat ? ` · Top: ${topCat[0]}` : ''));
+    set('pevol-dep',  evolHtml(depTotal, depPrev));
+    // Sparkline dépenses
+    const dBars = [];
+    for (let i=6; i>=0; i--) {
+      const d = new Date(now); d.setDate(now.getDate()-i);
+      const ds = d.toISOString().slice(0,10);
+      dBars.push(allExp.filter(e=>(e.date||'').slice(0,10)===ds).reduce((a,b)=>a+(b.amount||0),0));
+    }
+    const maxD = Math.max(...dBars, 1);
+    set('spark-dep', dBars.map((v,i)=>{
+      const h=Math.max(3,Math.round((v/maxD)*30));
+      return `<div class="spark-bar ${i===6?'today':''}" style="height:${h}px;background:var(--danger);opacity:${i===6?1:.4}"></div>`;
+    }).join(''));
+  }
+
   if (card === 'marge') {
-    // Calcul marge : cherche prix d'achat (cout) sur les produits
-    let revenu=0, cout=0, hasCout=false;
+    // ── Calcul marge brute (CA - coût d'achat des produits vendus)
+    let revenu=0, coutAchat=0, hasCout=false;
     cur.forEach(s => {
       (s.items||[]).forEach(i => {
         const p   = prods.find(x=>x.nom===i.nom||x.id===i.product_id);
         const qty = i.qty||1;
         revenu += (i.prix||0)*qty;
-        if (p?.cout) { cout += p.cout*qty; hasCout=true; }
+        if (p?.cout) { coutAchat += p.cout*qty; hasCout=true; }
       });
     });
-    const benefice = revenu - cout;
-    const pct      = hasCout && revenu>0 ? Math.round((benefice/revenu)*100) : null;
-    const ringClass= pct===null?'none':pct>=30?'':'warn'+(pct>=10?'':' danger');
-    const ringTxt  = pct===null ? 'Ajout\ncoûts' : pct+'%';
-    const color    = pct===null?'var(--text-dim)':pct>=30?'var(--success)':pct>=10?'var(--warning)':'var(--danger)';
 
+    // ── Dépenses de la période
+    const allExp = _getExpenses(m.id);
+    const expPeriod = allExp.filter(e => {
+      const d = e.date || e.created_at?.slice(0,10) || '';
+      if (period==='j') return d === todayStr;
+      if (period==='s') return new Date(d) >= weekStart;
+      return d.slice(0,7) === monthStr;
+    });
+    const totalDep = expPeriod.reduce((a,b) => a+(b.amount||0), 0);
+
+    const margeBrute  = revenu - coutAchat;
+    const beneficeNet = margeBrute - totalDep;         // après dépenses
+    const pctBrute    = hasCout && revenu>0 ? Math.round((margeBrute/revenu)*100)   : null;
+    const pctNet      = hasCout && revenu>0 ? Math.round((beneficeNet/revenu)*100)  : null;
+
+    const color = pctBrute===null ? 'var(--text-dim)'
+                : pctBrute>=30   ? 'var(--success)'
+                : pctBrute>=10   ? 'var(--warning)'
+                : 'var(--danger)';
+
+    // Anneau marge brute
     const ring = document.getElementById('marge-ring');
     if (ring) {
-      ring.className = 'marge-ring' + (pct===null?' none':pct<30?' warn':'') + (pct!==null&&pct<10?' danger':'');
-      ring.textContent = pct===null ? 'Prix\nachat' : pct+'%';
+      const rc = pctBrute===null ? 'none' : pctBrute>=30 ? '' : pctBrute>=10 ? ' warn' : ' warn danger';
+      ring.className = 'marge-ring' + rc;
       ring.style.color = color; ring.style.borderColor = color;
+      ring.textContent = pctBrute===null ? 'Coût\n?' : pctBrute+'%';
     }
-    set('pval-marge',   hasCout ? fmtMoney(benefice,dev) : '—');
-    set('pcount-marge', hasCout ? `CA ${fmtMoney(revenu,dev)} · Coût ${fmtMoney(cout,dev)}` : `${fmtMoney(caCur,dev)} CA · Ajoutez un prix d'achat`);
-    // Évolution bénéfice vs période précédente
-    let rPrev=0,cPrev2=0,hcPrev=false;
-    prev.forEach(s=>{
-      (s.items||[]).forEach(i=>{
-        const p=prods.find(x=>x.nom===i.nom||x.id===i.product_id);const qty=i.qty||1;
-        rPrev+=(i.prix||0)*qty;if(p?.cout){cPrev2+=p.cout*qty;hcPrev=true;}
-      });
-    });
-    const benPrev = rPrev - cPrev2;
-    set('pevol-marge', hasCout ? evolHtml(benefice, hcPrev?benPrev:0) : `<span class="pcard-evol flat">Complétez les prix d'achat →</span>`);
+
+    // Valeur principale = bénéfice net (après dépenses)
+    set('pval-marge', hasCout ? fmtMoney(beneficeNet, dev)
+      : `<span style="font-size:1.1rem">${fmtMoney(caCur,dev)}</span>`);
+
+    // Sous-ligne détaillée
+    if (hasCout) {
+      set('pcount-marge',
+        `Brut: ${fmtMoney(margeBrute,dev)} · Dép: <span style="color:var(--danger)">−${fmtMoney(totalDep,dev)}</span>`);
+    } else {
+      set('pcount-marge',
+        `CA: ${fmtMoney(revenu||caCur,dev)} · Dép: <span style="color:var(--danger)">−${fmtMoney(totalDep,dev)}</span><br/><small style="font-size:.68rem;color:var(--text-dim)">Ajoutez un prix d'achat aux produits pour la marge brute</small>`);
+    }
+
+    // Badge résultat net
+    const netOk = (hasCout ? beneficeNet : caCur - totalDep) >= 0;
+    const netVal = hasCout ? beneficeNet : caCur - totalDep;
+    set('pevol-marge',
+      `<span class="net-profit-badge ${netOk?'pos':'neg'}">${netOk?'📈 Résultat positif':'📉 Résultat négatif'} : ${fmtMoney(netVal,dev)}</span>`
+      + (totalDep > 0 ? `<div style="font-size:.68rem;color:var(--text-muted);margin-top:4px">${expPeriod.length} dépense(s) · <a onclick="showSection('expenses')" style="color:var(--accent);cursor:pointer;text-decoration:underline">Voir le détail →</a></div>` : '')
+    );
   }
 }
+
+// ============================================================
+// DÉPENSES — SYSTÈME COMPLET
+// ============================================================
+
+const EXP_CATS = [
+  { id:'loyer',       label:'🏠 Loyer',         color:'#E74C3C' },
+  { id:'salaires',    label:'👷 Salaires',       color:'#9B59B6' },
+  { id:'transport',   label:'🚗 Transport',      color:'#3498DB' },
+  { id:'fournitures', label:'📦 Fournitures',    color:'#F39C12' },
+  { id:'electricite', label:'⚡ Électricité',    color:'#1ABC9C' },
+  { id:'eau',         label:'💧 Eau',            color:'#2980B9' },
+  { id:'internet',    label:'📶 Internet/Tel',   color:'#8E44AD' },
+  { id:'marketing',   label:'📣 Marketing',      color:'#E67E22' },
+  { id:'maintenance', label:'🔧 Maintenance',    color:'#27AE60' },
+  { id:'divers',      label:'📝 Divers',         color:'#95A5A6' },
+];
+
+let _expActiveCat = 'divers';
+
+function _getExpenses(mid) {
+  try { return JSON.parse(localStorage.getItem('ds_exp_' + mid) || '[]'); } catch { return []; }
+}
+function _saveExpenses(mid, list) {
+  localStorage.setItem('ds_exp_' + mid, JSON.stringify(list));
+}
+
+function _filterExpensesByRange(list, range) {
+  const now = new Date();
+  const todayStr  = now.toISOString().slice(0,10);
+  const monthStr  = now.toISOString().slice(0,7);
+  const yearStr   = now.getFullYear().toString();
+  const weekStart = new Date(now); weekStart.setDate(now.getDate() - ((now.getDay()+6)%7)); weekStart.setHours(0,0,0,0);
+  return list.filter(e => {
+    const d = e.date || e.created_at?.slice(0,10) || '';
+    if (range === 'today')  return d === todayStr;
+    if (range === 'week')   return new Date(d) >= weekStart;
+    if (range === 'month')  return d.slice(0,7) === monthStr;
+    if (range === 'year')   return d.slice(0,4) === yearStr;
+    return true;
+  });
+}
+
+function openExpenseModal() {
+  // Initialise la date à aujourd'hui
+  document.getElementById('exp-date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('exp-desc').value = '';
+  document.getElementById('exp-amount').value = '';
+  document.getElementById('exp-desc').focus();
+  _renderExpCatChips();
+}
+
+function _renderExpCatChips() {
+  const el = document.getElementById('exp-cat-chips'); if (!el) return;
+  el.innerHTML = EXP_CATS.map(c =>
+    `<span class="exp-chip ${c.id===_expActiveCat?'active':''}" onclick="_setExpCat('${c.id}')">${c.label}</span>`
+  ).join('');
+}
+
+function _setExpCat(id) {
+  _expActiveCat = id;
+  _renderExpCatChips();
+}
+
+function saveExpense() {
+  const m = Auth.current(); if (!m) return;
+  const desc   = document.getElementById('exp-desc').value.trim();
+  const amount = parseFloat(document.getElementById('exp-amount').value);
+  const date   = document.getElementById('exp-date').value || new Date().toISOString().slice(0,10);
+  if (!desc)   { showToast('⚠️ Description requise', 'error'); return; }
+  if (!amount || amount <= 0) { showToast('⚠️ Montant invalide', 'error'); return; }
+  const cat  = EXP_CATS.find(c => c.id === _expActiveCat) || EXP_CATS[EXP_CATS.length-1];
+  const item = {
+    id:         'exp_' + Date.now().toString(36),
+    desc, amount, date,
+    cat_id:     cat.id,
+    cat_label:  cat.label,
+    cat_color:  cat.color,
+    merchant_id: m.id,
+    created_at: new Date().toISOString()
+  };
+  const list = _getExpenses(m.id);
+  list.unshift(item);
+  _saveExpenses(m.id, list);
+  // Firebase
+  if (typeof fbSet === 'function' && _fbDb) fbSet(m.id, 'expenses', item.id, item);
+  showToast('✅ Dépense enregistrée', 'success');
+  document.getElementById('exp-desc').value = '';
+  document.getElementById('exp-amount').value = '';
+  renderExpenses();
+  // Rafraîchir la marge dans le dashboard si visible
+  if (document.getElementById('s-dashboard')?.classList.contains('active')) {
+    _renderPeriodCard('marge');
+  }
+}
+
+function deleteExpense(id) {
+  const m = Auth.current(); if (!m) return;
+  if (!confirm('Supprimer cette dépense ?')) return;
+  const list = _getExpenses(m.id).filter(e => e.id !== id);
+  _saveExpenses(m.id, list);
+  if (typeof fbDelete === 'function' && _fbDb) fbDelete(m.id, 'expenses', id);
+  showToast('🗑️ Dépense supprimée', 'success');
+  renderExpenses();
+  if (document.getElementById('s-dashboard')?.classList.contains('active')) _renderPeriodCard('marge');
+}
+
+function exportExpensesCSV() {
+  const m = Auth.current(); if (!m) return;
+  const dev  = getConfig()?.devise || 'FCFA';
+  const list = _getExpenses(m.id);
+  const rows = [['Date','Description','Catégorie','Montant (' + dev + ')']];
+  list.forEach(e => rows.push([e.date, e.desc, e.cat_label || e.cat_id, e.amount]));
+  const csv  = '\uFEFF' + rows.map(r => r.join(';')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = `depenses_${m.nom_commerce.replace(/\s/g,'_')}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+  showToast('📊 Export CSV téléchargé', 'success');
+}
+
+function renderExpenses() {
+  const m = Auth.current(); if (!m) return;
+  const dev   = getConfig()?.devise || 'FCFA';
+  const range = document.getElementById('exp-range')?.value || 'month';
+  const srch  = (document.getElementById('exp-search')?.value || '').toLowerCase();
+  const catF  = document.getElementById('exp-filter-cat')?.value || '';
+  const now   = new Date();
+
+  // Initialise chips catégorie si besoin
+  _renderExpCatChips();
+  document.getElementById('exp-date').value = now.toISOString().slice(0,10);
+
+  const allExp = _getExpenses(m.id);
+  let filtered = _filterExpensesByRange(allExp, range);
+
+  // Libellé période
+  const rangeLbl = {today:"Aujourd'hui",week:'Cette semaine',month:'Ce mois',year:'Cette année',all:'Tout'};
+  const el = document.getElementById('exp-period-lbl');
+  if (el) el.textContent = rangeLbl[range] + ' · ' + filtered.length + ' dépense(s)';
+
+  // Mettre à jour le filtre catégories
+  const catSel = document.getElementById('exp-filter-cat');
+  if (catSel) {
+    const usedCats = [...new Set(allExp.map(e => e.cat_id))].filter(Boolean);
+    catSel.innerHTML = '<option value="">Toutes catégories</option>' +
+      EXP_CATS.filter(c => usedCats.includes(c.id)).map(c =>
+        `<option value="${c.id}" ${catF===c.id?'selected':''}>${c.label}</option>`
+      ).join('');
+  }
+
+  // Appliquer filtres recherche + catégorie
+  if (srch)  filtered = filtered.filter(e => e.desc?.toLowerCase().includes(srch) || e.cat_label?.toLowerCase().includes(srch));
+  if (catF)  filtered = filtered.filter(e => e.cat_id === catF);
+
+  const total = filtered.reduce((a,b) => a+(b.amount||0), 0);
+  const avg   = filtered.length ? Math.round(total/filtered.length) : 0;
+
+  // CA de la période pour le résultat net
+  const allSales   = DB.forM('sales', m.id).filter(s => s.statut !== 'cancelled');
+  const periodSales = _filterExpensesByRange(allSales.map(s => ({...s, date: s.created_at?.slice(0,10)})), range);
+  const caPeriod    = periodSales.reduce((a,b) => a+(b.total||0), 0);
+  const netResult   = caPeriod - total;
+
+  const set = (id, v) => { const e=document.getElementById(id); if(e) e.innerHTML=v; };
+  set('exp-kpi-total', fmtMoney(total, dev));
+  set('exp-kpi-count', filtered.length.toString());
+  set('exp-kpi-avg',   fmtMoney(avg, dev));
+  set('exp-kpi-net',   `<span style="color:${netResult>=0?'var(--success)':'var(--danger)'}">${netResult>=0?'+':''}${fmtMoney(netResult, dev)}</span>`);
+
+  // ── Graphique par catégorie
+  const byCat = {};
+  filtered.forEach(e => {
+    const cat = EXP_CATS.find(c=>c.id===e.cat_id) || {id:'divers',label:'📝 Divers',color:'#95A5A6'};
+    if (!byCat[cat.id]) byCat[cat.id] = {label:cat.label, color:cat.color, total:0};
+    byCat[cat.id].total += e.amount||0;
+  });
+  const catEntries = Object.values(byCat).sort((a,b)=>b.total-a.total);
+  const maxCat = catEntries[0]?.total || 1;
+  const topCatEl = document.getElementById('exp-top-cat');
+  if (topCatEl && catEntries[0]) topCatEl.textContent = 'Top : ' + catEntries[0].label;
+  set('exp-cat-chart', catEntries.length ? catEntries.map(c => `
+    <div style="padding:10px 16px;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+        <span style="font-size:.82rem;font-weight:600">${c.label}</span>
+        <span style="font-size:.82rem;font-weight:700;color:${c.color}">${fmtMoney(c.total,dev)} <span style="color:var(--text-dim);font-size:.72rem">(${Math.round(c.total/total*100)}%)</span></span>
+      </div>
+      <div class="exp-bar-wrap"><div class="exp-bar-fill" style="width:${(c.total/maxCat*100).toFixed(1)}%;background:${c.color}"></div></div>
+    </div>`).join('') : '<p class="empty" style="padding:16px">Aucune dépense sur la période.</p>');
+
+  // ── Sparkline 7 jours
+  const days7 = []; const dayLbls = [];
+  for (let i=6; i>=0; i--) {
+    const d = new Date(now); d.setDate(now.getDate()-i);
+    const ds = d.toISOString().slice(0,10);
+    const dayTotal = allExp.filter(e => (e.date||'').slice(0,10)===ds).reduce((a,b)=>a+(b.amount||0),0);
+    days7.push(dayTotal);
+    dayLbls.push(d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'}));
+  }
+  const maxSpk = Math.max(...days7, 1);
+  set('exp-sparkline', days7.map((v,i) => {
+    const h = Math.max(4, Math.round((v/maxSpk)*74));
+    const isToday = i===6;
+    return `<div style="flex:1;height:${h}px;background:${isToday?'var(--danger)':'rgba(231,76,60,.4)'};border-radius:3px 3px 0 0" title="${dayLbls[i]}: ${fmtMoney(v,dev)}"></div>`;
+  }).join(''));
+  set('exp-sparkline-lbl', dayLbls.map((l,i) =>
+    `<div style="flex:1;text-align:center;${i===6?'color:var(--danger);font-weight:700':''}">${i%2===0||i===6?l:''}</div>`
+  ).join(''));
+
+  // ── Liste des dépenses
+  const listEl = document.getElementById('exp-list');
+  if (!listEl) return;
+  if (!filtered.length) {
+    listEl.innerHTML = '<p class="empty" style="padding:24px">Aucune dépense pour cette période.</p>';
+    return;
+  }
+  const sorted = [...filtered].sort((a,b) => (b.date||'').localeCompare(a.date||''));
+  listEl.innerHTML = sorted.map(e => {
+    const cat = EXP_CATS.find(c=>c.id===e.cat_id) || {label:'📝 Divers',color:'#95A5A6'};
+    return `<div class="exp-list-item">
+      <div class="exp-cat-dot" style="background:${cat.color}"></div>
+      <div class="exp-item-info">
+        <div class="exp-item-label">${e.desc}</div>
+        <div class="exp-item-meta">${cat.label} · ${e.date || '—'}</div>
+      </div>
+      <div class="exp-item-amt">−${fmtMoney(e.amount, dev)}</div>
+      <button class="tbtn d" onclick="deleteExpense('${e.id}')" title="Supprimer" style="flex-shrink:0">🗑️</button>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// MARGE BÉNÉFICIAIRE AMÉLIORÉE (intègre les dépenses)
+// ============================================================
 
 function renderDashboard() {
   const m = Auth.current(); if (!m) return;
@@ -3578,8 +4031,8 @@ function renderDashboard() {
   document.getElementById('w-msg').textContent  = cfg.message_accueil || 'Bienvenue, ' + m.proprietaire + ' !';
   document.getElementById('w-date').textContent = new Date().toLocaleDateString('fr-FR', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
 
-  // ── Cartes de période (CA, Ventes, Marge)
-  ['ca','ventes','marge'].forEach(card => _renderPeriodCard(card));
+  // ── Cartes de période (CA, Ventes, Dépenses, Marge)
+  ['ca','ventes','dep','marge'].forEach(card => _renderPeriodCard(card));
 
   // ── Dernières ventes
   const recent = [...validSales].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5);
