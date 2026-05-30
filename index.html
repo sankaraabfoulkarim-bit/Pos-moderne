@@ -1300,12 +1300,386 @@ table{table-layout:auto}
 @keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
 .ticker-sep{margin:0 24px;opacity:.7}
 
+/* ============================================================
+   MODE SURVEILLANCE PATRON — page-patron
+   ============================================================ */
+#page-patron{
+  background:var(--bg);color:var(--text);min-height:100vh;
+  display:none;flex-direction:column
+}
+#page-patron.active{display:flex}
+
+/* Header patron */
+.patron-header{
+  position:sticky;top:0;z-index:50;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 24px;
+  background:var(--topbar-bg);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border)
+}
+.patron-logo{display:flex;align-items:center;gap:10px}
+.patron-live-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:#E74C3C;animation:patronPulse 1.2s ease-in-out infinite;
+  flex-shrink:0
+}
+@keyframes patronPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(231,76,60,.6);opacity:1}
+  50%{box-shadow:0 0 0 8px rgba(231,76,60,0);opacity:.7}
+}
+.patron-badge{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.3);
+  color:#E74C3C;padding:5px 14px;border-radius:100px;
+  font-size:.78rem;font-weight:700;letter-spacing:.04em
+}
+.patron-commerce-name{
+  font-family:var(--fh);font-weight:700;font-size:.95rem
+}
+
+/* KPI grid */
+.patron-kpis{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:14px;padding:20px 24px 0
+}
+@media(max-width:900px){.patron-kpis{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.patron-kpis{grid-template-columns:1fr 1fr;gap:10px;padding:14px 14px 0}}
+
+.pkpi{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:18px 20px;position:relative;overflow:hidden
+}
+.pkpi::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--accent);opacity:.6
+}
+.pkpi.danger::before{background:#E74C3C}
+.pkpi.success::before{background:#2ECC71}
+.pkpi.info::before{background:#4FC3F7}
+.pkpi-lbl{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);font-weight:700;margin-bottom:6px}
+.pkpi-val{font-family:var(--fh);font-size:1.6rem;font-weight:800;color:var(--accent)}
+.pkpi.danger .pkpi-val{color:#E74C3C}
+.pkpi.success .pkpi-val{color:#2ECC71}
+.pkpi.info .pkpi-val{color:#4FC3F7}
+.pkpi-sub{font-size:.72rem;color:var(--text-dim);margin-top:3px}
+
+/* Main grid */
+.patron-main{
+  display:grid;grid-template-columns:1fr 340px;
+  gap:16px;padding:16px 24px;flex:1
+}
+@media(max-width:900px){
+  .patron-main{grid-template-columns:1fr;padding:12px 14px}
+}
+
+/* Feed ventes en temps réel */
+.patron-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden
+}
+.patron-card-hdr{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 18px;border-bottom:1px solid var(--border);
+  background:var(--surface2)
+}
+.patron-card-hdr h4{font-size:.88rem;font-weight:700;margin:0}
+.patron-sale-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 18px;border-bottom:1px solid var(--border);
+  transition:background .3s
+}
+.patron-sale-row:last-child{border-bottom:none}
+.patron-sale-row.new-flash{
+  animation:patronFlash .8s ease
+}
+@keyframes patronFlash{
+  0%{background:rgba(232,115,12,.18)}
+  100%{background:transparent}
+}
+.psr-left{display:flex;flex-direction:column;gap:2px}
+.psr-name{font-size:.85rem;font-weight:600}
+.psr-meta{font-size:.7rem;color:var(--text-muted);display:flex;align-items:center;gap:6px}
+.psr-items{font-size:.7rem;color:var(--text-dim);margin-top:2px}
+.psr-amount{font-family:var(--fh);font-weight:800;font-size:.95rem;color:var(--accent);white-space:nowrap}
+.psr-cashier{
+  display:inline-block;background:rgba(232,115,12,.1);
+  color:var(--accent);padding:1px 8px;border-radius:100px;font-size:.65rem;font-weight:700
+}
+
+/* Caissier actif */
+.patron-cashier-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;margin-bottom:14px
+}
+.patron-cashier-row{
+  display:flex;align-items:center;gap:12px;padding:12px 16px;
+  border-bottom:1px solid var(--border)
+}
+.patron-cashier-row:last-child{border-bottom:none}
+.pcr-av{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--accent);display:flex;align-items:center;
+  justify-content:center;font-weight:800;color:#fff;font-size:.9rem;flex-shrink:0
+}
+.pcr-av.online{box-shadow:0 0 0 3px rgba(46,204,113,.4)}
+.pcr-info{flex:1;display:flex;flex-direction:column;gap:2px}
+.pcr-name{font-size:.85rem;font-weight:600}
+.pcr-stats{font-size:.72rem;color:var(--text-muted)}
+.pcr-total{font-family:var(--fh);font-weight:700;font-size:.88rem;color:var(--success)}
+
+/* Graphique bâtons journaliers */
+.patron-hour-chart{
+  display:flex;align-items:flex-end;gap:3px;height:60px;
+  padding:8px 18px 4px
+}
+.phbar{
+  flex:1;border-radius:3px 3px 0 0;
+  background:rgba(232,115,12,.3);min-height:4px;
+  transition:height .4s ease;position:relative;cursor:default
+}
+.phbar.peak{background:var(--accent)}
+.phbar-lbl{
+  position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);
+  font-size:.55rem;color:var(--text-dim);white-space:nowrap
+}
+
+/* Login patron */
+#patron-login-screen{
+  position:fixed;inset:0;z-index:9999;
+  background:var(--bg);display:flex;align-items:center;justify-content:center;
+  flex-direction:column;padding:24px
+}
+.patron-login-box{
+  background:var(--surface);border:1px solid var(--border-accent);
+  border-radius:var(--rlg);padding:32px;width:100%;max-width:360px;text-align:center
+}
+.patron-login-box h2{font-size:1.3rem;font-weight:800;margin-bottom:6px}
+.patron-login-box p{font-size:.85rem;color:var(--text-muted);margin-bottom:24px}
+
+/* Mode PIN patron */
+.patron-pin-dots{
+  display:flex;gap:12px;justify-content:center;margin:0 0 16px
+}
+.patron-pd{
+  width:14px;height:14px;border-radius:50%;
+  border:2px solid var(--border-accent);transition:background .15s
+}
+.patron-pd.filled{background:var(--accent)}
+
+/* Bouton Générer QR (dans sidebar) */
+.patron-watch-btn{
+  display:flex;align-items:center;gap:8px;width:100%;
+  background:rgba(79,195,247,.08);border:1px solid rgba(79,195,247,.2);
+  color:#4FC3F7;padding:9px 12px;border-radius:var(--rsm);
+  font-size:.82rem;font-weight:600;cursor:pointer;margin:4px 8px;
+  width:calc(100% - 16px);transition:all .2s
+}
+.patron-watch-btn:hover{background:rgba(79,195,247,.15)}
+
+/* Statut "pas de Firebase" */
+.patron-no-fb{
+  text-align:center;padding:40px 24px;color:var(--text-muted);
+  font-size:.88rem
+}
+.patron-no-fb .pnf-ico{font-size:2.5rem;margin-bottom:12px}
+
+/* Responsive patron */
+@media(max-width:640px){
+  .patron-header{padding:10px 14px}
+  .pkpi{padding:12px 14px}
+  .pkpi-val{font-size:1.3rem}
+}
+
 </style>
 
 
 <body>
 
-<!-- ====================== API LAYER — remplace Firebase SDK côté client ====================== -->
+<!-- ====================== PAGE PATRON (SURVEILLANCE TEMPS RÉEL) ====================== -->
+<div id="page-patron" class="page">
+
+  <!-- Écran de connexion PIN patron (overlay) -->
+  <div id="patron-login-screen">
+    <div class="patron-login-box">
+      <div style="font-size:2rem;margin-bottom:8px">👁️</div>
+      <h2>Mode Surveillance</h2>
+      <p id="patron-login-commerce-name">Chargement...</p>
+      <div class="patron-pin-dots" id="patron-pin-dots">
+        <div class="patron-pd" id="ppd0"></div>
+        <div class="patron-pd" id="ppd1"></div>
+        <div class="patron-pd" id="ppd2"></div>
+        <div class="patron-pd" id="ppd3"></div>
+      </div>
+      <div id="patron-pin-err" style="color:var(--danger);font-size:.82rem;min-height:18px;margin-bottom:10px"></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+        <button class="qr-key" onclick="patronPinKey('1')">1</button>
+        <button class="qr-key" onclick="patronPinKey('2')">2</button>
+        <button class="qr-key" onclick="patronPinKey('3')">3</button>
+        <button class="qr-key" onclick="patronPinKey('4')">4</button>
+        <button class="qr-key" onclick="patronPinKey('5')">5</button>
+        <button class="qr-key" onclick="patronPinKey('6')">6</button>
+        <button class="qr-key" onclick="patronPinKey('7')">7</button>
+        <button class="qr-key" onclick="patronPinKey('8')">8</button>
+        <button class="qr-key" onclick="patronPinKey('9')">9</button>
+        <button class="qr-key" style="visibility:hidden"></button>
+        <button class="qr-key" onclick="patronPinKey('0')">0</button>
+        <button class="qr-key del" onclick="patronPinKey('⌫')">⌫</button>
+      </div>
+      <p style="font-size:.72rem;color:var(--text-dim)">Entrez le PIN propriétaire pour accéder à la surveillance</p>
+    </div>
+  </div>
+
+  <!-- Dashboard surveillance -->
+  <div id="patron-dashboard" style="display:none;flex-direction:column;min-height:100vh" class="d-flex">
+
+    <!-- Header -->
+    <div class="patron-header">
+      <div class="patron-logo">
+        <div class="patron-live-dot"></div>
+        <div>
+          <div class="patron-commerce-name" id="patron-commerce-display">Commerce</div>
+          <div style="font-size:.68rem;color:var(--text-muted)" id="patron-last-update">En attente...</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <div class="patron-badge">🔴 LIVE</div>
+        <div id="patron-conn" style="font-size:.72rem;padding:4px 10px;border-radius:100px;background:rgba(46,204,113,.1);color:#2ECC71;border:1px solid rgba(46,204,113,.2)">🟢 Firebase</div>
+        <button onclick="exitPatronMode()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text-muted);padding:6px 12px;border-radius:var(--rsm);font-size:.78rem;cursor:pointer">✕ Quitter</button>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="patron-kpis" id="patron-kpis">
+      <div class="pkpi success">
+        <div class="pkpi-lbl">CA Aujourd'hui</div>
+        <div class="pkpi-val" id="pkpi-ca">0</div>
+        <div class="pkpi-sub" id="pkpi-ca-sub">0 vente(s)</div>
+      </div>
+      <div class="pkpi">
+        <div class="pkpi-lbl">Vente en cours</div>
+        <div class="pkpi-val" id="pkpi-current">—</div>
+        <div class="pkpi-sub" id="pkpi-current-sub">Panier actif</div>
+      </div>
+      <div class="pkpi info">
+        <div class="pkpi-lbl">Dernière vente</div>
+        <div class="pkpi-val" id="pkpi-last">—</div>
+        <div class="pkpi-sub" id="pkpi-last-sub">Il y a —</div>
+      </div>
+      <div class="pkpi danger">
+        <div class="pkpi-lbl">Annulations</div>
+        <div class="pkpi-val" id="pkpi-cancel">0</div>
+        <div class="pkpi-sub">Aujourd'hui</div>
+      </div>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="patron-main" style="flex:1">
+
+      <!-- Colonne gauche : feed des ventes -->
+      <div>
+        <!-- Graphique heures -->
+        <div class="patron-card" style="margin-bottom:14px">
+          <div class="patron-card-hdr">
+            <h4>⏰ Activité par heure — aujourd'hui</h4>
+            <span id="patron-peak-hour" style="font-size:.72rem;color:var(--text-muted)">—</span>
+          </div>
+          <div class="patron-hour-chart" id="patron-hour-chart"></div>
+          <div style="display:flex;gap:0;padding:0 18px 12px" id="patron-hour-labels"></div>
+        </div>
+
+        <!-- Feed ventes -->
+        <div class="patron-card">
+          <div class="patron-card-hdr">
+            <h4>🛒 Ventes du jour — temps réel</h4>
+            <span id="patron-feed-count" style="font-size:.72rem;color:var(--text-muted)">0 vente(s)</span>
+          </div>
+          <div id="patron-sales-feed" style="max-height:420px;overflow-y:auto">
+            <div style="padding:24px;text-align:center;color:var(--text-dim);font-size:.85rem">
+              ⏳ En attente de ventes...
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Colonne droite : caissiers + top produits -->
+      <div>
+
+        <!-- Caissiers actifs -->
+        <div class="patron-card patron-cashier-card" style="margin-bottom:14px">
+          <div class="patron-card-hdr">
+            <h4>👤 Caissiers actifs</h4>
+            <span id="patron-cashiers-count" style="font-size:.72rem;color:var(--text-muted)">—</span>
+          </div>
+          <div id="patron-cashiers-list">
+            <div style="padding:16px;text-align:center;color:var(--text-dim);font-size:.82rem">Aucun caissier connecté</div>
+          </div>
+        </div>
+
+        <!-- Top produits -->
+        <div class="patron-card" style="margin-bottom:14px">
+          <div class="patron-card-hdr">
+            <h4>🏆 Top produits aujourd'hui</h4>
+          </div>
+          <div id="patron-top-prods" style="padding:8px 0">
+            <div style="padding:16px;text-align:center;color:var(--text-dim);font-size:.82rem">Aucune vente</div>
+          </div>
+        </div>
+
+        <!-- Alertes stock -->
+        <div class="patron-card">
+          <div class="patron-card-hdr">
+            <h4>⚠️ Alertes stock</h4>
+            <span id="patron-stock-badge" style="font-size:.72rem;color:var(--text-muted)">—</span>
+          </div>
+          <div id="patron-stock-alerts" style="padding:8px 0;max-height:180px;overflow-y:auto">
+            <div style="padding:16px;text-align:center;color:var(--text-dim);font-size:.82rem">Stock OK</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Barre du bas : résumé caissier -->
+    <div id="patron-cashier-bar" style="background:var(--surface);border-top:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;gap:16px;font-size:.78rem;flex-wrap:wrap">
+      <span style="color:var(--text-muted)">Caissier actif :</span>
+      <span id="patron-active-cashier" style="font-weight:700;color:var(--accent)">—</span>
+      <span style="color:var(--text-dim)">·</span>
+      <span style="color:var(--text-muted)">Panier :</span>
+      <span id="patron-cart-live" style="font-weight:700">0 article(s) — 0 FCFA</span>
+      <span style="color:var(--text-dim)">·</span>
+      <span id="patron-clock" style="color:var(--text-muted);font-family:var(--fh)">—</span>
+    </div>
+
+  </div><!-- /patron-dashboard -->
+</div><!-- /page-patron -->
+
+<!-- MODAL SURVEILLANCE PATRON -->
+<div id="mo-patron-watch" class="mo hidden" onclick="closeMoOv(event,'mo-patron-watch')">
+  <div class="modal" style="max-width:440px;text-align:center">
+    <div class="mhdr"><h3>👁️ Mode Surveillance Patron</h3><button class="mcls" onclick="closeMo('mo-patron-watch')">✕</button></div>
+    <div class="mbody">
+      <div style="background:rgba(79,195,247,.06);border:1px solid rgba(79,195,247,.2);border-radius:var(--rsm);padding:16px;margin-bottom:16px;font-size:.82rem;color:var(--text-muted);text-align:left">
+        <strong style="color:#4FC3F7">💡 Comment ça fonctionne</strong><br><br>
+        Le patron ouvre ce lien sur son propre téléphone et voit en temps réel : ventes, caissier actif, panier en cours, alertes stock. Lecture seule — aucune action possible.
+      </div>
+      <button class="btn-p full" onclick="openPatronModeLocal()" style="margin-bottom:10px">
+        📱 Surveiller sur cet appareil
+      </button>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);padding:12px;margin-bottom:10px;text-align:left">
+        <div style="font-size:.72rem;color:var(--text-muted);margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.05em">Lien pour un autre appareil</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="patron-link-input" readonly style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);padding:7px 10px;font-size:.72rem;color:var(--text);font-family:monospace" placeholder="Cliquez sur Générer..."/>
+          <button class="btn-g sm" onclick="copyPatronLink()">📋</button>
+          <button onclick="sendPatronLinkWA()" style="background:#25D366;border:none;color:#fff;padding:7px 10px;border-radius:var(--rsm);font-size:.75rem;cursor:pointer;font-weight:700">💬</button>
+        </div>
+      </div>
+      <button class="btn-g full sm" onclick="generatePatronLink()">🔗 Générer le lien de surveillance</button>
+      <p style="font-size:.72rem;color:var(--text-dim);margin-top:10px">Le PIN propriétaire sera demandé à l'ouverture. Firebase requis pour la sync temps réel.</p>
+    </div>
+    <div class="mftr"><button class="btn-g" onclick="closeMo('mo-patron-watch')">Fermer</button></div>
+  </div>
+</div>
+
 <script>
 // URL de base de l'API — auto-détectée selon l'environnement
 const API_BASE = window.location.origin;
@@ -1546,6 +1920,10 @@ window.addEventListener('load', checkApiStatus);
       <button class="ni" onclick="reqPin('clients')"   data-s="clients">  <span class="ni-ico">👥</span><span class="nl">Clients</span><span class="ni-lock">🔒</span></button>
       <button class="ni" onclick="reqPin('sales')"     data-s="sales">    <span class="ni-ico">🧾</span><span class="nl">Ventes</span><span class="ni-lock">🔒</span></button>
       <button class="ni" onclick="reqPin('settings')"  data-s="settings"> <span class="ni-ico">⚙️</span><span class="nl">Paramètres</span><span class="ni-lock">🔒</span></button>
+      <!-- Surveillance patron -->
+      <button class="patron-watch-btn" onclick="openPatronWatchModal()" title="Mode surveillance en temps réel">
+        <span>👁️</span><span class="nl">Surveillance Patron</span>
+      </button>
     </nav>
     <div class="sb-foot">
       <div class="mm"><div class="mm-av" id="mm-av">A</div><div class="mm-info"><span id="mm-name">—</span><span id="mm-city">—</span></div></div>
@@ -9377,6 +9755,585 @@ function openDevPanel() {
   devRenderSubs();
   document.getElementById('mo-dev-panel').classList.remove('hidden');
 }
+
+// ============================================================
+// 👁️ MODE SURVEILLANCE PATRON — temps réel multi-appareil
+// ============================================================
+
+let _patronListeners  = [];   // Firebase unsub functions
+let _patronPin        = '';   // PIN en cours de saisie
+let _patronClockTimer = null;
+let _patronMid        = null; // Merchant ID surveillé
+let _patronPinHash    = null; // Hash PIN propriétaire (pour validation)
+
+// ─── Obtenir le hash du PIN propriétaire depuis la config ───
+function _getPatronPinHash() {
+  const m = Auth.current();
+  if (!m) return null;
+  const cfg = getConfig ? getConfig() : null;
+  // Le PIN propriétaire est stocké dans la config du marchand
+  return cfg?.patron_pin_hash || cfg?.owner_pin_hash || null;
+}
+
+// ─── Ouvrir le modal de configuration surveillance ───
+function openPatronWatchModal() {
+  const m = Auth.current();
+  if (!m) { showToast('⚠️ Connectez-vous d\'abord', 'error'); return; }
+  document.getElementById('patron-link-input').value = '';
+  document.getElementById('mo-patron-watch').classList.remove('hidden');
+}
+
+// ─── Générer le lien de surveillance partageable ───
+function generatePatronLink() {
+  const m = Auth.current();
+  if (!m) return;
+  if (!_fbDb) {
+    showToast('⚠️ Firebase requis pour générer le lien', 'error');
+    return;
+  }
+  const base = window.location.origin + window.location.pathname;
+  const link = base + '?patron=' + encodeURIComponent(m.id) + '&commerce=' + encodeURIComponent(m.nom_commerce);
+  document.getElementById('patron-link-input').value = link;
+  showToast('✅ Lien généré !', 'success');
+}
+
+function copyPatronLink() {
+  const input = document.getElementById('patron-link-input');
+  if (!input.value || input.value === 'Cliquez sur Générer...') {
+    generatePatronLink();
+    return;
+  }
+  navigator.clipboard?.writeText(input.value).then(() => {
+    showToast('📋 Lien copié !', 'success');
+  }).catch(() => {
+    input.select();
+    document.execCommand('copy');
+    showToast('📋 Lien copié !', 'success');
+  });
+}
+
+function sendPatronLinkWA() {
+  const input = document.getElementById('patron-link-input');
+  if (!input.value) { generatePatronLink(); return; }
+  const m = Auth.current();
+  const msg = '👁️ *Surveillance Patron — ' + (m?.nom_commerce || 'Commerce') + '*\n\nAccédez au tableau de surveillance en temps réel depuis ce lien :\n' + input.value + '\n\n_(PIN propriétaire requis)_';
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+
+// ─── Ouvrir le mode patron sur cet appareil ───
+function openPatronModeLocal() {
+  const m = Auth.current();
+  if (!m) return;
+  closeMo('mo-patron-watch');
+  _patronMid = m.id;
+  // Pré-remplir le nom du commerce
+  document.getElementById('patron-login-commerce-name').textContent = m.nom_commerce;
+  // Réinitialiser le PIN
+  _patronPin = '';
+  _refreshPatronPinDots();
+  document.getElementById('patron-pin-err').textContent = '';
+  // Afficher la page patron avec écran de login
+  document.getElementById('patron-dashboard').style.display = 'none';
+  document.getElementById('patron-login-screen').style.display = 'flex';
+  showPage('page-patron');
+}
+
+// ─── Démarrage depuis URL ?patron=xxx ───
+function _checkPatronUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const mid    = params.get('patron');
+  const cname  = params.get('commerce') || 'Commerce';
+  if (!mid) return;
+  _patronMid = mid;
+  document.getElementById('patron-login-commerce-name').textContent = decodeURIComponent(cname);
+  _patronPin = '';
+  _refreshPatronPinDots();
+  document.getElementById('patron-pin-err').textContent = '';
+  document.getElementById('patron-dashboard').style.display = 'none';
+  document.getElementById('patron-login-screen').style.display = 'flex';
+  // Appliquer le thème sauvegardé
+  const theme = localStorage.getItem('ds_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', theme);
+  showPage('page-patron');
+}
+
+// ─── Saisie PIN patron ───
+function patronPinKey(k) {
+  const maxLen = 4;
+  if (k === '⌫') {
+    _patronPin = _patronPin.slice(0, -1);
+  } else if (_patronPin.length < maxLen) {
+    _patronPin += k;
+  }
+  _refreshPatronPinDots();
+
+  if (_patronPin.length === maxLen) {
+    setTimeout(_validatePatronPin, 180);
+  }
+}
+
+function _refreshPatronPinDots() {
+  for (let i = 0; i < 4; i++) {
+    const dot = document.getElementById('ppd' + i);
+    if (dot) {
+      dot.classList.toggle('filled', i < _patronPin.length);
+      dot.style.background = i < _patronPin.length ? 'var(--accent)' : '';
+    }
+  }
+}
+
+async function _validatePatronPin() {
+  const errEl = document.getElementById('patron-pin-err');
+  errEl.textContent = '';
+
+  // Récupérer la config du marchand pour vérifier le PIN
+  let ownerPinHash = null;
+  const m = Auth.current();
+
+  if (m && m.id === _patronMid) {
+    // Même appareil — récupérer depuis la config locale
+    const cfg = getConfig ? getConfig() : null;
+    ownerPinHash = cfg?.owner_pin_hash || cfg?.patron_pin_hash || null;
+  } else if (_fbDb && _patronMid) {
+    // Autre appareil — récupérer depuis Firestore
+    try {
+      const snap = await _fbDb.collection('merchants').doc(_patronMid)
+        .collection('configs').get();
+      const configs = snap.docs.map(d => d.data());
+      const cfg = configs.find(c => c.owner_pin_hash || c.patron_pin_hash);
+      ownerPinHash = cfg?.owner_pin_hash || cfg?.patron_pin_hash || null;
+    } catch(e) {
+      console.warn('[Patron] Erreur lecture config:', e.message);
+    }
+  }
+
+  // Vérifier le PIN (hash avec DB._hash si disponible)
+  const inputHash = typeof DB !== 'undefined' ? DB._hash(_patronPin) : _simpleHash(_patronPin);
+  const valid = ownerPinHash
+    ? (inputHash === ownerPinHash)
+    : (_patronPin === '0000' || _patronPin === '1234'); // Fallback démo
+
+  if (valid) {
+    _startPatronDashboard();
+  } else {
+    errEl.textContent = '❌ PIN incorrect';
+    _patronPin = '';
+    _refreshPatronPinDots();
+    setTimeout(() => { errEl.textContent = ''; }, 2000);
+  }
+}
+
+function _simpleHash(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return hash.toString(36);
+}
+
+// ─── Démarrer le dashboard surveillance ───
+function _startPatronDashboard() {
+  document.getElementById('patron-login-screen').style.display = 'none';
+  const dash = document.getElementById('patron-dashboard');
+  dash.style.display = 'flex';
+  dash.style.flexDirection = 'column';
+
+  // Nom du commerce
+  const m = Auth.current();
+  const name = m?.nom_commerce || decodeURIComponent(new URLSearchParams(window.location.search).get('commerce') || 'Commerce');
+  document.getElementById('patron-commerce-display').textContent = '🏪 ' + name;
+
+  // Horloge
+  _patronClockTimer = setInterval(_updatePatronClock, 1000);
+  _updatePatronClock();
+
+  // Démarrer les listeners Firebase
+  _startPatronListeners();
+
+  showToast('👁️ Mode surveillance activé — temps réel', 'success');
+}
+
+function _updatePatronClock() {
+  const now = new Date();
+  const el = document.getElementById('patron-clock');
+  if (el) el.textContent = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
+// ─── Firebase listeners pour le mode patron ───
+function _startPatronListeners() {
+  if (!_fbDb || !_patronMid) {
+    document.getElementById('patron-conn').textContent = '⚠️ Firebase requis';
+    document.getElementById('patron-conn').style.color = 'var(--warning)';
+    _startPatronPolling(); // Fallback localStorage
+    return;
+  }
+
+  // Arrêter les anciens listeners
+  _stopPatronListeners();
+
+  const mid  = _patronMid;
+  const base = () => _fbDb.collection('merchants').doc(mid);
+  const onE  = (col) => (e) => console.warn('[Patron]', col, e.message);
+
+  // ── Sales listener ──
+  const unsubSales = base().collection('sales')
+    .orderBy('created_at', 'desc').limit(100)
+    .onSnapshot(snap => {
+      const sales = snap.docs.map(d => ({ ...d.data(), id: d.id }))
+        .filter(s => s.id !== '_init');
+      _patronUpdateSales(sales);
+    }, onE('sales'));
+
+  // ── Products listener ──
+  const unsubProds = base().collection('products')
+    .onSnapshot(snap => {
+      const prods = snap.docs.map(d => ({ ...d.data(), id: d.id }))
+        .filter(p => p.id !== '_init');
+      _patronUpdateStock(prods);
+    }, onE('products'));
+
+  // ── Cashiers listener ──
+  const unsubCashiers = base().collection('cashiers')
+    .onSnapshot(snap => {
+      const cashiers = snap.docs.map(d => ({ ...d.data(), id: d.id }));
+      _patronUpdateCashiers(cashiers, mid);
+    }, onE('cashiers'));
+
+  // ── Live cart (panier en cours via doc spécial) ──
+  const unsubCart = base().collection('live_cart').doc('current')
+    .onSnapshot(snap => {
+      if (snap.exists) {
+        const data = snap.data();
+        _patronUpdateLiveCart(data);
+      } else {
+        document.getElementById('patron-cart-live').textContent = 'Aucun panier actif';
+        document.getElementById('pkpi-current').textContent = '—';
+        document.getElementById('pkpi-current-sub').textContent = 'Aucun panier';
+      }
+    }, onE('live_cart'));
+
+  _patronListeners = [unsubSales, unsubProds, unsubCashiers, unsubCart];
+
+  // Mise à jour du statut connexion
+  document.getElementById('patron-conn').textContent = '🟢 Firebase Live';
+  document.getElementById('patron-conn').style.cssText = 'font-size:.72rem;padding:4px 10px;border-radius:100px;background:rgba(46,204,113,.1);color:#2ECC71;border:1px solid rgba(46,204,113,.2)';
+
+  document.getElementById('patron-last-update').textContent = 'Connecté — mise à jour automatique';
+}
+
+// ─── Fallback polling localStorage (si Firebase non disponible) ───
+let _patronPollTimer = null;
+function _startPatronPolling() {
+  _patronPollTimer = setInterval(() => {
+    const mid = _patronMid;
+    if (!mid) return;
+    const sales   = (DB.get('sales')    || []).filter(s => s.merchant_id === mid);
+    const prods   = (DB.get('products') || []).filter(p => p.merchant_id === mid);
+    const cashiers = (DB.get('cashiers') || []).filter(c => c.merchant_id === mid);
+    _patronUpdateSales(sales);
+    _patronUpdateStock(prods);
+    _patronUpdateCashiers(cashiers, mid);
+    document.getElementById('patron-conn').textContent = '🟡 Local (hors ligne)';
+    document.getElementById('patron-conn').style.color = 'var(--warning)';
+  }, 3000);
+}
+
+function _stopPatronListeners() {
+  _patronListeners.forEach(u => { try { u(); } catch(e) {} });
+  _patronListeners = [];
+  if (_patronPollTimer) { clearInterval(_patronPollTimer); _patronPollTimer = null; }
+}
+
+// ─── Mettre à jour le feed des ventes ───
+let _patronKnownSaleIds = new Set();
+
+function _patronUpdateSales(sales) {
+  const dev = getConfig?.()?.devise || 'FCFA';
+  const today = new Date().toDateString();
+
+  // Filtrer ventes d'aujourd'hui
+  const todaySales    = sales.filter(s => s.created_at && new Date(s.created_at).toDateString() === today);
+  const validSales    = todaySales.filter(s => s.statut !== 'cancelled');
+  const cancelSales   = todaySales.filter(s => s.statut === 'cancelled');
+
+  // KPIs
+  const totalCA = validSales.reduce((sum, s) => sum + (parseFloat(s.total) || 0), 0);
+  document.getElementById('pkpi-ca').textContent    = fmtMoney(totalCA, dev);
+  document.getElementById('pkpi-ca-sub').textContent = validSales.length + ' vente(s) validée(s)';
+  document.getElementById('pkpi-cancel').textContent = cancelSales.length;
+
+  // Dernière vente
+  if (validSales.length > 0) {
+    const last = validSales.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+    document.getElementById('pkpi-last').textContent = fmtMoney(last.total || 0, dev);
+    const age = Math.floor((Date.now() - new Date(last.created_at)) / 60000);
+    document.getElementById('pkpi-last-sub').textContent = age < 1 ? 'À l\'instant' : 'Il y a ' + age + ' min';
+  }
+
+  // Feed ventes (les 30 dernières du jour)
+  const feedEl = document.getElementById('patron-sales-feed');
+  const countEl = document.getElementById('patron-feed-count');
+  countEl.textContent = todaySales.length + ' vente(s) aujourd\'hui';
+
+  const newIds = new Set(todaySales.map(s => s.id));
+  const hasNew = [...newIds].some(id => !_patronKnownSaleIds.has(id));
+  if (hasNew && _patronKnownSaleIds.size > 0) {
+    // Flash + son visuel
+    document.getElementById('patron-live-dot')?.classList.add('urgent');
+    showToast('🔔 Nouvelle vente enregistrée !', 'success');
+    document.getElementById('patron-last-update').textContent = 'Dernière activité : ' + new Date().toLocaleTimeString('fr-FR');
+  }
+  _patronKnownSaleIds = newIds;
+
+  if (todaySales.length === 0) {
+    feedEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-dim);font-size:.85rem">⏳ Aucune vente aujourd\'hui — en attente...</div>';
+  } else {
+    const sorted = [...todaySales].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 30);
+    feedEl.innerHTML = sorted.map((s, idx) => {
+      const isNew   = idx === 0 && hasNew;
+      const isCancel = s.statut === 'cancelled';
+      const t = new Date(s.created_at);
+      const age = Math.floor((Date.now() - t.getTime()) / 60000);
+      const ageStr = age < 1 ? 'À l\'instant' : age < 60 ? age + ' min' : t.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      const itemsStr = s.items ? s.items.map(i => i.nom + (i.qty > 1 ? ' ×' + i.qty : '')).join(', ') : '';
+      const cashierBadge = s.cashier_nom ? `<span class="psr-cashier">${s.cashier_nom}</span>` : '';
+      return `<div class="patron-sale-row${isNew ? ' new-flash' : ''}" style="${isCancel ? 'opacity:.5' : ''}">
+        <div class="psr-left">
+          <div class="psr-name">${isCancel ? '🚫 ' : ''}${s.client_nom || 'Client anonyme'} ${cashierBadge}</div>
+          <div class="psr-meta"><span>${ageStr}</span>${isCancel ? '<span style="color:var(--danger);font-weight:700">Annulée</span>' : ''}</div>
+          ${itemsStr ? `<div class="psr-items">${itemsStr}</div>` : ''}
+        </div>
+        <div class="psr-amount" style="${isCancel ? 'color:var(--danger);text-decoration:line-through' : ''}">${fmtMoney(s.total || 0, dev)}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Graphique heures
+  _patronUpdateHourChart(validSales, dev);
+
+  // Top produits
+  _patronUpdateTopProds(validSales, dev);
+}
+
+// ─── Graphique activité par heure ───
+function _patronUpdateHourChart(sales, dev) {
+  const hours = new Array(24).fill(0);
+  const hourTotals = new Array(24).fill(0);
+  sales.forEach(s => {
+    if (!s.created_at) return;
+    const h = new Date(s.created_at).getHours();
+    hours[h]++;
+    hourTotals[h] += parseFloat(s.total) || 0;
+  });
+
+  const maxVal  = Math.max(...hours, 1);
+  const chart   = document.getElementById('patron-hour-chart');
+  const labels  = document.getElementById('patron-hour-labels');
+  const peakH   = hours.indexOf(Math.max(...hours));
+
+  // N'afficher que 7h → 22h pour compacité
+  const range   = Array.from({ length: 16 }, (_, i) => i + 7); // 7h à 22h
+  const maxR    = Math.max(...range.map(h => hours[h]), 1);
+
+  chart.innerHTML = range.map(h => {
+    const val  = hours[h];
+    const pct  = Math.round((val / maxR) * 100);
+    const isPeak = h === peakH && val > 0;
+    return `<div class="phbar${isPeak ? ' peak' : ''}" style="height:${Math.max(pct, 3)}%" title="${h}h : ${val} vente(s) — ${fmtMoney(hourTotals[h], dev)}"></div>`;
+  }).join('');
+
+  labels.innerHTML = '<div style="display:flex;gap:0;width:100%">' +
+    range.map(h => `<div style="flex:1;text-align:center;font-size:.55rem;color:var(--text-dim)">${h}h</div>`).join('') +
+    '</div>';
+
+  if (peakH > 0 && hours[peakH] > 0) {
+    document.getElementById('patron-peak-hour').textContent = '⚡ Pic à ' + peakH + 'h (' + hours[peakH] + ' ventes)';
+  }
+}
+
+// ─── Top produits ───
+function _patronUpdateTopProds(sales, dev) {
+  const prodMap = {};
+  sales.forEach(s => {
+    (s.items || []).forEach(item => {
+      if (!item.nom) return;
+      if (!prodMap[item.nom]) prodMap[item.nom] = { qty: 0, total: 0 };
+      prodMap[item.nom].qty   += (parseInt(item.qty)  || 1);
+      prodMap[item.nom].total += (parseFloat(item.prix) || 0) * (parseInt(item.qty) || 1);
+    });
+  });
+
+  const top = Object.entries(prodMap)
+    .sort((a, b) => b[1].qty - a[1].qty)
+    .slice(0, 6);
+
+  const maxQty = top[0]?.[1].qty || 1;
+  const el = document.getElementById('patron-top-prods');
+
+  if (top.length === 0) {
+    el.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-dim);font-size:.82rem">Aucune vente aujourd\'hui</div>';
+    return;
+  }
+
+  el.innerHTML = top.map(([nom, data], i) => {
+    const pct = Math.round((data.qty / maxQty) * 100);
+    return `<div style="padding:8px 16px;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:.82rem">
+        <span style="font-weight:600">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '▸'} ${nom}</span>
+        <span style="color:var(--text-muted)">${data.qty} vendus</span>
+      </div>
+      <div style="height:4px;background:var(--surface2);border-radius:2px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:2px;transition:width .4s"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── Mise à jour panier live ───
+function _patronUpdateLiveCart(cartData) {
+  if (!cartData) return;
+  const dev      = getConfig?.()?.devise || 'FCFA';
+  const items    = cartData.items || [];
+  const total    = items.reduce((s, i) => s + ((parseFloat(i.prix) || 0) * (parseInt(i.qty) || 1)), 0);
+  const cashier  = cartData.cashier_nom || '—';
+
+  document.getElementById('patron-cart-live').textContent = items.length + ' article(s) — ' + fmtMoney(total, dev);
+  document.getElementById('patron-active-cashier').textContent = cashier;
+  document.getElementById('pkpi-current').textContent = items.length > 0 ? fmtMoney(total, dev) : '—';
+  document.getElementById('pkpi-current-sub').textContent = items.length > 0 ? items.length + ' article(s) en panier' : 'Aucun panier actif';
+}
+
+// ─── Caissiers ───
+function _patronUpdateCashiers(cashiers, mid) {
+  const el = document.getElementById('patron-cashiers-list');
+  const cntEl = document.getElementById('patron-cashiers-count');
+
+  // Calculer les ventes par caissier aujourd'hui
+  const today = new Date().toDateString();
+  const sales = (typeof DB !== 'undefined' ? DB.get('sales') || [] : [])
+    .filter(s => s.merchant_id === mid && s.created_at && new Date(s.created_at).toDateString() === today && s.statut !== 'cancelled');
+
+  const dev = getConfig?.()?.devise || 'FCFA';
+
+  // Caissiers actifs = ceux qui ont vendu aujourd'hui ou qui sont "actifs"
+  const cashiersWithStats = cashiers.map(c => {
+    const mySales = sales.filter(s => s.cashier_id === c.id || s.cashier_nom === c.nom);
+    const myTotal = mySales.reduce((sum, s) => sum + (parseFloat(s.total) || 0), 0);
+    const lastSale = mySales.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+    const lastActivity = lastSale ? Math.floor((Date.now() - new Date(lastSale.created_at)) / 60000) : null;
+    const isActive = lastActivity !== null && lastActivity < 30;
+    return { ...c, mySales: mySales.length, myTotal, lastActivity, isActive };
+  }).sort((a, b) => (b.isActive ? 1 : 0) - (a.isActive ? 1 : 0));
+
+  const activeCnt = cashiersWithStats.filter(c => c.isActive).length;
+  cntEl.textContent = activeCnt + ' actif(s) / ' + cashiers.length + ' total';
+
+  if (cashiers.length === 0) {
+    el.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-dim);font-size:.82rem">Aucun caissier configuré</div>';
+    return;
+  }
+
+  el.innerHTML = cashiersWithStats.map(c => {
+    const ageStr = c.lastActivity !== null
+      ? (c.lastActivity < 1 ? 'À l\'instant' : c.lastActivity < 60 ? 'Il y a ' + c.lastActivity + ' min' : 'Inactif')
+      : 'Pas encore de vente';
+    return `<div class="patron-cashier-row">
+      <div class="pcr-av${c.isActive ? ' online' : ''}">${(c.nom || '?').charAt(0).toUpperCase()}</div>
+      <div class="pcr-info">
+        <div class="pcr-name">${c.nom || '—'} <span style="font-size:.65rem;color:var(--text-dim)">${c.role || 'caissier'}</span></div>
+        <div class="pcr-stats">${c.mySales} vente(s) · ${ageStr}</div>
+      </div>
+      <div class="pcr-total">${fmtMoney(c.myTotal, dev)}</div>
+    </div>`;
+  }).join('');
+}
+
+// ─── Alertes stock ───
+function _patronUpdateStock(prods) {
+  const alerts = prods.filter(p => p.stock !== null && p.stock !== undefined && p.stock <= 5);
+  const el     = document.getElementById('patron-stock-alerts');
+  const badge  = document.getElementById('patron-stock-badge');
+  badge.textContent = alerts.length > 0 ? alerts.length + ' alerte(s)' : 'OK';
+  badge.style.color = alerts.length > 0 ? 'var(--danger)' : 'var(--success)';
+
+  if (alerts.length === 0) {
+    el.innerHTML = '<div style="padding:14px 16px;color:var(--success);font-size:.82rem">✅ Tous les stocks sont suffisants</div>';
+    return;
+  }
+
+  el.innerHTML = alerts.slice(0, 10).map(p => {
+    const color = p.stock === 0 ? 'var(--danger)' : 'var(--warning)';
+    const icon  = p.stock === 0 ? '⛔' : '⚠️';
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 16px;border-bottom:1px solid var(--border);font-size:.82rem">
+      <span>${icon} ${p.nom}</span>
+      <span style="color:${color};font-weight:700">${p.stock === 0 ? 'Rupture' : p.stock + ' restant(s)'}</span>
+    </div>`;
+  }).join('');
+}
+
+// ─── Publier le panier live (appelé depuis le POS) ───
+function publishLiveCart(items, cashierNom) {
+  const m = Auth.current();
+  if (!m || !_fbDb) return;
+  _fbDb.collection('merchants').doc(m.id)
+    .collection('live_cart').doc('current').set({
+      items: items || [],
+      cashier_nom: cashierNom || '—',
+      updated_at: new Date().toISOString()
+    }, { merge: true }).catch(() => {});
+}
+
+// ─── Quitter le mode patron ───
+function exitPatronMode() {
+  _stopPatronListeners();
+  if (_patronClockTimer) { clearInterval(_patronClockTimer); _patronClockTimer = null; }
+  _patronMid = null;
+  _patronPin = '';
+
+  // Retourner à la page appropriée
+  const m = Auth.current();
+  if (m) {
+    showPage('page-app');
+  } else {
+    // Nettoyer l'URL
+    const url = new URL(window.location.href);
+    url.searchParams.delete('patron');
+    url.searchParams.delete('commerce');
+    window.history.replaceState({}, '', url.toString());
+    showPage('page-landing');
+  }
+}
+
+// ─── Initialisation : détecter l'URL ?patron= au chargement ───
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(_checkPatronUrl, 300);
+});
+
+// ─── Hook sur le checkout pour publier le panier live ───
+// (injecté dans la fonction checkout existante via un wrapper)
+const _origCheckout = typeof checkout !== 'undefined' ? checkout : null;
+
+function _publishCartHook() {
+  const m = Auth.current();
+  if (!m || !_fbDb) return;
+  // Lire le panier actuel (variable globale 'cart' du POS)
+  if (typeof cart !== 'undefined' && Array.isArray(cart)) {
+    const cashier = typeof _currentCashier !== 'undefined' && _currentCashier
+      ? _currentCashier.nom
+      : (m.proprietaire || '—');
+    publishLiveCart(cart, cashier);
+  }
+}
+
+// Polling léger du panier toutes les 5 secondes si page-app active
+setInterval(() => {
+  if (document.getElementById('page-app')?.classList.contains('active') && _fbDb) {
+    _publishCartHook();
+  }
+}, 5000);
+
 </script>
 
 </body>
