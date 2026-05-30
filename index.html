@@ -2381,7 +2381,7 @@ window.addEventListener('load', checkApiStatus);
         <!-- MULTI-APPAREILS -->
         <div class="sc">
           <h4>📱 Accès multi-appareils <span style="font-size:.7rem;background:rgba(232,115,12,.15);color:var(--accent);padding:2px 8px;border-radius:100px;margin-left:6px">Firebase</span></h4>
-          <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:16px">Générez un code temporaire (5 min) pour reprendre votre session sur un autre appareil sans mot de passe.</p>
+          <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:16px">Générez un code permanent pour reprendre votre session sur un autre appareil sans mot de passe.</p>
           <button class="btn-p" onclick="generateDeviceCode()">📲 Générer un code d'accès</button>
         </div>
 
@@ -7824,11 +7824,10 @@ async function generateDeviceCode() {
   const m = Auth.current(); if (!m) return;
   if (!_fbDb) { showToast('⚠️ Firebase requis', 'error'); return; }
   const code = Math.random().toString(36).slice(2, 8).toUpperCase();
-  const expiry = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 min
   try {
     await _fbDb.collection('device_codes').doc(code).set({
       merchant_id: m.id, nom_commerce: m.nom_commerce,
-      telephone: m.telephone, expiry, used: false,
+      telephone: m.telephone, expiry: null, used: false,
       created_at: new Date().toISOString()
     });
     // Afficher le code dans un modal
@@ -7836,7 +7835,7 @@ async function generateDeviceCode() {
       <div style="background:var(--surface);border-radius:24px;padding:32px;text-align:center;max-width:320px;width:90%">
         <div style="font-size:.85rem;color:var(--text-muted);margin-bottom:8px">Code d'accès multi-appareil</div>
         <div style="font-size:3.5rem;font-weight:900;font-family:var(--fh);color:var(--accent);letter-spacing:.15em;margin:16px 0">${code}</div>
-        <div style="font-size:.78rem;color:var(--text-dim);margin-bottom:20px">Valable 5 minutes · Tapez ce code sur l'autre appareil</div>
+        <div style="font-size:.78rem;color:var(--text-dim);margin-bottom:20px">Valable sans limite · Tapez ce code sur l'autre appareil</div>
         <div style="font-size:.75rem;color:var(--text-muted)">Allez sur l'écran de connexion → "Reprendre avec code"</div>
         <button onclick="this.closest('div').parentElement.remove()" style="margin-top:16px;background:var(--surface2);border:none;border-radius:10px;padding:10px 24px;color:var(--text);cursor:pointer">Fermer</button>
       </div>
@@ -7856,8 +7855,10 @@ async function resumeWithDeviceCode() {
     const snap   = await docRef.get();
     if (!snap.exists) { showToast('❌ Code invalide', 'error'); return; }
     const data = snap.data();
-    if (data.used || new Date(data.expiry) < new Date()) { showToast('❌ Code expiré ou déjà utilisé', 'error'); return; }
-    // Invalider le code
+    if (data.used) { showToast('❌ Code déjà utilisé', 'error'); return; }
+    // Vérifier expiration seulement si une date est définie (null = illimité)
+    if (data.expiry && new Date(data.expiry) < new Date()) { showToast('❌ Code expiré', 'error'); return; }
+    // Invalider le code après usage
     await docRef.update({ used: true });
     // Restaurer les données depuis Firebase
     const mid = data.merchant_id;
