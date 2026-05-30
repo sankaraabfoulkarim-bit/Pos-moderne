@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
@@ -2691,25 +2692,14 @@ window.addEventListener('load', checkApiStatus);
           <button class="fmt-btn" onclick="setTheme('ocean',null)" style="padding:5px 12px;font-size:.78rem" title="Océan">🌊 Océan</button>
         </div>
       </div>
-      <!-- Statut -->
+      <!-- Statut Firebase (config intégrée dans le code) -->
       <div id="dev-fb-status-bar" style="display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:12px 16px;border-radius:var(--rsm);background:var(--surface2);border:1px solid var(--border);font-size:.85rem">
         <span id="dev-fb-dot" style="width:11px;height:11px;border-radius:50%;background:#888;flex-shrink:0;animation:pulse 2s infinite"></span>
         <span id="dev-fb-txt">Vérification de la connexion Firebase...</span>
       </div>
-      <!-- Config Firebase -->
-      <h4 style="margin-bottom:14px;font-size:.95rem">🔥 Configuration Firebase</h4>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
-        <div class="fg"><label>API Key</label><input id="fb-apiKey" placeholder="AIzaSy..." style="font-size:.78rem;font-family:monospace"/></div>
-        <div class="fg"><label>Auth Domain</label><input id="fb-authDomain" placeholder="mon-projet.firebaseapp.com" style="font-size:.78rem;font-family:monospace"/></div>
-        <div class="fg"><label>Project ID</label><input id="fb-projectId" placeholder="mon-projet" style="font-size:.78rem;font-family:monospace"/></div>
-        <div class="fg"><label>Storage Bucket</label><input id="fb-storageBucket" placeholder="mon-projet.appspot.com" style="font-size:.78rem;font-family:monospace"/></div>
-        <div class="fg"><label>Messaging Sender ID</label><input id="fb-messagingSenderId" placeholder="123456789" style="font-size:.78rem;font-family:monospace"/></div>
-        <div class="fg"><label>App ID</label><input id="fb-appId" placeholder="1:123:web:abc" style="font-size:.78rem;font-family:monospace"/></div>
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px">
-        <button class="btn-p" onclick="saveFirebaseConfig()">💾 Enregistrer &amp; Connecter</button>
-        <button class="btn-g" onclick="testFirebaseConnection()">🔍 Tester</button>
-        <button class="btn-d sm" onclick="clearFirebaseConfig()">🗑️ Effacer</button>
+      <div style="background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.2);border-radius:var(--rsm);padding:12px 16px;margin-bottom:20px;font-size:.82rem;color:var(--text-muted)">
+        🔥 <strong style="color:var(--success)">Firebase configuré</strong> — Projet : <code style="color:var(--accent);font-family:monospace">posmoderne-e8807</code><br>
+        <span style="font-size:.72rem">La configuration est intégrée directement dans le code source.</span>
       </div>
       <!-- Infos techniques -->
       <h4 style="margin-bottom:10px;font-size:.95rem">📊 Infos système</h4>
@@ -5942,38 +5932,88 @@ async function loginMerchant(e) {
   if (fbStatus) { fbStatus.textContent = '🔄 Vérification...'; fbStatus.style.display = 'block'; }
 
   try {
-    const merchant = Auth.login(tel, pwd);
+    let merchant = null;
 
+    // ── Étape 1 : tentative locale (localStorage) ──
+    try {
+      merchant = Auth.login(tel, pwd);
+    } catch(localErr) {
+      // Compte introuvable en local → tenter Firebase
+      if (_fbDb) {
+        if (fbStatus) { fbStatus.textContent = '🔄 Compte non trouvé en local — recherche Firebase...'; fbStatus.style.display = 'block'; }
+        const clean = tel.replace(/\D/g, '');
+        // Chercher par téléphone (brut ou nettoyé)
+        let snap = await _fbDb.collection('merchants').where('telephone', '==', tel).limit(1).get();
+        if (snap.empty) snap = await _fbDb.collection('merchants').where('telephone', '==', clean).limit(1).get();
+
+        if (snap.empty) {
+          throw new Error('Aucun compte trouvé pour ce numéro.');
+        }
+
+        const fbData = snap.docs[0].data();
+        const mid    = snap.docs[0].id;
+
+        // Vérifier le mot de passe (hash identique)
+        if (fbData.password && fbData.password !== DB._hash(pwd)) {
+          throw new Error('Mot de passe incorrect.');
+        }
+
+        // ── Restaurer le compte dans localStorage ──
+        const merchants = DB.get('merchants');
+        if (!merchants.find(m => m.id === mid)) {
+          merchants.push({ ...fbData, id: mid });
+          DB.set('merchants', merchants);
+        } else {
+          // Mettre à jour si existant
+          const idx = merchants.findIndex(m => m.id === mid);
+          merchants[idx] = { ...fbData, id: mid };
+          DB.set('merchants', merchants);
+        }
+
+        // ── Restaurer les données (products, clients, sales, configs) ──
+        if (fbStatus) fbStatus.textContent = '🔄 Chargement des données...';
+        for (const col of ['products','clients','sales','configs','cashiers']) {
+          try {
+            const colSnap = await _fbDb.collection('merchants').doc(mid).collection(col).get();
+            const items = colSnap.docs
+              .map(d => ({ ...d.data(), id: d.id, merchant_id: mid }))
+              .filter(x => x.id !== '_init');
+            const all = DB.get(col).filter(r => r.merchant_id !== mid);
+            DB.set(col, [...all, ...items]);
+          } catch(colErr) { /* col optionnel */ }
+        }
+
+        // ── Se connecter avec les données restaurées ──
+        merchant = Auth.login(fbData.telephone || tel, pwd);
+        if (fbStatus) fbStatus.textContent = '✅ Compte restauré depuis Firebase !';
+
+      } else {
+        // Pas de Firebase — remonter l'erreur originale
+        throw localErr;
+      }
+    }
+
+    // ── Connexion réussie ──
     showPage('page-app');
     renderDashboard();
     showToast('✅ Connecté — bienvenue ' + merchant.proprietaire + ' !', 'success');
 
-    // Badge stock
     if (typeof StockNotif !== 'undefined') StockNotif._updateBadge(merchant.id);
-    // Sync Firebase temps réel
     if (_fbDb) {
       startFirebase();
-      // Connexion Firebase Auth avec email dérivé du téléphone
       const fbEmail = tel.replace(/\D/g, '') + '@digitalesolution.app';
-      fbSignInWithEmail(fbEmail, pwd).then(user => {
-        if (fbStatus) fbStatus.textContent = '✅ Firebase connecté';
-        setTimeout(() => { if (fbStatus) fbStatus.style.display = 'none'; }, 2000);
-      }).catch(() => {
-        // Auth Firebase optionnelle — l'app fonctionne sans
-        if (fbStatus) fbStatus.style.display = 'none';
-      });
+      fbSignInWithEmail(fbEmail, pwd).catch(() => {});
     }
-    // Notifications push
     _initPushOnLogin();
-    // Rapport WhatsApp auto
     if (merchant.telephone) WAReport.scheduleDaily(merchant.telephone);
+    setTimeout(() => { if (fbStatus) fbStatus.style.display = 'none'; }, 2500);
 
   } catch(err) {
     er.textContent = err.message;
     er.classList.remove('hidden');
+    if (fbStatus) fbStatus.style.display = 'none';
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Se connecter →'; }
-    if (fbStatus) fbStatus.style.display = 'none';
   }
 }
 
@@ -7232,27 +7272,25 @@ function renderFirebaseStatus() {}     // no-op
 // ── Clé localStorage pour la config Firebase
 const FB_STORAGE_KEY = 'ds_firebase_config';
 
-// ── Lire la config sauvegardée (localStorage) ou retomber sur la config par défaut
-function getFirebaseConfig() {
-  try {
-    const saved = localStorage.getItem(FB_STORAGE_KEY);
-    if (saved) return JSON.parse(saved);
-  } catch(e) {}
-  // Config par défaut (peut être remplacée via Paramètres)
-  return {
-  apiKey: "AIzaSyBzN-751rWUsJe38CDVIAMnnvyB127nBuw",
-  authDomain: "pos-moderne.firebaseapp.com",
-  projectId: "pos-moderne",
-  storageBucket: "pos-moderne.firebasestorage.app",
-  messagingSenderId: "190801651948",
-  appId: "1:190801651948:web:073777af12cbe423979dc9"
+// ── Config Firebase intégrée directement dans le code
+const FB_DEFAULT_CONFIG = {
+  apiKey: "AIzaSyA0TpK8_97XncDZC9qxS7sCOr-ZL1lMJZo",
+  authDomain: "posmoderne-e8807.firebaseapp.com",
+  projectId: "posmoderne-e8807",
+  storageBucket: "posmoderne-e8807.firebasestorage.app",
+  messagingSenderId: "796392886098",
+  appId: "1:796392886098:web:99a4cbbe4c179c50e8748b"
 };
+
+function getFirebaseConfig() {
+  return FB_DEFAULT_CONFIG;
 }
 
-let _fbDb   = null;
-let _fbAuth = null;
-let _fbStorage = null;
-let _fbOffline = false;
+let _fbDb       = null;
+let _fbAuth     = null;
+let _fbStorage  = null;
+let _fbOffline  = false;
+const _fbListeners = {}; // listeners onSnapshot par merchant_id
 
 // Intercepte les logs Firebase pour supprimer le bruit "Connection failed"
 (function silenceFirebaseLogs() {
@@ -7377,93 +7415,36 @@ function updateFbStatusBar(state, msg) {
 // ── Remplir les champs du formulaire avec la config actuelle
 function loadFbConfigToForm() {
   const cfg = getFirebaseConfig();
-  ['apiKey','authDomain','projectId','storageBucket','messagingSenderId','appId'].forEach(k => {
-    const el = document.getElementById('fb-' + k);
-    if (el) el.value = cfg[k] || '';
-  });
-  // Statut connexion
+  // Config intégrée dans le code — mettre à jour uniquement le statut
   if (_fbDb) {
-    updateFbStatusBar('ok', '✅ Connecté à ' + (cfg.projectId || '—') + ' — temps réel actif');
+    updateFbStatusBar('ok', '✅ Connecté à ' + cfg.projectId + ' — temps réel actif');
   } else {
-    updateFbStatusBar('off', '⚠️ Non connecté — renseignez votre config Firebase');
+    updateFbStatusBar('off', '⚠️ Non connecté — vérifiez Firebase Console');
   }
   // Infos système
   const m = Auth.current();
   const info = document.getElementById('dev-sys-info');
   if (info) {
     const merchants = DB.get('merchants').length;
-    const sales = DB.get('sales').length;
-    const prods = DB.get('products').length;
+    const sales     = DB.get('sales').length;
+    const prods     = DB.get('products').length;
     info.innerHTML = [
-      'Marchand actif : ' + (m ? m.nom_commerce + ' (' + m.id + ')' : '—'),
-      'Firebase project : ' + (cfg.projectId || '—'),
-      'Firebase connecté : ' + (_fbDb ? '✅ oui' : '❌ non'),
-      'Merchants en local : ' + merchants,
-      'Ventes en local : ' + sales,
-      'Produits en local : ' + prods,
-      'User-Agent : ' + navigator.userAgent.substring(0, 60) + '…',
+      'Marchand actif : ' + (m ? m.nom_commerce + ' (' + m.id + ')' : '—'),
+      'Firebase project : ' + cfg.projectId,
+      'Firebase connecté : ' + (_fbDb ? '✅ oui' : '❌ non'),
+      'Merchants en local : ' + merchants,
+      'Ventes en local : ' + sales,
+      'Produits en local : ' + prods,
+      'User-Agent : ' + navigator.userAgent.substring(0, 60) + '…',
     ].join('<br>');
   }
 }
 
-// ── Sauvegarder la config depuis le formulaire et reconnecter
-function saveFirebaseConfig() {
-  const fields = ['apiKey','authDomain','projectId','storageBucket','messagingSenderId','appId'];
-  const cfg = {};
-  for (const k of fields) {
-    const val = document.getElementById('fb-' + k)?.value.trim();
-    if (!val) { showToast('⚠️ Le champ "' + k + '" est requis', 'error'); return; }
-    cfg[k] = val;
-  }
-  updateFbStatusBar('pending', '⏳ Connexion en cours...');
-  localStorage.setItem(FB_STORAGE_KEY, JSON.stringify(cfg));
-  const ok = initFirestoreWith(cfg);
-  if (ok) {
-    showToast('✅ Firebase configuré ! Sync temps réel activée.', 'success');
-    updateFbStatusBar('ok', '✅ Connecté à ' + cfg.projectId + ' — temps réel actif');
-    // Redémarrer les listeners pour le marchand courant
-    const m = Auth.current();
-    if (m) { stopFirebase(m.id); startFirebase(); }
-  } else {
-    showToast('❌ Connexion Firebase échouée — vérifiez la config.', 'error');
-    updateFbStatusBar('error', '❌ Connexion échouée — vérifiez les champs');
-  }
-}
 
-// ── Tester la connexion sans sauvegarder
-async function testFirebaseConnection() {
-  if (!_fbDb) { showToast('⚠️ Firebase non initialisé', 'error'); return; }
-  updateFbStatusBar('pending', '⏳ Test en cours...');
-  try {
-    await _fbDb.collection('_ping').doc('test').set({ ts: Date.now() });
-    await _fbDb.collection('_ping').doc('test').delete();
-    showToast('✅ Connexion Firebase OK !', 'success');
-    const cfg = getFirebaseConfig();
-    updateFbStatusBar('ok', '✅ Connecté à ' + cfg.projectId + ' — temps réel actif');
-  } catch(e) {
-    showToast('❌ Test échoué : ' + e.message, 'error');
-    updateFbStatusBar('error', '❌ Erreur : ' + e.message);
-  }
-}
+function saveFirebaseConfig() { showToast("ℹ️ Config intégrée dans le code source.", "success"); }
 
-// ── Effacer la config Firebase (retour mode localStorage seul)
-function clearFirebaseConfig() {
-  if (!confirm('Effacer la config Firebase ? L\'app passera en mode hors-ligne seul.')) return;
-  localStorage.removeItem(FB_STORAGE_KEY);
-  const m = Auth.current();
-  if (m) stopFirebase(m.id);
-  _fbDb = null;
-  ['apiKey','authDomain','projectId','storageBucket','messagingSenderId','appId'].forEach(k => {
-    const el = document.getElementById('fb-' + k); if (el) el.value = '';
-  });
-  showToast('🗑️ Config Firebase effacée — mode local uniquement', 'success');
-  updateFbStatusBar('off', '⚠️ Non connecté — mode localStorage seul');
-}
+function clearFirebaseConfig() { showToast("ℹ️ Config intégrée dans le code source.", "success"); }
 
-// ── Listeners temps réel actifs (pour pouvoir les détacher)
-const _fbListeners = {};
-
-// ── Démarre les listeners onSnapshot pour un marchand
 function startFirebase() {
   const m = Auth.current();
   if (!m || !_fbDb) return;
