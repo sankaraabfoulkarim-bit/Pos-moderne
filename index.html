@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
@@ -1482,6 +1481,92 @@ table{table-layout:auto}
   text-align:center;padding:40px 24px;color:var(--text-muted);
   font-size:.88rem
 }
+
+/* ── Navigation onglets patron */
+.patron-tabs{
+  display:flex;gap:0;padding:0 24px;border-bottom:1px solid var(--border);
+  background:var(--surface);overflow-x:auto;scrollbar-width:none
+}
+.patron-tabs::-webkit-scrollbar{display:none}
+.ptab{
+  padding:12px 20px;font-size:.83rem;font-weight:600;cursor:pointer;
+  border-bottom:2px solid transparent;color:var(--text-muted);
+  white-space:nowrap;transition:all .2s;background:none;border-top:none;
+  border-left:none;border-right:none
+}
+.ptab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.ptab:hover:not(.active){color:var(--text);border-bottom-color:var(--border)}
+
+/* ── Contenu par onglet */
+.patron-tab-content{display:none;flex:1;flex-direction:column}
+.patron-tab-content.active{display:flex;flex-direction:column}
+
+/* ── Récapitulatif semaine */
+.week-recap-card{
+  background:linear-gradient(135deg,rgba(232,115,12,.12),rgba(79,195,247,.08));
+  border:1px solid var(--border-accent);border-radius:var(--rlg);
+  padding:24px;margin:16px 24px
+}
+@media(max-width:640px){.week-recap-card{margin:12px 14px;padding:16px}}
+.wrc-title{
+  font-family:var(--fh);font-weight:800;font-size:1.1rem;
+  margin-bottom:4px;display:flex;align-items:center;gap:8px
+}
+.wrc-period{font-size:.75rem;color:var(--text-muted);margin-bottom:20px}
+.wrc-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:700px){.wrc-kpis{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:400px){.wrc-kpis{grid-template-columns:1fr 1fr}}
+.wkpi{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:14px;text-align:center
+}
+.wkpi-lbl{font-size:.65rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);font-weight:700;margin-bottom:4px}
+.wkpi-val{font-family:var(--fh);font-weight:800;font-size:1.1rem;color:var(--accent)}
+.wkpi-val.success{color:var(--success)}
+.wkpi-val.danger{color:var(--danger)}
+.wkpi-val.info{color:#4FC3F7}
+
+/* ── Ventes de la semaine (liste par jour) */
+.week-day-group{border-bottom:1px solid var(--border)}
+.wdg-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 18px;background:var(--surface2);cursor:pointer;
+  font-size:.84rem;font-weight:700;user-select:none
+}
+.wdg-header:hover{background:var(--surface3,var(--surface))}
+.wdg-body{display:none}
+.wdg-body.open{display:block}
+.wdg-chevron{transition:transform .2s;display:inline-block}
+.wdg-header.open .wdg-chevron{transform:rotate(90deg)}
+
+/* ── Historique semaines */
+.hist-week-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);margin-bottom:10px;overflow:hidden;
+  transition:box-shadow .2s
+}
+.hist-week-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.15)}
+.hwc-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 18px;cursor:pointer
+}
+.hwc-period{font-weight:700;font-size:.88rem}
+.hwc-ca{font-family:var(--fh);font-weight:800;color:var(--accent);font-size:.95rem}
+.hwc-detail{
+  display:none;border-top:1px solid var(--border);
+  padding:14px 18px;font-size:.82rem
+}
+.hwc-detail.open{display:block}
+.hwc-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)}
+.hwc-row:last-child{border-bottom:none}
+
+/* ── PIN patron spécifique */
+.patron-pin-setup{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--rsm);padding:14px 16px;margin-bottom:12px;
+  font-size:.82rem
+}
+
 .patron-no-fb .pnf-ico{font-size:2.5rem;margin-bottom:12px}
 
 /* Responsive patron */
@@ -1549,107 +1634,151 @@ table{table-layout:auto}
       </div>
     </div>
 
-    <!-- KPIs -->
-    <div class="patron-kpis" id="patron-kpis">
-      <div class="pkpi success">
-        <div class="pkpi-lbl">CA Aujourd'hui</div>
-        <div class="pkpi-val" id="pkpi-ca">0</div>
-        <div class="pkpi-sub" id="pkpi-ca-sub">0 vente(s)</div>
-      </div>
-      <div class="pkpi">
-        <div class="pkpi-lbl">Vente en cours</div>
-        <div class="pkpi-val" id="pkpi-current">—</div>
-        <div class="pkpi-sub" id="pkpi-current-sub">Panier actif</div>
-      </div>
-      <div class="pkpi info">
-        <div class="pkpi-lbl">Dernière vente</div>
-        <div class="pkpi-val" id="pkpi-last">—</div>
-        <div class="pkpi-sub" id="pkpi-last-sub">Il y a —</div>
-      </div>
-      <div class="pkpi danger">
-        <div class="pkpi-lbl">Annulations</div>
-        <div class="pkpi-val" id="pkpi-cancel">0</div>
-        <div class="pkpi-sub">Aujourd'hui</div>
-      </div>
+    <!-- Onglets navigation -->
+    <div class="patron-tabs">
+      <button class="ptab active" onclick="switchPatronTab('live',this)">🔴 Temps réel</button>
+      <button class="ptab" onclick="switchPatronTab('week',this)">📅 Cette semaine</button>
+      <button class="ptab" onclick="switchPatronTab('history',this)">📚 Historique</button>
     </div>
 
-    <!-- Contenu principal -->
-    <div class="patron-main" style="flex:1">
+    <!-- ═══ ONGLET 1 : TEMPS RÉEL ═══ -->
+    <div id="ptab-live" class="patron-tab-content active">
 
-      <!-- Colonne gauche : feed des ventes -->
-      <div>
-        <!-- Graphique heures -->
-        <div class="patron-card" style="margin-bottom:14px">
-          <div class="patron-card-hdr">
-            <h4>⏰ Activité par heure — aujourd'hui</h4>
-            <span id="patron-peak-hour" style="font-size:.72rem;color:var(--text-muted)">—</span>
-          </div>
-          <div class="patron-hour-chart" id="patron-hour-chart"></div>
-          <div style="display:flex;gap:0;padding:0 18px 12px" id="patron-hour-labels"></div>
+      <!-- KPIs -->
+      <div class="patron-kpis" id="patron-kpis">
+        <div class="pkpi success">
+          <div class="pkpi-lbl">CA Aujourd'hui</div>
+          <div class="pkpi-val" id="pkpi-ca">0</div>
+          <div class="pkpi-sub" id="pkpi-ca-sub">0 vente(s)</div>
         </div>
+        <div class="pkpi">
+          <div class="pkpi-lbl">Vente en cours</div>
+          <div class="pkpi-val" id="pkpi-current">—</div>
+          <div class="pkpi-sub" id="pkpi-current-sub">Panier actif</div>
+        </div>
+        <div class="pkpi info">
+          <div class="pkpi-lbl">Dernière vente</div>
+          <div class="pkpi-val" id="pkpi-last">—</div>
+          <div class="pkpi-sub" id="pkpi-last-sub">Il y a —</div>
+        </div>
+        <div class="pkpi danger">
+          <div class="pkpi-lbl">Annulations</div>
+          <div class="pkpi-val" id="pkpi-cancel">0</div>
+          <div class="pkpi-sub">Aujourd'hui</div>
+        </div>
+      </div>
 
-        <!-- Feed ventes -->
-        <div class="patron-card">
-          <div class="patron-card-hdr">
-            <h4>🛒 Ventes du jour — temps réel</h4>
-            <span id="patron-feed-count" style="font-size:.72rem;color:var(--text-muted)">0 vente(s)</span>
+      <!-- Contenu principal -->
+      <div class="patron-main" style="flex:1">
+        <div>
+          <div class="patron-card" style="margin-bottom:14px">
+            <div class="patron-card-hdr">
+              <h4>⏰ Activité par heure — aujourd'hui</h4>
+              <span id="patron-peak-hour" style="font-size:.72rem;color:var(--text-muted)">—</span>
+            </div>
+            <div class="patron-hour-chart" id="patron-hour-chart"></div>
+            <div style="display:flex;gap:0;padding:0 18px 12px" id="patron-hour-labels"></div>
           </div>
-          <div id="patron-sales-feed" style="max-height:420px;overflow-y:auto">
-            <div style="padding:24px;text-align:center;color:var(--text-dim);font-size:.85rem">
-              ⏳ En attente de ventes...
+          <div class="patron-card">
+            <div class="patron-card-hdr">
+              <h4>🛒 Ventes du jour — temps réel</h4>
+              <span id="patron-feed-count" style="font-size:.72rem;color:var(--text-muted)">0 vente(s)</span>
+            </div>
+            <div id="patron-sales-feed" style="max-height:420px;overflow-y:auto">
+              <div style="padding:24px;text-align:center;color:var(--text-dim);font-size:.85rem">⏳ En attente de ventes...</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="patron-card patron-cashier-card" style="margin-bottom:14px">
+            <div class="patron-card-hdr">
+              <h4>👤 Caissiers actifs</h4>
+              <span id="patron-cashiers-count" style="font-size:.72rem;color:var(--text-muted)">—</span>
+            </div>
+            <div id="patron-cashiers-list">
+              <div style="padding:16px;text-align:center;color:var(--text-dim);font-size:.82rem">Aucun caissier connecté</div>
+            </div>
+          </div>
+          <div class="patron-card" style="margin-bottom:14px">
+            <div class="patron-card-hdr"><h4>🏆 Top produits aujourd'hui</h4></div>
+            <div id="patron-top-prods" style="padding:8px 0">
+              <div style="padding:16px;text-align:center;color:var(--text-dim);font-size:.82rem">Aucune vente</div>
+            </div>
+          </div>
+          <div class="patron-card">
+            <div class="patron-card-hdr">
+              <h4>⚠️ Alertes stock</h4>
+              <span id="patron-stock-badge" style="font-size:.72rem;color:var(--text-muted)">—</span>
+            </div>
+            <div id="patron-stock-alerts" style="padding:8px 0;max-height:180px;overflow-y:auto">
+              <div style="padding:16px;text-align:center;color:var(--text-dim);font-size:.82rem">Stock OK</div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Colonne droite : caissiers + top produits -->
-      <div>
-
-        <!-- Caissiers actifs -->
-        <div class="patron-card patron-cashier-card" style="margin-bottom:14px">
-          <div class="patron-card-hdr">
-            <h4>👤 Caissiers actifs</h4>
-            <span id="patron-cashiers-count" style="font-size:.72rem;color:var(--text-muted)">—</span>
-          </div>
-          <div id="patron-cashiers-list">
-            <div style="padding:16px;text-align:center;color:var(--text-dim);font-size:.82rem">Aucun caissier connecté</div>
-          </div>
-        </div>
-
-        <!-- Top produits -->
-        <div class="patron-card" style="margin-bottom:14px">
-          <div class="patron-card-hdr">
-            <h4>🏆 Top produits aujourd'hui</h4>
-          </div>
-          <div id="patron-top-prods" style="padding:8px 0">
-            <div style="padding:16px;text-align:center;color:var(--text-dim);font-size:.82rem">Aucune vente</div>
-          </div>
-        </div>
-
-        <!-- Alertes stock -->
-        <div class="patron-card">
-          <div class="patron-card-hdr">
-            <h4>⚠️ Alertes stock</h4>
-            <span id="patron-stock-badge" style="font-size:.72rem;color:var(--text-muted)">—</span>
-          </div>
-          <div id="patron-stock-alerts" style="padding:8px 0;max-height:180px;overflow-y:auto">
-            <div style="padding:16px;text-align:center;color:var(--text-dim);font-size:.82rem">Stock OK</div>
-          </div>
-        </div>
-
+      <!-- Barre bas -->
+      <div id="patron-cashier-bar" style="background:var(--surface);border-top:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;gap:16px;font-size:.78rem;flex-wrap:wrap">
+        <span style="color:var(--text-muted)">Caissier actif :</span>
+        <span id="patron-active-cashier" style="font-weight:700;color:var(--accent)">—</span>
+        <span style="color:var(--text-dim)">·</span>
+        <span style="color:var(--text-muted)">Panier :</span>
+        <span id="patron-cart-live" style="font-weight:700">0 article(s) — 0 FCFA</span>
+        <span style="color:var(--text-dim)">·</span>
+        <span id="patron-clock" style="color:var(--text-muted);font-family:var(--fh)">—</span>
       </div>
-    </div>
+    </div><!-- /ptab-live -->
 
-    <!-- Barre du bas : résumé caissier -->
-    <div id="patron-cashier-bar" style="background:var(--surface);border-top:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;gap:16px;font-size:.78rem;flex-wrap:wrap">
-      <span style="color:var(--text-muted)">Caissier actif :</span>
-      <span id="patron-active-cashier" style="font-weight:700;color:var(--accent)">—</span>
-      <span style="color:var(--text-dim)">·</span>
-      <span style="color:var(--text-muted)">Panier :</span>
-      <span id="patron-cart-live" style="font-weight:700">0 article(s) — 0 FCFA</span>
-      <span style="color:var(--text-dim)">·</span>
-      <span id="patron-clock" style="color:var(--text-muted);font-family:var(--fh)">—</span>
-    </div>
+    <!-- ═══ ONGLET 2 : SEMAINE EN COURS ═══ -->
+    <div id="ptab-week" class="patron-tab-content" style="overflow-y:auto">
+      <!-- Récap semaine -->
+      <div class="week-recap-card" id="week-recap-card">
+        <div class="wrc-title">📅 Semaine en cours <span id="week-recap-save-btn" style="font-size:.72rem;background:rgba(46,204,113,.15);color:var(--success);padding:3px 10px;border-radius:100px;cursor:pointer;border:1px solid rgba(46,204,113,.3)" onclick="saveWeekRecap()">💾 Sauvegarder</span></div>
+        <div class="wrc-period" id="week-period-label">Chargement...</div>
+        <div class="wrc-kpis">
+          <div class="wkpi">
+            <div class="wkpi-lbl">Chiffre d&#39;affaires</div>
+            <div class="wkpi-val success" id="wkpi-ca">0 FCFA</div>
+          </div>
+          <div class="wkpi">
+            <div class="wkpi-lbl">Marge bénéficiaire</div>
+            <div class="wkpi-val" id="wkpi-marge">0 FCFA</div>
+            <div style="font-size:.65rem;color:var(--text-dim);margin-top:2px" id="wkpi-marge-pct">0%</div>
+          </div>
+          <div class="wkpi">
+            <div class="wkpi-lbl">Dépenses</div>
+            <div class="wkpi-val danger" id="wkpi-depenses">0 FCFA</div>
+          </div>
+          <div class="wkpi">
+            <div class="wkpi-lbl">Bénéfice net</div>
+            <div class="wkpi-val info" id="wkpi-benefice">0 FCFA</div>
+          </div>
+        </div>
+        <!-- Barre synthèse -->
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;gap:20px;flex-wrap:wrap;font-size:.78rem">
+          <span>🛒 <strong id="wkpi-nb-ventes">0</strong> ventes</span>
+          <span>👥 <strong id="wkpi-nb-clients">0</strong> clients servis</span>
+          <span>📦 <strong id="wkpi-top-prod">—</strong> (produit #1)</span>
+          <span>📅 Meilleur jour : <strong id="wkpi-best-day">—</strong></span>
+        </div>
+      </div>
+
+      <!-- Ventes par jour (accordion) -->
+      <div style="padding:0 24px 16px" id="week-days-container">
+        <div style="padding:24px;text-align:center;color:var(--text-dim);font-size:.85rem">⏳ Chargement des ventes...</div>
+      </div>
+    </div><!-- /ptab-week -->
+
+    <!-- ═══ ONGLET 3 : HISTORIQUE ═══ -->
+    <div id="ptab-history" class="patron-tab-content" style="overflow-y:auto;padding:16px 24px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h3 style="margin:0;font-size:1rem">📚 Récapitulatifs hebdomadaires</h3>
+        <span style="font-size:.75rem;color:var(--text-muted)" id="history-count">—</span>
+      </div>
+      <div id="patron-history-list">
+        <div style="padding:32px;text-align:center;color:var(--text-dim);font-size:.85rem">Aucun récapitulatif sauvegardé.<br><small>Utilisez 💾 Sauvegarder dans l'onglet Semaine.</small></div>
+      </div>
+    </div><!-- /ptab-history -->
 
   </div><!-- /patron-dashboard -->
 </div><!-- /page-patron -->
@@ -1990,7 +2119,7 @@ window.addEventListener('load', checkApiStatus);
         <div id="cs-motif-bars"></div>
       </div>
       <div class="kpi-grid">
-        <div class="kpi acc"><div class="kpi-lbl">Chiffre d'affaires</div><div class="kpi-val" id="k-ca">0</div><div class="kpi-sub">Total des ventes</div></div>
+        <div class="kpi acc"><div class="kpi-lbl">Chiffre d&#39;affaires</div><div class="kpi-val" id="k-ca">0</div><div class="kpi-sub">Total des ventes</div></div>
         <div class="kpi"><div class="kpi-lbl">Ventes</div><div class="kpi-val" id="k-v">0</div><div class="kpi-sub">Transactions</div></div>
         <div class="kpi"><div class="kpi-lbl">Produits</div><div class="kpi-val" id="k-p">0</div><div class="kpi-sub">En catalogue</div></div>
         <div class="kpi"><div class="kpi-lbl">Clients</div><div class="kpi-val" id="k-c">0</div><div class="kpi-sub">Enregistrés</div></div>
@@ -2001,7 +2130,7 @@ window.addEventListener('load', checkApiStatus);
 
         <!-- Carte 1 : CA journalier / hebdo / mensuel -->
         <div class="pcard" id="pcard-ca">
-          <div class="pcard-lbl">💰 Chiffre d'affaires</div>
+          <div class="pcard-lbl">💰 Chiffre d&#39;affaires</div>
           <div class="pcard-tabs">
             <button class="pcard-tab active" id="catab-j" onclick="setPeriodTab('ca','j')">Jour</button>
             <button class="pcard-tab" id="catab-s" onclick="setPeriodTab('ca','s')">Semaine</button>
@@ -2328,6 +2457,19 @@ window.addEventListener('load', checkApiStatus);
           <div class="fg"><label>Nouveau PIN (4 chiffres)</label><input type="password" id="s-pin-new" maxlength="4" placeholder="••••" inputmode="numeric"/></div>
           <div class="fg"><label>Confirmer PIN</label><input type="password" id="s-pin-conf" maxlength="4" placeholder="••••" inputmode="numeric"/></div>
           <button class="btn-p" onclick="savePin()">Enregistrer le PIN</button>
+        </div>
+        <div class="sc">
+          <h4>👁️ PIN Surveillance Patron</h4>
+          <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:16px">PIN <strong>distinct</strong> pour accéder au tableau de surveillance patron (ventes semaine, récapitulatifs). Partageable avec le patron sans donner accès à l'app.</p>
+          <div class="patron-pin-setup" id="patron-pin-current-status">
+            <span style="color:var(--text-dim)">⚙️ Aucun PIN patron configuré — le PIN propriétaire est utilisé par défaut.</span>
+          </div>
+          <div class="fg"><label>PIN Patron (4 chiffres)</label><input type="password" id="s-patron-pin-new" maxlength="4" placeholder="••••" inputmode="numeric"/></div>
+          <div class="fg"><label>Confirmer PIN Patron</label><input type="password" id="s-patron-pin-conf" maxlength="4" placeholder="••••" inputmode="numeric"/></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn-p" onclick="savePatronPin()">💾 Enregistrer</button>
+            <button class="btn-g sm" onclick="clearPatronPin()">🗑️ Supprimer</button>
+          </div>
         </div>
         <div class="sc">
           <h4>🔐 Licence & Abonnement</h4>
@@ -7274,12 +7416,13 @@ const FB_STORAGE_KEY = 'ds_firebase_config';
 
 // ── Config Firebase intégrée directement dans le code
 const FB_DEFAULT_CONFIG = {
-  apiKey: "AIzaSyAWOjmv9X_3INB5vonLkkzEccAL7FhxRo4",
-  authDomain: "posmod-443b3.firebaseapp.com",
-  projectId: "posmod-443b3",
-  storageBucket: "posmod-443b3.firebasestorage.app",
-  messagingSenderId: "180500053703",
-  appId: "1:180500053703:web:b083aee3c283767eedc8e2"
+  apiKey: "AIzaSyBrQy4VuncezPeZ6vPTaiTmTWxqTVQm1ZI",
+  authDomain: "commerce-3ae6e.firebaseapp.com",
+  databaseURL: "https://commerce-3ae6e-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "commerce-3ae6e",
+  storageBucket: "commerce-3ae6e.firebasestorage.app",
+  messagingSenderId: "946906333487",
+  appId: "1:946906333487:web:7a3aee75efeff49db921da"
 };
 
 function getFirebaseConfig() {
@@ -8672,7 +8815,7 @@ function exportAnalyticsPDF() {
   <p>Période : ${cutoff.toLocaleDateString('fr-FR')} → ${now.toLocaleDateString('fr-FR')} (${days} jours)</p>
   <p>Généré le : ${now.toLocaleString('fr-FR')}</p>
   <table><tr><th>Indicateur</th><th>Valeur</th></tr>
-  <tr><td>Chiffre d'affaires</td><td class="total">${fmtMoney(ca, dev)}</td></tr>
+  <tr><td>Chiffre d&#39;affaires</td><td class="total">${fmtMoney(ca, dev)}</td></tr>
   <tr><td>Nombre de ventes</td><td>${period.length}</td></tr>
   <tr><td>Panier moyen</td><td>${fmtMoney(avg, dev)}</td></tr>
   </table>
@@ -9320,7 +9463,7 @@ const WAReport = {
       `📊 *RAPPORT JOURNALIER — ${today}*`,
       `🏪 *${m.nom_commerce}*`,
       ``,
-      `💰 *Chiffre d'affaires :* ${fmtMoney(ca, dev)}`,
+      `💰 *Chiffre d&#39;affaires :* ${fmtMoney(ca, dev)}`,
       `🧾 *Ventes :* ${sales.length} transaction(s)`,
       `🚫 *Annulations :* ${cancelled}`,
       sales.length ? `💵 *Panier moyen :* ${fmtMoney(Math.round(ca / sales.length), dev)}` : '',
@@ -10315,6 +10458,422 @@ setInterval(() => {
     _publishCartHook();
   }
 }, 5000);
+
+
+// ============================================================
+// 📅 SEMAINE EN COURS + HISTORIQUE + PIN PATRON SPÉCIFIQUE
+// ============================================================
+
+// ── Helpers dates semaine ────────────────────────────────────
+function _getWeekBounds(date) {
+  const d = date ? new Date(date) : new Date();
+  const day = d.getDay(); // 0=dim,1=lun,...
+  const diffLun = (day === 0) ? -6 : 1 - day;
+  const lun = new Date(d); lun.setDate(d.getDate() + diffLun);
+  lun.setHours(0,0,0,0);
+  const dim = new Date(lun); dim.setDate(lun.getDate() + 6);
+  dim.setHours(23,59,59,999);
+  return { start: lun, end: dim };
+}
+
+function _fmtDate(d) {
+  return new Date(d).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+function _fmtDateShort(d) {
+  return new Date(d).toLocaleDateString('fr-FR', { weekday:'short', day:'2-digit', month:'short' });
+}
+
+function _weekKey(date) {
+  const b = _getWeekBounds(date);
+  return b.start.toISOString().substring(0,10);
+}
+
+// ── Navigation onglets ────────────────────────────────────────
+function switchPatronTab(tab, btn) {
+  document.querySelectorAll('.ptab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.patron-tab-content').forEach(c => c.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const el = document.getElementById('ptab-' + tab);
+  if (el) el.classList.add('active');
+  if (tab === 'week')    _renderWeekTab();
+  if (tab === 'history') _renderHistoryTab();
+}
+
+// ── Récupérer les données de la semaine ──────────────────────
+function _getWeekData(weekStart) {
+  const bounds = _getWeekBounds(weekStart || new Date());
+  const mid    = _patronMid;
+  const dev    = typeof getConfig === 'function' ? (getConfig()?.devise || 'FCFA') : 'FCFA';
+
+  // Filtrer les ventes de la semaine
+  let sales = [];
+  if (typeof DB !== 'undefined') {
+    sales = (DB.get('sales') || []).filter(s => {
+      if (mid && s.merchant_id !== mid) return false;
+      if (!s.created_at) return false;
+      const t = new Date(s.created_at);
+      return t >= bounds.start && t <= bounds.end && s.statut !== 'cancelled';
+    });
+  }
+
+  // Dépenses de la semaine
+  let depenses = [];
+  if (typeof DB !== 'undefined') {
+    depenses = (DB.get('expenses') || DB.get('depenses') || []).filter(e => {
+      if (mid && e.merchant_id !== mid) return false;
+      if (!e.date && !e.created_at) return false;
+      const t = new Date(e.date || e.created_at);
+      return t >= bounds.start && t <= bounds.end;
+    });
+  }
+
+  const totalCA       = sales.reduce((s, v) => s + (parseFloat(v.total) || 0), 0);
+  const totalCost     = sales.reduce((s, v) => s + ((v.items||[]).reduce((a,i) => a + ((parseFloat(i.prix_achat)||0)*(parseInt(i.qty)||1)),0)), 0);
+  const totalDepenses = depenses.reduce((s, e) => s + (parseFloat(e.montant) || 0), 0);
+  const marge         = totalCA - totalCost;
+  const margePct      = totalCA > 0 ? Math.round((marge / totalCA) * 100) : 0;
+  const beneficeNet   = marge - totalDepenses;
+
+  // Grouper par jour
+  const dayMap = {};
+  const DAYS   = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(bounds.start); d.setDate(bounds.start.getDate() + i);
+    const key = d.toDateString();
+    dayMap[key] = { date: new Date(d), sales: [], total: 0, name: DAYS[d.getDay()] };
+  }
+  sales.forEach(s => {
+    const key = new Date(s.created_at).toDateString();
+    if (dayMap[key]) {
+      dayMap[key].sales.push(s);
+      dayMap[key].total += parseFloat(s.total) || 0;
+    }
+  });
+
+  // Top produit
+  const prodMap = {};
+  sales.forEach(s => (s.items||[]).forEach(i => {
+    if (!i.nom) return;
+    prodMap[i.nom] = (prodMap[i.nom]||0) + (parseInt(i.qty)||1);
+  }));
+  const topProd = Object.entries(prodMap).sort((a,b)=>b[1]-a[1])[0]?.[0] || '—';
+
+  // Meilleur jour
+  const bestDay = Object.values(dayMap).sort((a,b) => b.total - a.total)[0];
+
+  // Clients uniques
+  const clients = new Set(sales.filter(s=>s.client_id||s.client_nom).map(s=>s.client_id||s.client_nom));
+
+  return { sales, depenses, totalCA, marge, margePct, totalDepenses, beneficeNet,
+    dayMap: Object.values(dayMap), topProd, bestDay, dev,
+    bounds, nbVentes: sales.length, nbClients: clients.size };
+}
+
+// ── Rendu onglet Semaine ──────────────────────────────────────
+function _renderWeekTab() {
+  const data = _getWeekData();
+  const dev  = data.dev;
+
+  document.getElementById('week-period-label').textContent =
+    'Du ' + _fmtDate(data.bounds.start) + ' au ' + _fmtDate(data.bounds.end);
+
+  document.getElementById('wkpi-ca').textContent        = fmtMoney(data.totalCA, dev);
+  document.getElementById('wkpi-marge').textContent     = fmtMoney(data.marge, dev);
+  document.getElementById('wkpi-marge-pct').textContent = data.margePct + '% de marge';
+  document.getElementById('wkpi-depenses').textContent  = fmtMoney(data.totalDepenses, dev);
+  document.getElementById('wkpi-benefice').textContent  = fmtMoney(data.beneficeNet, dev);
+  document.getElementById('wkpi-nb-ventes').textContent  = data.nbVentes;
+  document.getElementById('wkpi-nb-clients').textContent = data.nbClients;
+  document.getElementById('wkpi-top-prod').textContent   = data.topProd;
+  document.getElementById('wkpi-best-day').textContent   =
+    data.bestDay ? data.bestDay.name + ' (' + fmtMoney(data.bestDay.total, dev) + ')' : '—';
+
+  const benEl = document.getElementById('wkpi-benefice');
+  benEl.style.color = data.beneficeNet >= 0 ? 'var(--success)' : 'var(--danger)';
+
+  const cont = document.getElementById('week-days-container');
+  if (data.nbVentes === 0) {
+    cont.innerHTML = '<div style="padding:32px;text-align:center;color:var(--text-dim);font-size:.85rem">Aucune vente cette semaine.</div>';
+    return;
+  }
+
+  var html = '';
+  data.dayMap.forEach(function(day, idx) {
+    var hasData = day.sales.length > 0;
+    var dayTotal = fmtMoney(day.total, dev);
+    var isToday  = day.date.toDateString() === new Date().toDateString();
+    var hdrClass = 'wdg-header' + (isToday ? ' open' : '');
+    var bodyClass = 'wdg-body' + (isToday ? ' open' : '');
+
+    html += '<div class="week-day-group">';
+    html += '<div class="' + hdrClass + '" onclick="_toggleWeekDay(this,&quot;wday-' + idx + '&quot;)">';
+    html += '<span>' + (isToday ? '📍 ' : '') + day.name + ' — ' + _fmtDateShort(day.date) + '</span>';
+    html += '<span style="display:flex;align-items:center;gap:10px">';
+    html += '<span style="font-family:var(--fh);font-weight:800;color:' + (hasData ? 'var(--accent)' : 'var(--text-dim)') + '">';
+    html += (hasData ? dayTotal : '—') + '</span>';
+    if (hasData) html += '<span style="font-size:.72rem;color:var(--text-muted)">' + day.sales.length + ' vente(s)</span>';
+    html += '<span class="wdg-chevron">▶</span></span></div>';
+    html += '<div id="wday-' + idx + '" class="' + bodyClass + '">';
+    if (hasData) {
+      day.sales.forEach(function(s) {
+        var items = (s.items||[]).map(function(i){ return i.nom + (i.qty > 1 ? ' ×' + i.qty : ''); }).join(', ');
+        var t = new Date(s.created_at).toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+        var cashierBadge = s.cashier_nom ? '<span class="psr-cashier">' + s.cashier_nom + '</span>' : '';
+        html += '<div class="patron-sale-row">';
+        html += '<div class="psr-left">';
+        html += '<div class="psr-name">' + (s.client_nom || 'Client anonyme') + cashierBadge + '</div>';
+        html += '<div class="psr-meta"><span>' + t + '</span></div>';
+        if (items) html += '<div class="psr-items">' + items + '</div>';
+        html += '</div>';
+        html += '<div class="psr-amount">' + fmtMoney(s.total || 0, dev) + '</div>';
+        html += '</div>';
+      });
+    } else {
+      html += '<div style="padding:12px 18px;color:var(--text-dim);font-size:.82rem">Aucune vente ce jour.</div>';
+    }
+    html += '</div></div>';
+  });
+  cont.innerHTML = html;
+}
+
+function _toggleWeekDay(hdr, bodyId) {
+  var body = document.getElementById(bodyId);
+  if (!body) return;
+  var open = body.classList.toggle('open');
+  hdr.classList.toggle('open', open);
+}
+
+// ── Sauvegarder le récapitulatif semaine ─────────────────────
+async function saveWeekRecap() {
+  const data    = _getWeekData();
+  const weekKey = _weekKey();
+  const recap   = {
+    id: weekKey,
+    period_start : data.bounds.start.toISOString(),
+    period_end   : data.bounds.end.toISOString(),
+    label        : 'Semaine du ' + _fmtDate(data.bounds.start) + ' au ' + _fmtDate(data.bounds.end),
+    ca           : data.totalCA,
+    marge        : data.marge,
+    marge_pct    : data.margePct,
+    depenses     : data.totalDepenses,
+    benefice_net : data.beneficeNet,
+    nb_ventes    : data.nbVentes,
+    nb_clients   : data.nbClients,
+    top_produit  : data.topProd,
+    best_day     : data.bestDay?.name || '—',
+    devise       : data.dev,
+    saved_at     : new Date().toISOString()
+  };
+
+  // Sauvegarder en localStorage
+  const key     = 'ds_week_recaps_' + (_patronMid || 'local');
+  const recaps  = JSON.parse(localStorage.getItem(key) || '[]');
+  const existIdx = recaps.findIndex(r => r.id === weekKey);
+  if (existIdx >= 0) recaps[existIdx] = recap; else recaps.unshift(recap);
+  localStorage.setItem(key, JSON.stringify(recaps));
+
+  // Sauvegarder dans Firebase si disponible
+  if (_fbDb && _patronMid) {
+    try {
+      await _fbDb.collection('merchants').doc(_patronMid)
+        .collection('week_recaps').doc(weekKey).set(recap);
+    } catch(e) { console.warn('[Patron] Erreur save recap Firebase:', e.message); }
+  }
+
+  showToast('✅ Récapitulatif semaine sauvegardé !', 'success');
+  // Actualiser le bouton
+  const btn = document.getElementById('week-recap-save-btn');
+  if (btn) { btn.textContent = '✅ Sauvegardé'; setTimeout(()=>{ btn.textContent='💾 Sauvegarder'; },2000); }
+}
+
+// ── Charger et afficher l'historique ─────────────────────────
+async function _renderHistoryTab() {
+  var el  = document.getElementById('patron-history-list');
+  var cnt = document.getElementById('history-count');
+  el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-dim)">⏳ Chargement...</div>';
+
+  var recaps = [];
+
+  if (_fbDb && _patronMid) {
+    try {
+      var snap = await _fbDb.collection('merchants').doc(_patronMid)
+        .collection('week_recaps').orderBy('period_start', 'desc').get();
+      recaps = snap.docs.map(function(d) { return d.data(); });
+    } catch(e) { console.warn('[Patron] Erreur load recaps:', e.message); }
+  }
+
+  if (recaps.length === 0) {
+    var key = 'ds_week_recaps_' + (_patronMid || 'local');
+    recaps = JSON.parse(localStorage.getItem(key) || '[]');
+  }
+
+  cnt.textContent = recaps.length + ' semaine(s) sauvegardée(s)';
+
+  if (recaps.length === 0) {
+    el.innerHTML = '<div style="padding:40px 24px;text-align:center;color:var(--text-dim);font-size:.85rem">Aucun r&eacute;capitulatif sauvegard&eacute;.<br><small>Allez dans l&#39;onglet &quot;Cette semaine&quot; et cliquez 💾 Sauvegarder.</small></div>';
+    return;
+  }
+
+  var html = '';
+  recaps.forEach(function(r, i) {
+    var dev = r.devise || 'FCFA';
+    var benColor   = (r.benefice_net || 0) >= 0 ? 'var(--success)' : 'var(--danger)';
+    var margeColor = (r.marge_pct || 0) >= 20 ? 'var(--success)' : (r.marge_pct || 0) >= 10 ? 'var(--warning)' : 'var(--danger)';
+    var savedDate  = r.saved_at ? new Date(r.saved_at).toLocaleDateString('fr-FR') : '—';
+
+    html += '<div class="hist-week-card">';
+    html += '<div class="hwc-header" onclick="_toggleHistCard(this,&quot;hwcd-' + i + '&quot;)">';
+    html += '<div>';
+    html += '<div class="hwc-period">' + (r.label || 'Semaine') + '</div>';
+    html += '<div style="font-size:.7rem;color:var(--text-muted);margin-top:2px">' + (r.nb_ventes||0) + ' ventes · ' + (r.nb_clients||0) + ' clients</div>';
+    html += '</div>';
+    html += '<div style="text-align:right">';
+    html += '<div class="hwc-ca">' + fmtMoney(r.ca || 0, dev) + '</div>';
+    html += '<div style="font-size:.7rem;color:' + benColor + '">Net : ' + fmtMoney(r.benefice_net || 0, dev) + '</div>';
+    html += '</div></div>';
+
+    html += '<div id="hwcd-' + i + '" class="hwc-detail">';
+    html += '<div class="hwc-row"><span>💰 Chiffre d&#39;affaires</span><strong>' + fmtMoney(r.ca||0, dev) + '</strong></div>';
+    html += '<div class="hwc-row"><span>📈 Marge brute</span><strong style="color:' + margeColor + '">' + fmtMoney(r.marge||0, dev) + ' (' + (r.marge_pct||0) + '%)</strong></div>';
+    html += '<div class="hwc-row"><span>💸 Dépenses</span><strong style="color:var(--danger)">' + fmtMoney(r.depenses||0, dev) + '</strong></div>';
+    html += '<div class="hwc-row"><span>✅ Bénéfice net</span><strong style="color:' + benColor + '">' + fmtMoney(r.benefice_net||0, dev) + '</strong></div>';
+    html += '<div class="hwc-row"><span>🏆 Produit #1</span><span>' + (r.top_produit||'—') + '</span></div>';
+    html += '<div class="hwc-row"><span>📅 Meilleur jour</span><span>' + (r.best_day||'—') + '</span></div>';
+    html += '<div class="hwc-row" style="border:none;color:var(--text-dim);font-size:.7rem">';
+    html += '<span>Sauvegardé le ' + savedDate + '</span>';
+    html += '<button onclick="deleteWeekRecap(&quot;' + r.id + '&quot;)" style="background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.2);color:var(--danger);padding:3px 10px;border-radius:var(--rsm);font-size:.7rem;cursor:pointer">🗑️ Supprimer</button>';
+    html += '</div></div></div>';
+  });
+  el.innerHTML = html;
+}
+
+function _toggleHistCard(hdr, bodyId) {
+  const body = document.getElementById(bodyId);
+  if (!body) return;
+  body.classList.toggle('open');
+}
+
+async function deleteWeekRecap(weekId) {
+  if (!confirm('Supprimer ce récapitulatif ?')) return;
+  const key    = 'ds_week_recaps_' + (_patronMid || 'local');
+  const recaps = JSON.parse(localStorage.getItem(key) || '[]').filter(r => r.id !== weekId);
+  localStorage.setItem(key, JSON.stringify(recaps));
+  if (_fbDb && _patronMid) {
+    try { await _fbDb.collection('merchants').doc(_patronMid).collection('week_recaps').doc(weekId).delete(); }
+    catch(e) {}
+  }
+  showToast('🗑️ Récapitulatif supprimé', 'success');
+  _renderHistoryTab();
+}
+
+// ── Sauvegarde automatique dimanche à 23h ────────────────────
+function _scheduleWeekAutoSave() {
+  const check = () => {
+    const now = new Date();
+    if (now.getDay() === 0 && now.getHours() === 23 && now.getMinutes() === 0) {
+      saveWeekRecap();
+    }
+  };
+  setInterval(check, 60000); // vérifier chaque minute
+}
+
+// ── PIN Patron spécifique ────────────────────────────────────
+function savePatronPin() {
+  const newPin  = document.getElementById('s-patron-pin-new')?.value.trim();
+  const confPin = document.getElementById('s-patron-pin-conf')?.value.trim();
+  if (!newPin || newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
+    showToast('⚠️ PIN doit être 4 chiffres', 'error'); return;
+  }
+  if (newPin !== confPin) {
+    showToast('⚠️ Les deux PIN ne correspondent pas', 'error'); return;
+  }
+  const m = Auth.current();
+  if (!m) return;
+  const hash = DB._hash(newPin);
+  // Sauvegarder dans les configs
+  const configs  = DB.get('configs');
+  const cfgIdx   = configs.findIndex(c => c.merchant_id === m.id);
+  if (cfgIdx >= 0) {
+    configs[cfgIdx].patron_pin_hash = hash;
+    DB.set('configs', configs);
+  } else {
+    DB.set('configs', [...configs, { merchant_id: m.id, patron_pin_hash: hash }]);
+  }
+  // Sync Firebase
+  if (_fbDb) {
+    _fbDb.collection('merchants').doc(m.id).collection('configs').doc('main')
+      .set({ patron_pin_hash: hash }, { merge: true }).catch(()=>{});
+  }
+  // Vider les champs
+  document.getElementById('s-patron-pin-new').value  = '';
+  document.getElementById('s-patron-pin-conf').value = '';
+  const status = document.getElementById('patron-pin-current-status');
+  if (status) status.innerHTML = '<span style="color:var(--success)">✅ PIN Patron configuré et actif.</span>';
+  showToast('✅ PIN Surveillance Patron enregistré !', 'success');
+}
+
+function clearPatronPin() {
+  if (!confirm('Supprimer le PIN Patron ? Le PIN propriétaire sera utilisé à la place.')) return;
+  const m = Auth.current();
+  if (!m) return;
+  const configs = DB.get('configs');
+  const cfgIdx  = configs.findIndex(c => c.merchant_id === m.id);
+  if (cfgIdx >= 0) {
+    delete configs[cfgIdx].patron_pin_hash;
+    DB.set('configs', configs);
+  }
+  if (_fbDb) {
+    _fbDb.collection('merchants').doc(m.id).collection('configs').doc('main')
+      .update({ patron_pin_hash: firebase.firestore.FieldValue.delete() }).catch(()=>{});
+  }
+  const status = document.getElementById('patron-pin-current-status');
+  if (status) status.innerHTML = '<span style="color:var(--text-dim)">⚙️ Aucun PIN patron — PIN propriétaire utilisé par défaut.</span>';
+  showToast('🗑️ PIN Patron supprimé', 'success');
+}
+
+// ── Mettre à jour la validation PIN pour utiliser patron_pin_hash en priorité
+async function _validatePatronPin() {
+  const errEl = document.getElementById('patron-pin-err');
+  errEl.textContent = '';
+  let pinHash = null;
+  const m = Auth.current();
+
+  if (m && m.id === _patronMid) {
+    const cfg = typeof getConfig === 'function' ? getConfig() : null;
+    // Priorité : PIN patron spécifique > PIN propriétaire
+    pinHash = cfg?.patron_pin_hash || cfg?.owner_pin_hash || null;
+  } else if (_fbDb && _patronMid) {
+    try {
+      const snap = await _fbDb.collection('merchants').doc(_patronMid)
+        .collection('configs').get();
+      const configs = snap.docs.map(d => d.data());
+      const cfg = configs.find(c => c.patron_pin_hash || c.owner_pin_hash);
+      pinHash = cfg?.patron_pin_hash || cfg?.owner_pin_hash || null;
+    } catch(e) { console.warn('[Patron] Config:', e.message); }
+  }
+
+  const inputHash = typeof DB !== 'undefined' ? DB._hash(_patronPin) : _simpleHash(_patronPin);
+  const valid = pinHash
+    ? (inputHash === pinHash)
+    : (_patronPin === '0000' || _patronPin === '1234');
+
+  if (valid) {
+    _startPatronDashboard();
+  } else {
+    errEl.textContent = '❌ PIN incorrect';
+    _patronPin = '';
+    _refreshPatronPinDots();
+    setTimeout(() => { errEl.textContent = ''; }, 2000);
+  }
+}
+
+// ── Démarrer la surveillance auto-save et activer l'onglet semaine par défaut
+const _origStartPatronDashboard = _startPatronDashboard;
+_startPatronDashboard = function() {
+  _origStartPatronDashboard();
+  _scheduleWeekAutoSave();
+};
 
 </script>
 
