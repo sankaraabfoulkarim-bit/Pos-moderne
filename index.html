@@ -1279,8 +1279,225 @@ table{table-layout:auto}
 .s-ok{background:rgba(46,204,113,.12);color:var(--success)}
 .s-low{background:rgba(243,156,18,.12);color:var(--warning)}
 .s-zero{background:rgba(231,76,60,.12);color:var(--danger)}
+
+/* ---- AUDIT STOCK ADMIN ---- */
+.as-mv-item{display:flex;align-items:flex-start;gap:12px;padding:11px 16px;border-bottom:1px solid var(--border);font-size:.82rem;transition:background var(--tr)}
+.as-mv-item:hover{background:var(--surface2)}
+.as-mv-item:last-child{border-bottom:none}
+.as-mv-icon{font-size:1.2rem;flex-shrink:0;width:26px;text-align:center;margin-top:1px}
+.as-mv-body{flex:1;min-width:0}
+.as-mv-title{font-weight:700;margin-bottom:2px}
+.as-mv-meta{font-size:.72rem;color:var(--text-muted);display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2px}
+.as-mv-motif{font-size:.73rem;color:var(--text-dim);font-style:italic}
+.as-mv-right{flex-shrink:0;text-align:right}
+.as-mv-delta{font-family:var(--fh);font-size:1.1rem;font-weight:800}
+.as-mv-stocks{font-size:.7rem;color:var(--text-dim)}
+/* badge rôle auteur */
+.role-badge{font-size:.62rem;padding:2px 7px;border-radius:100px;font-weight:700}
+.role-proprio{background:rgba(232,115,12,.15);color:var(--accent)}
+.role-gerant{background:rgba(79,195,247,.15);color:#4FC3F7}
+.role-caissier{background:rgba(46,204,113,.15);color:var(--success)}
+/* Écart stock */
+.ecart-ok{color:var(--success)}
+.ecart-warn{color:var(--warning);font-weight:700}
+.ecart-danger{color:var(--danger);font-weight:700}
+/* Inventaire physique */
+.inv-row{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border)}
+.inv-row:last-child{border-bottom:none}
+.inv-row:hover{background:var(--surface2)}
+.inv-input{width:70px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:6px 10px;font-size:.9rem;font-weight:700;text-align:center}
+.inv-input:focus{border-color:var(--accent);outline:none}
+.inv-ecart-pos{color:var(--danger);font-weight:700}
+.inv-ecart-neg{color:var(--success);font-weight:700}
+.inv-ecart-zero{color:var(--text-muted)}
+.vj-day-card{background:var(--surface);border:2px solid var(--border);border-radius:var(--r);padding:12px 8px;text-align:center;cursor:pointer;transition:all var(--tr);position:relative}
+.vj-day-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow-a)}
+.vj-day-card.today{border-color:var(--accent);background:rgba(232,115,12,.06)}
+.vj-day-card.selected{border-color:var(--accent);background:rgba(232,115,12,.12);box-shadow:var(--shadow-a)}
+.vj-day-card.no-data{opacity:.55}
+.vj-day-name{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:3px}
+.vj-day-date{font-size:.7rem;color:var(--text-dim);margin-bottom:8px}
+.vj-day-ca{font-family:var(--fh);font-size:.88rem;font-weight:800;color:var(--accent);margin-bottom:2px}
+.vj-day-marge{font-size:.72rem;font-weight:700;margin-bottom:2px}
+.vj-day-count{font-size:.65rem;color:var(--text-dim)}
+.vj-day-card .vj-best-badge{position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:.55rem;font-weight:800;padding:2px 7px;border-radius:100px;white-space:nowrap}
+/* Marge couleur */
+.marge-pos{color:var(--success)}
+.marge-neg{color:var(--danger)}
+.marge-zero{color:var(--text-muted)}
+/* Produit image dans POS */
+.ppc-img{width:100%;height:72px;object-fit:cover;border-radius:var(--rsm) var(--rsm) 0 0;display:block}
+/* Produit image dans tableau */
+.prod-thumb{width:36px;height:36px;object-fit:cover;border-radius:var(--rsm);flex-shrink:0;border:1px solid var(--border)}
+/* Aperçu marge modal produit */
+#prod-marge-preview{margin-top:10px;transition:all .2s}
+@media(max-width:640px){
+  #vj-days-grid{grid-template-columns:repeat(4,1fr)}
+  .vj-day-name{font-size:.58rem}
+}
+.gs-prod-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);transition:background var(--tr)}
+.gs-prod-row:hover{background:var(--surface2)}
+.gs-prod-row:last-child{border-bottom:none}
+.gs-prod-icon{font-size:1.5rem;flex-shrink:0;width:36px;text-align:center}
+.gs-prod-info{flex:1;min-width:0}
+.gs-prod-name{font-weight:700;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gs-prod-cat{font-size:.72rem;color:var(--text-muted)}
+.gs-prod-stock{font-family:var(--fh);font-size:1.4rem;font-weight:800;flex-shrink:0;min-width:52px;text-align:right}
+.gs-history-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);font-size:.82rem}
+.gs-history-item:last-child{border-bottom:none}
+.gs-history-icon{font-size:1.1rem;flex-shrink:0}
+.gs-history-body{flex:1;min-width:0}
+.gs-history-title{font-weight:600}
+.gs-history-sub{font-size:.72rem;color:var(--text-muted)}
+.gs-history-time{font-size:.7rem;color:var(--text-dim);flex-shrink:0}
+/* Rupture modal */
+.rupt-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:background var(--tr)}
+.rupt-item:hover{background:var(--surface2);margin:0 -16px;padding:12px 16px;border-radius:var(--rsm)}
+.rupt-item:last-child{border-bottom:none}
+.rupt-item-badge{padding:3px 10px;border-radius:100px;font-size:.7rem;font-weight:700;flex-shrink:0}
+.rupt-zero{background:rgba(231,76,60,.15);color:var(--danger)}
+.rupt-low{background:rgba(243,156,18,.15);color:var(--warning)}
 /* lic-exp-warn topbar */
 #lic-exp-warn{font-size:.78rem;padding:4px 10px;background:rgba(243,156,18,.15);color:var(--warning);border-radius:var(--rsm);display:none}
+
+/* ============================================================
+   MODULE SERVEUR — page-serveur (lien ?serveur=Fatou)
+   ============================================================ */
+#page-serveur{background:var(--bg);min-height:100vh;display:none;flex-direction:column}
+#page-serveur.active{display:flex}
+
+/* Header serveuse */
+.srv-header{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;
+  background:var(--topbar-bg);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border)
+}
+.srv-name-badge{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(232,115,12,.12);border:1px solid rgba(232,115,12,.25);
+  padding:6px 14px;border-radius:100px;font-weight:700;font-size:.85rem;color:var(--accent)
+}
+.srv-status-dot{width:8px;height:8px;border-radius:50%;background:var(--success);animation:pulse 1.5s ease-in-out infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Catalogue serveuse */
+.srv-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px
+}
+@media(max-width:480px){.srv-grid{grid-template-columns:repeat(2,1fr)}}
+
+.srv-card{
+  background:var(--surface);border:2px solid var(--border);
+  border-radius:var(--r);overflow:hidden;cursor:pointer;
+  transition:all var(--tr);position:relative;
+  display:flex;flex-direction:column;align-items:center
+}
+.srv-card:active{transform:scale(.96)}
+.srv-card.oos{opacity:.45;cursor:not-allowed;pointer-events:none}
+.srv-card.in-cart{border-color:var(--accent);box-shadow:0 0 0 3px rgba(232,115,12,.15)}
+.srv-card-img{width:100%;height:80px;object-fit:cover;display:block}
+.srv-card-emo{font-size:2rem;padding:14px 0 6px}
+.srv-card-name{font-size:.82rem;font-weight:700;text-align:center;padding:0 6px 4px;line-height:1.2}
+.srv-card-price{font-size:.78rem;font-weight:800;color:var(--accent);padding-bottom:8px}
+.srv-card-oos{font-size:.65rem;color:var(--danger);font-weight:700;padding-bottom:6px}
+.srv-card-badge{
+  position:absolute;top:6px;right:6px;
+  background:var(--accent);color:#fff;
+  width:22px;height:22px;border-radius:50%;
+  font-size:.72rem;font-weight:800;
+  display:flex;align-items:center;justify-content:center
+}
+
+/* Panier serveuse bottom bar */
+.srv-cart-bar{
+  position:sticky;bottom:0;z-index:40;
+  background:var(--surface);border-top:1px solid var(--border);
+  padding:12px 16px;display:flex;align-items:center;gap:10px
+}
+.srv-cart-summary{flex:1;min-width:0}
+.srv-cart-count{font-weight:700;font-size:.88rem}
+.srv-cart-total{font-size:.78rem;color:var(--text-muted)}
+.srv-send-btn{
+  background:var(--accent);color:#fff;border:none;
+  padding:12px 22px;border-radius:var(--rsm);
+  font-weight:800;font-size:.9rem;cursor:pointer;
+  transition:all var(--tr);flex-shrink:0;white-space:nowrap
+}
+.srv-send-btn:disabled{background:var(--border);color:var(--text-dim);cursor:not-allowed}
+.srv-send-btn:active:not(:disabled){transform:scale(.96)}
+
+/* Statut commande serveuse */
+.srv-order-status{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:40px 20px;text-align:center;gap:16px
+}
+.srv-status-icon{font-size:3rem;animation:bounceSrv .6s ease}
+@keyframes bounceSrv{0%{transform:scale(0)}80%{transform:scale(1.1)}100%{transform:scale(1)}}
+.srv-status-steps{
+  display:flex;gap:6px;align-items:center;margin-top:8px
+}
+.srv-step{
+  display:flex;flex-direction:column;align-items:center;gap:4px;flex:1
+}
+.srv-step-dot{
+  width:28px;height:28px;border-radius:50%;
+  border:2px solid var(--border);background:var(--surface2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;font-weight:700;color:var(--text-muted);
+  transition:all .4s
+}
+.srv-step.done .srv-step-dot{background:var(--success);border-color:var(--success);color:#fff}
+.srv-step.active .srv-step-dot{background:var(--accent);border-color:var(--accent);color:#fff;animation:srvDotPulse 1s ease-in-out infinite}
+@keyframes srvDotPulse{0%,100%{box-shadow:0 0 0 0 rgba(232,115,12,.4)}50%{box-shadow:0 0 0 8px rgba(232,115,12,0)}}
+.srv-step-lbl{font-size:.6rem;color:var(--text-muted);text-align:center}
+.srv-step.done .srv-step-lbl,.srv-step.active .srv-step-lbl{color:var(--text)}
+.srv-step-line{width:24px;height:2px;background:var(--border);margin-bottom:18px;flex-shrink:0;transition:background .4s}
+.srv-step-line.done{background:var(--success)}
+
+/* ============================================================
+   ÉCRAN COMMANDES CAISSIÈRE
+   ============================================================ */
+.cmd-card{
+  background:var(--surface);border:2px solid var(--border);
+  border-radius:var(--r);overflow:hidden;transition:all var(--tr)
+}
+.cmd-card.new{border-color:var(--accent);animation:cmdFlash .8s ease}
+@keyframes cmdFlash{
+  0%,100%{box-shadow:none}
+  50%{box-shadow:0 0 0 6px rgba(232,115,12,.25)}
+}
+.cmd-card.vue{border-color:rgba(79,195,247,.4)}
+.cmd-card.encaissee{border-color:rgba(46,204,113,.3);opacity:.7}
+.cmd-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;background:var(--surface2);border-bottom:1px solid var(--border)
+}
+.cmd-serveur{font-weight:800;font-size:.88rem;color:var(--accent)}
+.cmd-table{font-size:.72rem;color:var(--text-muted);margin-top:1px}
+.cmd-time{font-size:.7rem;color:var(--text-dim)}
+.cmd-items{padding:10px 14px}
+.cmd-item-row{display:flex;justify-content:space-between;font-size:.82rem;padding:3px 0;border-bottom:1px solid var(--border)}
+.cmd-item-row:last-child{border-bottom:none}
+.cmd-total{padding:8px 14px;background:rgba(232,115,12,.06);display:flex;justify-content:space-between;font-weight:800;font-size:.88rem}
+.cmd-actions{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--border)}
+.cmd-status-badge{
+  font-size:.65rem;font-weight:800;padding:3px 10px;border-radius:100px;white-space:nowrap
+}
+.st-new{background:rgba(232,115,12,.15);color:var(--accent)}
+.st-vue{background:rgba(79,195,247,.15);color:#4FC3F7}
+.st-encaissee{background:rgba(46,204,113,.15);color:var(--success)}
+.st-annulee{background:rgba(231,76,60,.15);color:var(--danger)}
+
+/* Notif bell commandes */
+#cmd-notif-badge{
+  position:absolute;top:-4px;right:-4px;
+  background:var(--danger);color:#fff;
+  border-radius:50%;width:18px;height:18px;
+  font-size:.6rem;font-weight:800;
+  display:none;align-items:center;justify-content:center
+}
 
 
 /* ============================================================
@@ -1580,6 +1797,112 @@ table{table-layout:auto}
 
 
 <body>
+
+<!-- ====================== PAGE SERVEUSE (lien ?serveur=Fatou) ====================== -->
+<div id="page-serveur" class="page">
+
+  <!-- Header -->
+  <div class="srv-header">
+    <div class="srv-name-badge">
+      <div class="srv-status-dot"></div>
+      <span>👩‍🍳 <span id="srv-name-display">Serveuse</span></span>
+    </div>
+    <div style="font-size:.78rem;color:var(--text-muted)" id="srv-commerce-name">Commerce</div>
+    <button onclick="srvViewOrders()" style="position:relative;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:var(--rsm);font-size:.78rem;cursor:pointer">
+      📋 Mes commandes
+      <span id="srv-orders-badge" style="display:none;position:absolute;top:-5px;right:-5px;background:var(--accent);color:#fff;border-radius:50%;width:16px;height:16px;font-size:.58rem;font-weight:800;align-items:center;justify-content:center"></span>
+    </button>
+  </div>
+
+  <!-- Barre recherche + table -->
+  <div style="padding:12px 14px 0;display:flex;gap:8px;align-items:center">
+    <input id="srv-srch" placeholder="🔍 Rechercher..." oninput="srvRenderCatalogue()"
+      style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:10px 14px;font-size:.88rem"/>
+    <div style="display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);padding:8px 12px;font-size:.82rem;white-space:nowrap">
+      🪑 <input id="srv-table" type="text" placeholder="Table (opt.)"
+        style="border:none;background:none;color:var(--text);font-size:.82rem;width:70px;outline:none"/>
+    </div>
+  </div>
+
+  <!-- Catalogue -->
+  <div style="flex:1;overflow-y:auto;padding-bottom:80px">
+    <div id="srv-grid" class="srv-grid"></div>
+  </div>
+
+  <!-- Barre panier bas -->
+  <div class="srv-cart-bar">
+    <div class="srv-cart-summary">
+      <div class="srv-cart-count" id="srv-cart-count">Panier vide</div>
+      <div class="srv-cart-total" id="srv-cart-total"></div>
+    </div>
+    <button class="srv-send-btn" id="srv-send-btn" onclick="srvSendOrder()" disabled>
+      📤 Envoyer
+    </button>
+  </div>
+
+  <!-- Modal : détail panier avant envoi -->
+  <div id="srv-mo-cart" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.7);align-items:flex-end">
+    <div style="background:var(--surface);width:100%;border-radius:var(--r) var(--r) 0 0;padding:20px;max-height:80vh;overflow-y:auto">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h3 style="font-size:1rem;font-weight:700">🛒 Récapitulatif commande</h3>
+        <button onclick="srvCloseMoCart()" style="background:none;border:none;color:var(--text-muted);font-size:1.2rem;cursor:pointer">✕</button>
+      </div>
+      <div id="srv-cart-recap"></div>
+      <div style="margin-top:16px;display:flex;gap:8px">
+        <button onclick="srvCloseMoCart()" style="flex:1;padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);font-weight:600;cursor:pointer">Modifier</button>
+        <button onclick="srvConfirmSend()" style="flex:2;padding:12px;background:var(--accent);border:none;border-radius:var(--rsm);color:#fff;font-weight:800;cursor:pointer;font-size:.95rem">✅ Confirmer et envoyer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Écran statut après envoi -->
+  <div id="srv-status-screen" style="display:none;position:fixed;inset:0;z-index:300;background:var(--bg);flex-direction:column">
+    <div class="srv-header">
+      <div class="srv-name-badge"><div class="srv-status-dot"></div><span>👩‍🍳 <span id="srv-status-name"></span></span></div>
+      <button onclick="srvNewOrder()" style="background:var(--accent);border:none;color:#fff;padding:8px 16px;border-radius:var(--rsm);font-weight:700;cursor:pointer;font-size:.82rem">+ Nouvelle commande</button>
+    </div>
+    <div class="srv-order-status">
+      <div class="srv-status-icon" id="srv-st-icon">📤</div>
+      <div style="font-size:1.1rem;font-weight:800" id="srv-st-title">Commande envoyée !</div>
+      <div style="font-size:.82rem;color:var(--text-muted)" id="srv-st-sub">En attente de prise en charge</div>
+      <!-- Barre de progression -->
+      <div class="srv-status-steps" style="width:100%;max-width:320px;margin-top:12px">
+        <div class="srv-step active" id="srv-step-1">
+          <div class="srv-step-dot">📤</div>
+          <div class="srv-step-lbl">Envoyée</div>
+        </div>
+        <div class="srv-step-line" id="srv-line-1"></div>
+        <div class="srv-step" id="srv-step-2">
+          <div class="srv-step-dot">👀</div>
+          <div class="srv-step-lbl">Vue</div>
+        </div>
+        <div class="srv-step-line" id="srv-line-2"></div>
+        <div class="srv-step" id="srv-step-3">
+          <div class="srv-step-dot">✅</div>
+          <div class="srv-step-lbl">Encaissée</div>
+        </div>
+      </div>
+      <!-- Recap commande -->
+      <div id="srv-st-recap" style="width:100%;max-width:380px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-top:16px;text-align:left;font-size:.82rem"></div>
+      <!-- Bouton relance -->
+      <button id="srv-relance-btn" onclick="srvRelance()" style="display:none;margin-top:12px;background:rgba(232,115,12,.1);border:1px solid rgba(232,115,12,.3);color:var(--accent);padding:10px 20px;border-radius:var(--rsm);font-weight:700;cursor:pointer;font-size:.82rem">
+        🔔 Relancer la caissière
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal : mes commandes (historique serveuse) -->
+  <div id="srv-mo-orders" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.7);align-items:flex-end">
+    <div style="background:var(--surface);width:100%;border-radius:var(--r) var(--r) 0 0;max-height:85vh;overflow-y:auto">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:16px;border-bottom:1px solid var(--border)">
+        <h3 style="font-size:1rem;font-weight:700">📋 Mes commandes</h3>
+        <button onclick="document.getElementById('srv-mo-orders').style.display='none'" style="background:none;border:none;color:var(--text-muted);font-size:1.2rem;cursor:pointer">✕</button>
+      </div>
+      <div id="srv-orders-list" style="padding:12px"></div>
+    </div>
+  </div>
+
+</div><!-- /page-serveur -->
 
 <!-- ====================== PAGE PATRON (SURVEILLANCE TEMPS RÉEL) ====================== -->
 <div id="page-patron" class="page">
@@ -2039,14 +2362,18 @@ window.addEventListener('load', checkApiStatus);
       <button class="ni" onclick="showSection('quick')"    data-s="quick">   <span class="ni-ico">⚡</span><span class="nl">Vente Rapide</span></button>
       <button class="ni" onclick="showSection('caisse')"   data-s="caisse">  <span class="ni-ico">💰</span><span class="nl">Caisse</span></button>
       <button class="ni" onclick="showSection('products')" data-s="products"><span class="ni-ico">📦</span><span class="nl">Produits</span></button>
+      <button class="ni" onclick="showSection('gerant-stock')" data-s="gerant-stock"><span class="ni-ico">📊</span><span class="nl">Gestion Stock</span><span id="gerant-stock-badge" style="display:none;background:var(--danger);color:#fff;font-size:.6rem;padding:1px 6px;border-radius:8px;margin-left:auto">!</span></button>
       <button class="ni" onclick="showSection('mysales')"  data-s="mysales"> <span class="ni-ico">🧾</span><span class="nl">Mes ventes</span><span style="font-size:.6rem;background:rgba(232,115,12,.18);color:var(--accent);padding:1px 6px;border-radius:8px;margin-left:auto">Caissier</span></button>
+      <button class="ni" onclick="showSection('commandes')" data-s="commandes"><span class="ni-ico">📨</span><span class="nl">Commandes</span><span id="cmd-nav-badge" style="display:none;background:var(--danger);color:#fff;font-size:.6rem;padding:1px 7px;border-radius:8px;margin-left:auto;font-weight:800">0</span></button>
       <!-- PROPRIÉTAIRE — PIN requis -->
       <div class="nav-grp-lbl nav-grp-owner">🔐 Propriétaire</div>
       <button class="ni" onclick="reqPin('dashboard')" data-s="dashboard"><span class="ni-ico">📊</span><span class="nl">Dashboard</span><span class="ni-lock">🔒</span><span class="ni-notif-dot" id="nav-notif-dot" style="display:none"></span></button>
       <button class="ni" onclick="reqPin('analytics')" data-s="analytics"><span class="ni-ico">📈</span><span class="nl">Analytique</span><span class="ni-lock">🔒</span></button>
+      <button class="ni" onclick="reqPin('ventes-jour')" data-s="ventes-jour"><span class="ni-ico">📅</span><span class="nl">Ventes Journalières</span><span class="ni-lock">🔒</span></button>
       <button class="ni" onclick="reqPin('expenses')"  data-s="expenses"> <span class="ni-ico">💸</span><span class="nl">Dépenses</span><span class="ni-lock">🔒</span></button>
       <button class="ni" onclick="reqPin('cashiers')"  data-s="cashiers"> <span class="ni-ico">👤</span><span class="nl">Caissiers</span><span class="ni-lock">🔒</span></button>
-      <button class="ni" onclick="reqPin('stock')"     data-s="stock">    <span class="ni-ico">🏭</span><span class="nl">Gestion Stock</span><span class="ni-lock">🔒</span></button>
+      <button class="ni" onclick="reqPin('stock')"     data-s="stock">    <span class="ni-ico">🏭</span><span class="nl">Stock Avancé</span><span class="ni-lock">🔒</span></button>
+      <button class="ni" onclick="reqPin('admin-stock')" data-s="admin-stock"><span class="ni-ico">🔍</span><span class="nl">Audit Stock</span><span class="ni-lock">🔒</span></button>
       <button class="ni" onclick="reqPin('clients')"   data-s="clients">  <span class="ni-ico">👥</span><span class="nl">Clients</span><span class="ni-lock">🔒</span></button>
       <button class="ni" onclick="reqPin('sales')"     data-s="sales">    <span class="ni-ico">🧾</span><span class="nl">Ventes</span><span class="ni-lock">🔒</span></button>
       <button class="ni" onclick="reqPin('settings')"  data-s="settings"> <span class="ni-ico">⚙️</span><span class="nl">Paramètres</span><span class="ni-lock">🔒</span></button>
@@ -2201,6 +2528,8 @@ window.addEventListener('load', checkApiStatus);
       <div class="pos-layout">
         <div class="pos-cat">
           <div class="pos-srch"><input id="pos-srch" placeholder="🔍 Rechercher un produit..." oninput="renderPOS()"/></div>
+          <!-- Badge alerte ruptures / stock faible -->
+          <div id="pos-rupture-badge" style="display:none;align-items:center;gap:6px;padding:8px 14px;background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.2);border-radius:var(--rsm);margin:0 0 10px 0;font-size:.8rem;flex-wrap:wrap"></div>
           <div id="pos-grid" class="pos-grid"><p class="empty">Ajoutez des produits d'abord.</p></div>
         </div>
         <div class="pos-cart">
@@ -2369,6 +2698,227 @@ window.addEventListener('load', checkApiStatus);
       </table></div>
     </section>
 
+    <!-- COMMANDES SERVEUSES -->
+    <section id="s-commandes" class="section">
+
+      <!-- Header -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <div>
+          <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:3px">📨 Commandes Serveuses</h3>
+          <p style="font-size:.78rem;color:var(--text-muted)">Temps réel · Cliquez pour charger dans le POS</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-g sm" onclick="cmdPrintAll()">🖨️ Imprimer tout</button>
+          <button class="btn-g sm" onclick="cmdRefresh()">🔄 Rafraîchir</button>
+          <button class="btn-p sm" onclick="showCmdLinks()">🔗 Liens serveuses</button>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px">
+        <div class="kpi acc"><div class="kpi-lbl">📤 En attente</div><div class="kpi-val" id="cmd-kpi-new">0</div><div class="kpi-sub">Nouvelles</div></div>
+        <div class="kpi" style="border-color:rgba(79,195,247,.3)"><div class="kpi-lbl">👀 Vues</div><div class="kpi-val" style="color:#4FC3F7" id="cmd-kpi-vue">0</div><div class="kpi-sub">Prises en charge</div></div>
+        <div class="kpi" style="border-color:rgba(46,204,113,.3)"><div class="kpi-lbl">✅ Encaissées</div><div class="kpi-val" style="color:var(--success)" id="cmd-kpi-enc">0</div><div class="kpi-sub">Aujourd'hui</div></div>
+        <div class="kpi"><div class="kpi-lbl">👩‍🍳 Serveuses</div><div class="kpi-val" id="cmd-kpi-srv">0</div><div class="kpi-sub">Actives</div></div>
+      </div>
+
+      <!-- Filtre statut + serveuse -->
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <select id="cmd-flt-status" onchange="renderCommandes()" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:8px 12px;font-size:.82rem">
+          <option value="">Tous les statuts</option>
+          <option value="new">📤 En attente</option>
+          <option value="vue">👀 Vues</option>
+          <option value="encaissee">✅ Encaissées</option>
+          <option value="annulee">❌ Annulées</option>
+        </select>
+        <select id="cmd-flt-srv" onchange="renderCommandes()" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:8px 12px;font-size:.82rem">
+          <option value="">Toutes les serveuses</option>
+        </select>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--text-muted)">
+          <div id="cmd-live-dot" style="width:8px;height:8px;border-radius:50%;background:var(--success);animation:pulse 1.5s infinite"></div>
+          Mise à jour auto
+        </div>
+      </div>
+
+      <!-- Liste commandes -->
+      <div id="cmd-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px">
+        <div class="empty" style="grid-column:1/-1;padding:40px">Aucune commande reçue.</div>
+      </div>
+    </section>
+
+    <!-- MODAL LIENS SERVEUSES -->
+    <div id="mo-cmd-links" class="mo hidden" onclick="closeMoOv(event,'mo-cmd-links')">
+      <div class="modal" style="max-width:560px">
+        <div class="mhdr"><h3>🔗 Liens Serveuses</h3><button class="mcls" onclick="closeMo('mo-cmd-links')">✕</button></div>
+        <div class="mbody">
+          <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:16px">
+            Chaque serveuse reçoit son propre lien. Elle l'ouvre sur son téléphone et passe commande directement.
+          </p>
+          <div id="cmd-links-list"></div>
+          <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px">
+            <div style="font-size:.78rem;font-weight:700;margin-bottom:8px">Ajouter une serveuse</div>
+            <div style="display:flex;gap:8px">
+              <input id="new-srv-name" placeholder="Ex: Fatou, Aminata..." style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:10px 12px;font-size:.88rem"/>
+              <button class="btn-p sm" onclick="addServeur()">+ Ajouter</button>
+            </div>
+          </div>
+        </div>
+        <div class="mftr"><button class="btn-g" onclick="closeMo('mo-cmd-links')">Fermer</button></div>
+      </div>
+    </div>
+
+    <!-- MODAL IMPRESSION COMMANDE (BON CUISINE + TICKET) -->
+    <div id="mo-cmd-print" class="mo hidden" onclick="closeMoOv(event,'mo-cmd-print')">
+      <div class="modal" style="max-width:420px">
+        <div class="mhdr"><h3>🖨️ Impression</h3><button class="mcls" onclick="closeMo('mo-cmd-print')">✕</button></div>
+        <div class="mbody">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <button class="btn-p" onclick="cmdPrintBonCuisine(_currentPrintCmd)">🍽️ Bon cuisine (sans prix)</button>
+            <button class="btn-g" onclick="cmdPrintTicket(_currentPrintCmd)">🧾 Ticket client (avec prix)</button>
+          </div>
+        </div>
+        <div class="mftr"><button class="btn-g" onclick="closeMo('mo-cmd-print')">Fermer</button></div>
+      </div>
+    </div>
+
+    <!-- MODULE GÉRANT STOCK (accessible sans PIN) -->
+    <section id="s-gerant-stock" class="section">
+      <!-- En-tête -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+        <div>
+          <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:4px">📊 Gestion de Stock</h3>
+          <p style="font-size:.8rem;color:var(--text-muted)">Consultez et ajustez les niveaux de stock. Les entrées/sorties sont notifiées au propriétaire.</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-d sm" onclick="openRuptureModal()" id="gerant-rupture-btn" style="display:none">⛔ Voir ruptures</button>
+          <button class="btn-p sm" onclick="openGerantStockAdj()">+ Ajustement</button>
+        </div>
+      </div>
+
+      <!-- KPIs stock gérant -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+        <div class="kpi"><div class="kpi-lbl">Total produits</div><div class="kpi-val" id="gs-kpi-total">0</div><div class="kpi-sub">En catalogue</div></div>
+        <div class="kpi" style="border-color:rgba(231,76,60,.35)"><div class="kpi-lbl">⛔ Ruptures</div><div class="kpi-val" style="color:var(--danger)" id="gs-kpi-zero">0</div><div class="kpi-sub">Stock à zéro</div></div>
+        <div class="kpi" style="border-color:rgba(243,156,18,.35)"><div class="kpi-lbl">⚠️ Stock faible</div><div class="kpi-val" style="color:var(--warning)" id="gs-kpi-low">0</div><div class="kpi-sub">≤ seuil critique</div></div>
+        <div class="kpi" style="border-color:rgba(46,204,113,.35)"><div class="kpi-lbl">✅ Stock OK</div><div class="kpi-val" style="color:var(--success)" id="gs-kpi-ok">0</div><div class="kpi-sub">Niveaux suffisants</div></div>
+      </div>
+
+      <!-- Filtres et recherche -->
+      <div class="stbar" style="margin-bottom:14px">
+        <input class="si" id="gs-srch" placeholder="🔍 Rechercher un produit..." oninput="renderGerantStock()"/>
+        <div style="display:flex;gap:8px">
+          <select id="gs-filter" onchange="renderGerantStock()" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:8px 12px;font-size:.85rem">
+            <option value="">Tout le stock</option>
+            <option value="rupture">⛔ Rupture</option>
+            <option value="faible">⚠️ Stock faible</option>
+            <option value="ok">✅ Stock OK</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Alerte ruptures inline -->
+      <div id="gs-rupture-alert" style="display:none;background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.3);border-radius:var(--rsm);padding:12px 16px;margin-bottom:14px;display:none">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span style="font-size:1.2rem">⛔</span>
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:.9rem;color:var(--danger)" id="gs-alert-title">Produits en rupture de stock</div>
+            <div style="font-size:.78rem;color:var(--text-muted);margin-top:2px" id="gs-alert-list"></div>
+          </div>
+          <button onclick="openRuptureModal()" class="btn-d sm">Voir tout</button>
+        </div>
+      </div>
+
+      <!-- Tableau stock gérant -->
+      <div class="tbl-scroll">
+        <table class="dt">
+          <thead>
+            <tr>
+              <th>Produit</th>
+              <th>Catégorie</th>
+              <th>Stock actuel</th>
+              <th>Statut</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="gs-tbody"><tr><td colspan="5" class="empty">Aucun produit.</td></tr></tbody>
+        </table>
+      </div>
+
+      <!-- Historique des mouvements du gérant -->
+      <div class="dash-card" style="margin-top:20px">
+        <div class="dc-hdr">
+          <h4>📋 Mes derniers mouvements de stock</h4>
+          <button class="btn-g sm" onclick="clearGerantHistory()">🗑️ Effacer</button>
+        </div>
+        <div id="gs-history"><p class="empty" style="padding:16px">Aucun mouvement enregistré.</p></div>
+      </div>
+    </section>
+
+    <!-- MODAL AJUSTEMENT STOCK GÉRANT -->
+    <div id="mo-gerant-stk" class="mo hidden" onclick="closeMoOv(event,'mo-gerant-stk')">
+      <div class="modal" style="max-width:440px">
+        <div class="mhdr"><h3>📦 Ajustement de stock</h3><button class="mcls" onclick="closeMo('mo-gerant-stk')">✕</button></div>
+        <div class="mbody">
+          <div class="fg">
+            <label>Produit *</label>
+            <select id="gs-prod-sel" onchange="onGsProdChange()" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:11px 12px;font-size:.9rem;width:100%">
+              <option value="">— Sélectionner un produit —</option>
+            </select>
+          </div>
+          <!-- Info stock actuel -->
+          <div id="gs-current-info" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);padding:10px 14px;margin-bottom:14px;font-size:.85rem">
+            Stock actuel : <strong id="gs-current-val" style="color:var(--accent)">—</strong>
+          </div>
+          <!-- Opération -->
+          <div class="fg">
+            <label>Type d'opération</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <button id="gs-op-add" class="fmt-btn active" onclick="setGsOp('add',this)" style="padding:10px">📦 Entrée (+)</button>
+              <button id="gs-op-sub" class="fmt-btn" onclick="setGsOp('sub',this)" style="padding:10px">📤 Sortie (−)</button>
+            </div>
+          </div>
+          <div class="fg">
+            <label id="gs-qty-label">Quantité à ajouter *</label>
+            <input type="number" id="gs-qty" min="0" placeholder="Ex: 10" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:12px 14px;font-size:1.1rem;font-weight:700;width:100%"/>
+          </div>
+          <div class="fg">
+            <label>Motif / Remarque</label>
+            <input id="gs-reason" placeholder="Ex: Livraison fournisseur, Casse, Inventaire..." style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:11px 14px;font-size:.9rem;width:100%"/>
+          </div>
+          <div style="background:rgba(232,115,12,.07);border:1px solid rgba(232,115,12,.2);border-radius:var(--rsm);padding:10px 14px;font-size:.78rem;color:var(--text-muted)">
+            ℹ️ Cet ajustement sera notifié au propriétaire avec votre identité.
+          </div>
+        </div>
+        <div class="mftr">
+          <button class="btn-g" onclick="closeMo('mo-gerant-stk')">Annuler</button>
+          <button class="btn-p" onclick="applyGerantStockAdj()">✅ Confirmer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL FENÊTRE RUPTURES / ALERTES STOCK -->
+    <div id="mo-rupture" class="mo hidden" onclick="closeMoOv(event,'mo-rupture')">
+      <div class="modal" style="max-width:560px">
+        <div class="mhdr">
+          <h3>🚨 Alertes Stock</h3>
+          <button class="mcls" onclick="closeMo('mo-rupture')">✕</button>
+        </div>
+        <div class="mbody" style="padding:0">
+          <!-- Onglets -->
+          <div style="display:flex;border-bottom:1px solid var(--border)">
+            <button id="rupt-tab-zero" onclick="setRuptTab('zero',this)" style="flex:1;padding:12px;font-size:.82rem;font-weight:700;border:none;background:rgba(231,76,60,.08);color:var(--danger);border-bottom:2px solid var(--danger);cursor:pointer">⛔ Ruptures <span id="rupt-cnt-zero" style="background:var(--danger);color:#fff;border-radius:100px;padding:1px 7px;font-size:.7rem">0</span></button>
+            <button id="rupt-tab-low" onclick="setRuptTab('low',this)" style="flex:1;padding:12px;font-size:.82rem;font-weight:600;border:none;background:none;color:var(--text-muted);cursor:pointer">⚠️ Stock faible <span id="rupt-cnt-low" style="background:var(--warning);color:#fff;border-radius:100px;padding:1px 7px;font-size:.7rem">0</span></button>
+          </div>
+          <div id="rupt-list" style="max-height:420px;overflow-y:auto;padding:12px 16px"></div>
+          <!-- Boutons action bas -->
+          <div style="padding:14px 16px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap">
+            <span style="font-size:.78rem;color:var(--text-dim)">Cliquez sur un produit pour ajuster le stock</span>
+            <button class="btn-p sm" onclick="closeMo('mo-rupture');openGerantStockAdj()">+ Ajuster le stock</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- PRODUITS -->
     <section id="s-products" class="section">
       <div class="stbar">
@@ -2418,6 +2968,268 @@ window.addEventListener('load', checkApiStatus);
         <thead><tr><th>#</th><th>Client</th><th>Articles</th><th>Total</th><th>Date</th><th>Action</th></tr></thead>
         <tbody id="mysales-tbody"><tr><td colspan="6" class="empty">Aucune vente.</td></tr></tbody>
       </table></div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════
+         MODULE AUDIT STOCK — ADMIN (PIN PROPRIÉTAIRE)
+         Stock initial · Vendu · Restant · Valeur · Mouvements
+         ══════════════════════════════════════════════════════ -->
+    <section id="s-admin-stock" class="section">
+
+      <!-- En-tête -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+        <div>
+          <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:3px">🔍 Audit Stock — Vue Propriétaire</h3>
+          <p style="font-size:.78rem;color:var(--text-muted)">Stock initial / vendu / restant par produit · Journal complet des mouvements · Inventaire physique</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-g sm" onclick="asExportCSV()">📥 CSV</button>
+          <button class="btn-p sm" onclick="openInventaireModal()">📋 Inventaire physique</button>
+        </div>
+      </div>
+
+      <!-- Onglets -->
+      <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:20px">
+        <button id="as-tab-produits" onclick="asSetTab('produits',this)" style="padding:10px 18px;font-size:.85rem;font-weight:700;border:none;background:rgba(232,115,12,.08);color:var(--accent);border-bottom:2px solid var(--accent);cursor:pointer">📦 Par Produit</button>
+        <button id="as-tab-mouvements" onclick="asSetTab('mouvements',this)" style="padding:10px 18px;font-size:.85rem;font-weight:600;border:none;background:none;color:var(--text-muted);cursor:pointer">📋 Mouvements</button>
+        <button id="as-tab-inventaire" onclick="asSetTab('inventaire',this)" style="padding:10px 18px;font-size:.85rem;font-weight:600;border:none;background:none;color:var(--text-muted);cursor:pointer">🗂️ Inventaires</button>
+      </div>
+
+      <!-- ─── Onglet 1 : Vue par produit ─── -->
+      <div id="as-pane-produits">
+        <!-- KPIs -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+          <div class="kpi acc"><div class="kpi-lbl">Valeur stock actuel</div><div class="kpi-val" id="as-kpi-valeur">0</div><div class="kpi-sub">Stock × coût unit.</div></div>
+          <div class="kpi" style="border-color:rgba(46,204,113,.3)"><div class="kpi-lbl">CA généré (stock)</div><div class="kpi-val" style="color:var(--success)" id="as-kpi-ca">0</div><div class="kpi-sub">Ventes tracées</div></div>
+          <div class="kpi" style="border-color:rgba(231,76,60,.3)"><div class="kpi-lbl">⚠️ Écarts détectés</div><div class="kpi-val" style="color:var(--danger)" id="as-kpi-ecarts">0</div><div class="kpi-sub">Stock théor. ≠ réel</div></div>
+          <div class="kpi" style="border-color:rgba(243,156,18,.3)"><div class="kpi-lbl">Taux rotation moyen</div><div class="kpi-val" style="color:var(--warning)" id="as-kpi-rotation">—</div><div class="kpi-sub">Vendu / Initial</div></div>
+        </div>
+
+        <!-- Filtres -->
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+          <input id="as-srch" class="si" style="flex:1;min-width:160px" placeholder="🔍 Rechercher un produit..." oninput="renderAdminStock()"/>
+          <select id="as-flt-cat" onchange="renderAdminStock()" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:8px 12px;font-size:.82rem">
+            <option value="">Toutes catégories</option>
+          </select>
+          <select id="as-flt-alerte" onchange="renderAdminStock()" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:8px 12px;font-size:.82rem">
+            <option value="">Tous les produits</option>
+            <option value="ecart">⚠️ Écart détecté</option>
+            <option value="rupture">⛔ Rupture</option>
+            <option value="faible">⚠️ Stock faible</option>
+          </select>
+        </div>
+
+        <!-- Tableau produits -->
+        <div class="tbl-scroll">
+          <table class="dt">
+            <thead>
+              <tr>
+                <th>Produit</th>
+                <th title="Quantité en stock lors de la création du produit">Stock initial</th>
+                <th title="Total des entrées manuelles (hors initial)">Entrées +</th>
+                <th title="Total des ventes enregistrées">Vendu −</th>
+                <th title="Stock théorique = initial + entrées − ventes">Stock théorique</th>
+                <th title="Stock réel actuel dans le système">Stock réel</th>
+                <th title="Écart = théorique − réel (doit être 0)">Écart</th>
+                <th title="CA généré par les ventes de ce produit">CA vendu</th>
+                <th title="Marge brute sur ventes">Marge vendue</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="as-prod-tbody"><tr><td colspan="10" class="empty">Chargement...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ─── Onglet 2 : Mouvements ─── -->
+      <div id="as-pane-mouvements" style="display:none">
+        <!-- Filtres mouvements -->
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+          <input id="as-mv-srch" class="si" style="flex:1;min-width:160px" placeholder="🔍 Produit, auteur, motif..." oninput="renderAdminMovements()"/>
+          <select id="as-mv-type" onchange="renderAdminMovements()" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:8px 12px;font-size:.82rem">
+            <option value="">Tous les types</option>
+            <option value="vente">🛒 Ventes POS</option>
+            <option value="entree">📦 Entrées stock</option>
+            <option value="sortie">📤 Sorties manuelles</option>
+            <option value="annulation">↩️ Annulations</option>
+            <option value="inventaire">🔧 Inventaire/Correction</option>
+          </select>
+          <select id="as-mv-auteur" onchange="renderAdminMovements()" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:8px 12px;font-size:.82rem">
+            <option value="">Tous les auteurs</option>
+            <option value="proprietaire">👑 Propriétaire</option>
+            <option value="gerant">👤 Gérant</option>
+            <option value="caissier">💰 Caissier</option>
+          </select>
+          <select id="as-mv-period" onchange="renderAdminMovements()" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:8px 12px;font-size:.82rem">
+            <option value="">Toute période</option>
+            <option value="today">Aujourd'hui</option>
+            <option value="week">Cette semaine</option>
+            <option value="month">Ce mois</option>
+          </select>
+          <button class="btn-g sm" onclick="asMvExportCSV()">📥 Export CSV</button>
+          <button class="btn-d sm" onclick="if(confirm('Effacer tout le journal de stock ? Cette action est irréversible.')) { const m=Auth.current(); if(m){localStorage.removeItem(\'ds_stklog_\'+m.id); renderAdminMovements(); showToast(\'Journal effacé\',\'success\');} }">🗑️ Effacer journal</button>
+        </div>
+
+        <!-- Compteur résultats -->
+        <div id="as-mv-count" style="font-size:.78rem;color:var(--text-muted);margin-bottom:10px"></div>
+
+        <!-- Journal mouvements -->
+        <div id="as-mv-list" style="display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;max-height:600px;overflow-y:auto">
+          <div class="empty" style="padding:32px">Chargement des mouvements...</div>
+        </div>
+      </div>
+
+      <!-- ─── Onglet 3 : Inventaires physiques ─── -->
+      <div id="as-pane-inventaire" style="display:none">
+        <div style="background:rgba(232,115,12,.06);border:1px solid rgba(232,115,12,.2);border-radius:var(--r);padding:16px;margin-bottom:16px;font-size:.83rem">
+          🗂️ <strong>Inventaire physique</strong> : vous comptez physiquement chaque produit et entrez la quantité réelle. Le système calcule l'écart avec le stock théorique et génère une fiche d'écart horodatée et signée.
+        </div>
+        <div id="as-inv-history" style="display:flex;flex-direction:column;gap:12px">
+          <p class="empty" style="padding:24px">Aucun inventaire physique enregistré.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODAL INVENTAIRE PHYSIQUE -->
+    <div id="mo-inventaire" class="mo hidden" onclick="closeMoOv(event,'mo-inventaire')">
+      <div class="modal" style="max-width:700px">
+        <div class="mhdr">
+          <h3>📋 Inventaire physique</h3>
+          <button class="mcls" onclick="closeMo('mo-inventaire')">✕</button>
+        </div>
+        <div class="mbody" style="padding:0">
+          <div style="padding:14px 16px;background:rgba(232,115,12,.05);border-bottom:1px solid var(--border);font-size:.8rem;color:var(--text-muted)">
+            Entrez les quantités comptées physiquement. Les écarts avec le stock système seront mis en évidence.
+          </div>
+          <div id="inv-prod-list" style="max-height:480px;overflow-y:auto"></div>
+        </div>
+        <div class="mftr" style="justify-content:space-between">
+          <button class="btn-g" onclick="closeMo('mo-inventaire')">Annuler</button>
+          <div style="display:flex;gap:8px">
+            <button class="btn-g sm" onclick="invFillFromSystem()">↩ Copier depuis système</button>
+            <button class="btn-p" onclick="saveInventaire()">✅ Valider et générer rapport</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL DÉTAIL PRODUIT AUDIT -->
+    <div id="mo-as-detail" class="mo hidden" onclick="closeMoOv(event,'mo-as-detail')">
+      <div class="modal" style="max-width:560px">
+        <div class="mhdr"><h3 id="as-detail-title">Détail produit</h3><button class="mcls" onclick="closeMo('mo-as-detail')">✕</button></div>
+        <div class="mbody" style="padding:0">
+          <div id="as-detail-content" style="max-height:520px;overflow-y:auto"></div>
+        </div>
+        <div class="mftr">
+          <button class="btn-g sm" onclick="asDetailExport()">📥 Exporter mouvements</button>
+          <button class="btn-p sm" onclick="closeMo('mo-as-detail')">Fermer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VENTES JOURNALIÈRES + RAPPORT SEMAINE -->
+    <section id="s-ventes-jour" class="section">
+      <!-- Sélecteur de semaine -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+        <div>
+          <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:3px">📅 Ventes Journalières & Rapport Semaine</h3>
+          <p style="font-size:.78rem;color:var(--text-muted)" id="vj-week-label">Semaine en cours</p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn-g sm" onclick="vjNavWeek(-1)">← Semaine préc.</button>
+          <button class="btn-p sm" onclick="vjNavWeek(0)">Aujourd'hui</button>
+          <button class="btn-g sm" onclick="vjNavWeek(1)">Semaine suiv. →</button>
+        </div>
+      </div>
+
+      <!-- KPIs semaine -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+        <div class="kpi acc"><div class="kpi-lbl">CA Semaine</div><div class="kpi-val" id="vj-kpi-ca">0</div><div class="kpi-sub">Chiffre d'affaires</div></div>
+        <div class="kpi" style="border-color:rgba(46,204,113,.3)"><div class="kpi-lbl">Marge brute</div><div class="kpi-val" style="color:var(--success)" id="vj-kpi-marge">0</div><div class="kpi-sub">Bénéfice brut</div></div>
+        <div class="kpi"><div class="kpi-lbl">Ventes</div><div class="kpi-val" id="vj-kpi-ventes">0</div><div class="kpi-sub">Transactions</div></div>
+        <div class="kpi" style="border-color:rgba(243,156,18,.3)"><div class="kpi-lbl">Marge %</div><div class="kpi-val" style="color:var(--warning)" id="vj-kpi-pct">0%</div><div class="kpi-sub">Taux de marge</div></div>
+      </div>
+
+      <!-- Graphique barres semaine -->
+      <div class="dash-card" style="margin-bottom:20px">
+        <div class="dc-hdr"><h4>📊 CA et Marge par jour</h4></div>
+        <div id="vj-chart" style="padding:16px 12px 8px;display:flex;align-items:flex-end;gap:6px;height:160px"></div>
+        <div id="vj-chart-lbl" style="display:flex;gap:6px;padding:0 12px 14px;font-size:.7rem;color:var(--text-muted)"></div>
+        <div style="display:flex;gap:16px;padding:0 14px 14px;font-size:.72rem">
+          <span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;background:var(--accent);border-radius:2px;display:inline-block"></span>CA</span>
+          <span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;background:var(--success);border-radius:2px;display:inline-block"></span>Marge brute</span>
+        </div>
+      </div>
+
+      <!-- Jours de la semaine : cartes détail -->
+      <div id="vj-days-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:20px"></div>
+
+      <!-- Tableau détail jour sélectionné -->
+      <div id="vj-day-detail" style="display:none">
+        <div class="dash-card">
+          <div class="dc-hdr">
+            <h4 id="vj-detail-title">Ventes du Lundi</h4>
+            <button class="btn-g sm" onclick="document.getElementById('vj-day-detail').style.display='none'">✕ Fermer</button>
+          </div>
+          <!-- KPIs jour -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px 16px 0">
+            <div style="text-align:center;padding:10px;background:var(--surface2);border-radius:var(--rsm)">
+              <div style="font-size:1.1rem;font-weight:800;color:var(--accent)" id="vj-d-ca">0</div>
+              <div style="font-size:.7rem;color:var(--text-muted)">CA</div>
+            </div>
+            <div style="text-align:center;padding:10px;background:var(--surface2);border-radius:var(--rsm)">
+              <div style="font-size:1.1rem;font-weight:800;color:var(--success)" id="vj-d-marge">0</div>
+              <div style="font-size:.7rem;color:var(--text-muted)">Marge brute</div>
+            </div>
+            <div style="text-align:center;padding:10px;background:var(--surface2);border-radius:var(--rsm)">
+              <div style="font-size:1.1rem;font-weight:800;" id="vj-d-ventes">0</div>
+              <div style="font-size:.7rem;color:var(--text-muted)">Ventes</div>
+            </div>
+            <div style="text-align:center;padding:10px;background:var(--surface2);border-radius:var(--rsm)">
+              <div style="font-size:1.1rem;font-weight:800;color:var(--warning)" id="vj-d-pct">0%</div>
+              <div style="font-size:.7rem;color:var(--text-muted)">Taux marge</div>
+            </div>
+          </div>
+          <!-- Top produits du jour -->
+          <div style="padding:14px 16px 0">
+            <div style="font-size:.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px">Top produits du jour</div>
+            <div id="vj-d-top" style="display:flex;flex-direction:column;gap:6px"></div>
+          </div>
+          <!-- Liste ventes du jour -->
+          <div style="margin-top:14px">
+            <div style="font-size:.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;padding:0 16px 8px">Toutes les ventes</div>
+            <div id="vj-d-list" style="max-height:320px;overflow-y:auto"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rapport de la semaine -->
+      <div class="dash-card" style="margin-top:4px">
+        <div class="dc-hdr" style="justify-content:space-between">
+          <h4>📋 Rapport hebdomadaire</h4>
+          <div style="display:flex;gap:8px">
+            <button class="btn-g sm" onclick="vjExportCSV()">📥 CSV</button>
+            <button class="btn-p sm" onclick="vjPrintReport()">🖨️ Imprimer</button>
+          </div>
+        </div>
+        <div class="tbl-scroll">
+          <table class="dt" id="vj-report-table">
+            <thead>
+              <tr>
+                <th>Jour</th>
+                <th>Date</th>
+                <th>Ventes</th>
+                <th>CA</th>
+                <th>Coût total</th>
+                <th>Marge brute</th>
+                <th>Taux %</th>
+                <th>Top produit</th>
+              </tr>
+            </thead>
+            <tbody id="vj-report-tbody"></tbody>
+          </table>
+        </div>
+      </div>
     </section>
 
     <!-- PARAMÈTRES -->
@@ -2926,15 +3738,38 @@ window.addEventListener('load', checkApiStatus);
 </div>
 
 <div id="mo-prod" class="mo hidden" onclick="closeMoOv(event,'mo-prod')">
-  <div class="modal">
+  <div class="modal" style="max-width:500px">
     <div class="mhdr"><h3 id="mo-prod-title">Nouveau produit</h3><button class="mcls" onclick="closeMo('mo-prod')">✕</button></div>
     <div class="mbody">
+      <!-- Image produit -->
+      <div class="fg" style="margin-bottom:14px">
+        <label>📷 Image du produit</label>
+        <div id="prod-img-preview" style="width:100%;height:120px;border:2px dashed var(--border);border-radius:var(--rsm);display:flex;align-items:center;justify-content:center;cursor:pointer;background:var(--surface2);overflow:hidden;margin-bottom:8px;position:relative" onclick="document.getElementById('p-img-file').click()">
+          <div id="prod-img-placeholder" style="text-align:center;color:var(--text-muted)">
+            <div style="font-size:2rem;margin-bottom:4px">📷</div>
+            <div style="font-size:.78rem">Cliquer pour ajouter une image</div>
+          </div>
+          <img id="prod-img-thumb" src="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:var(--rsm)" alt=""/>
+          <button id="prod-img-del" onclick="event.stopPropagation();clearProdImage()" style="display:none;position:absolute;top:6px;right:6px;background:rgba(231,76,60,.85);border:none;color:#fff;border-radius:50%;width:24px;height:24px;font-size:.8rem;cursor:pointer;line-height:1">✕</button>
+        </div>
+        <input type="file" id="p-img-file" accept="image/*" style="display:none" onchange="onProdImgChange(this)"/>
+        <input type="hidden" id="p-img-data"/>
+        <div style="font-size:.72rem;color:var(--text-dim)">PNG, JPG, WEBP — max 2 Mo. L'image s'affiche dans le POS.</div>
+      </div>
       <div class="fg"><label>Nom *</label><input id="p-nom" placeholder="Ex: Thiéboudienne" required/></div>
       <div class="fr">
-        <div class="fg"><label>Prix *</label><input type="number" id="p-prix" placeholder="0" min="0" required/></div>
-        <div class="fg"><label>Stock</label><input type="number" id="p-stk" placeholder="∞" min="0"/></div>
+        <div class="fg"><label>Prix de vente *</label><input type="number" id="p-prix" placeholder="0" min="0" required oninput="_updateProdMargePreview()"/></div>
+        <div class="fg"><label>Coût unitaire</label><input type="number" id="p-cout" placeholder="0" min="0" title="Prix d'achat ou de revient" oninput="_updateProdMargePreview()"/></div>
       </div>
-      <div class="fg"><label>Catégorie</label><input id="p-cat" placeholder="Ex: Plats, Boissons..."/></div>
+      <div class="fr">
+        <div class="fg"><label>Stock initial</label><input type="number" id="p-stk" placeholder="∞" min="0"/></div>
+        <div class="fg"><label>Catégorie</label><input id="p-cat" placeholder="Ex: Plats, Boissons..."/></div>
+      </div>
+      <!-- Aperçu marge -->
+      <div id="prod-marge-preview" style="display:none;background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.2);border-radius:var(--rsm);padding:10px 14px;font-size:.82rem">
+        📈 Marge : <strong id="prod-marge-val" style="color:var(--success)">—</strong>
+        <span id="prod-marge-pct" style="color:var(--text-muted);margin-left:8px"></span>
+      </div>
     </div>
     <div class="mftr"><button class="btn-g" onclick="closeMo('mo-prod')">Annuler</button><button class="btn-p" onclick="saveProduct()">Enregistrer</button></div>
   </div>
@@ -3961,7 +4796,7 @@ function showSection(name) {
   document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
   document.getElementById('s-' + name)?.classList.add('active');
   document.querySelector('[data-s="' + name + '"]')?.classList.add('active');
-  const titles = {dashboard:'Dashboard',pos:'Point de Vente',quick:'Vente Rapide',caisse:'Caisse',products:'Produits',stock:'Gestion Stock',clients:'Clients',sales:'Ventes',settings:'Paramètres',analytics:'Analytique',cashiers:'Caissiers',expenses:'Dépenses'};
+  const titles = {dashboard:'Dashboard',pos:'Point de Vente',quick:'Vente Rapide',caisse:'Caisse',products:'Produits',stock:'Gestion Stock',clients:'Clients',sales:'Ventes',settings:'Paramètres',analytics:'Analytique',cashiers:'Caissiers',expenses:'Dépenses','gerant-stock':'📊 Gestion de Stock','mysales':'Mes Ventes','ventes-jour':'📅 Ventes Journalières','admin-stock':'🔍 Audit Stock','commandes':'📨 Commandes Serveuses'};
   document.getElementById('tb-title').textContent = titles[name] || name;
   // Update expiry warning in topbar
   const curM = Auth.current();
@@ -3979,7 +4814,7 @@ function showSection(name) {
   document.body.style.overflow = '';
   // Sync bottom nav
   _syncBottomNav('s-' + name);
-  ({dashboard:renderDashboard,pos:renderPOS,quick:renderQuick,caisse:renderCaisse,products:renderProducts,stock:renderStock,clients:renderClients,sales:renderSales,settings:renderSettings,mysales:renderMySales,analytics:renderAnalytics,cashiers:renderCashiers,expenses:renderExpenses})[name]?.();
+  ({dashboard:renderDashboard,pos:renderPOS,quick:renderQuick,caisse:renderCaisse,products:renderProducts,stock:renderStock,clients:renderClients,sales:renderSales,settings:renderSettings,mysales:renderMySales,analytics:renderAnalytics,cashiers:renderCashiers,expenses:renderExpenses,'gerant-stock':renderGerantStock,'ventes-jour':renderVentesJour,'admin-stock':() => { asSetTab('produits', document.getElementById('as-tab-produits')); },'commandes':() => { renderCommandes(); _cmdStartListener(Auth.current()?.id); }})[name]?.();
   if (typeof updateSubTicker === 'function') updateSubTicker();
 }
 function toggleSidebar() {
@@ -4562,6 +5397,9 @@ function renderDashboard() {
   StockNotif.render(m.id);
   setTimeout(() => { StockNotif.markAllRead(m.id); StockNotif._updateBadge(m.id); }, 1500);
 
+  // ── Badge Gérant Stock (sidebar)
+  _updateGerantStockBadge();
+
   // ── Stats annulations
   renderCancelStats();
 }
@@ -4573,31 +5411,132 @@ function openProductModal(p) {
   document.getElementById('mo-prod-title').textContent = p ? 'Modifier' : 'Nouveau produit';
   document.getElementById('p-nom').value = p ? p.nom : '';
   document.getElementById('p-prix').value = p ? p.prix : '';
+  document.getElementById('p-cout').value = (p && p.cout != null) ? p.cout : '';
   document.getElementById('p-stk').value = (p && p.stock != null) ? p.stock : '';
   document.getElementById('p-cat').value = p ? (p.categorie || '') : '';
+  document.getElementById('p-img-data').value = (p && p.image_b64) ? p.image_b64 : '';
+  // Aperçu image
+  _refreshProdImgPreview((p && p.image_b64) ? p.image_b64 : '');
+  // Aperçu marge
+  _updateProdMargePreview();
   document.getElementById('mo-prod').classList.remove('hidden');
 }
+
+function onProdImgChange(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { showToast('⚠️ Image trop lourde (max 2 Mo)', 'error'); input.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    // Redimensionner l'image pour réduire la taille
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const maxW = 400, maxH = 400;
+      let w = img.width, h = img.height;
+      if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+      if (h > maxH) { w = Math.round(w * maxH / h); h = maxH; }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const b64 = canvas.toDataURL('image/jpeg', 0.75);
+      document.getElementById('p-img-data').value = b64;
+      _refreshProdImgPreview(b64);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function _refreshProdImgPreview(b64) {
+  const thumb = document.getElementById('prod-img-thumb');
+  const placeholder = document.getElementById('prod-img-placeholder');
+  const delBtn = document.getElementById('prod-img-del');
+  if (b64) {
+    thumb.src = b64; thumb.style.display = 'block';
+    placeholder.style.display = 'none'; delBtn.style.display = 'block';
+  } else {
+    thumb.src = ''; thumb.style.display = 'none';
+    placeholder.style.display = 'flex'; delBtn.style.display = 'none';
+  }
+}
+
+function clearProdImage() {
+  document.getElementById('p-img-data').value = '';
+  document.getElementById('p-img-file').value = '';
+  _refreshProdImgPreview('');
+}
+
+function _updateProdMargePreview() {
+  const prix = parseFloat(document.getElementById('p-prix')?.value) || 0;
+  const cout = parseFloat(document.getElementById('p-cout')?.value) || 0;
+  const preview = document.getElementById('prod-marge-preview');
+  const val = document.getElementById('prod-marge-val');
+  const pct = document.getElementById('prod-marge-pct');
+  if (!preview) return;
+  if (prix > 0 && cout > 0) {
+    const marge = prix - cout;
+    const margePct = Math.round((marge / prix) * 100);
+    preview.style.display = 'block';
+    val.textContent = fmtMoney(marge, getConfig()?.devise || 'FCFA');
+    val.style.color = marge >= 0 ? 'var(--success)' : 'var(--danger)';
+    pct.textContent = '(' + (margePct >= 0 ? '+' : '') + margePct + '% de marge)';
+    preview.style.borderColor = marge >= 0 ? 'rgba(46,204,113,.25)' : 'rgba(231,76,60,.25)';
+    preview.style.background = marge >= 0 ? 'rgba(46,204,113,.07)' : 'rgba(231,76,60,.06)';
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
 function saveProduct() {
   const m = Auth.current(); if (!m) return;
-  const nom = document.getElementById('p-nom').value.trim(), prix = parseFloat(document.getElementById('p-prix').value);
+  const nom = document.getElementById('p-nom').value.trim();
+  const prix = parseFloat(document.getElementById('p-prix').value);
   if (!nom || isNaN(prix)) { showToast('⚠️ Nom et prix requis', 'error'); return; }
   const stkVal = document.getElementById('p-stk').value;
-  const rec = {nom, prix, stock: stkVal === '' ? null : parseInt(stkVal), categorie: document.getElementById('p-cat').value.trim()};
+  const coutVal = document.getElementById('p-cout').value;
+  const imgData = document.getElementById('p-img-data').value;
+  const rec = {
+    nom, prix,
+    stock: stkVal === '' ? null : parseInt(stkVal),
+    categorie: document.getElementById('p-cat').value.trim(),
+    cout: coutVal === '' ? null : parseFloat(coutVal),
+    image_b64: imgData || null,
+    // stock_initial : enregistré une fois à la création, jamais modifié
+    stock_initial: !editProdId && stkVal !== '' ? parseInt(stkVal) : undefined
+  };
   const isEdit = !!editProdId;
   editProdId ? DB.update('products', editProdId, rec, m.id) : DB.insert('products', rec, m.id);
+  // Tracer le stock initial comme mouvement d'entrée (création uniquement)
+  if (!isEdit && stkVal !== '' && parseInt(stkVal) > 0) {
+    const newProd = DB.forM('products', m.id).find(p => p.nom === nom && p.prix === prix);
+    if (newProd) {
+      StkLog.push(m.id, {
+        type:       'entree',
+        icon:       '🆕',
+        prod_id:    newProd.id,
+        prod_nom:   nom,
+        delta:      +parseInt(stkVal),
+        old_stock:  0,
+        new_stock:  parseInt(stkVal),
+        auteur:     m.proprietaire || 'Propriétaire',
+        auteur_role:'proprietaire',
+        motif:      'Stock initial à la création du produit'
+      });
+    }
+  }
   // Sync API
   const item = DB.forM('products', m.id).find(p => editProdId ? p.id === editProdId : p.nom === nom && p.prix === prix);
   if (item) {
-    API.post('sync', { merchant_id: m.id, collection: 'products', item }).catch(()=>{});
-    // Sync Firebase
+    // Ne pas envoyer l'image b64 vers l'API (trop lourd) — sync Firebase uniquement
+    const itemForApi = {...item}; delete itemForApi.image_b64;
+    API.post('sync', { merchant_id: m.id, collection: 'products', item: itemForApi }).catch(()=>{});
     fbSet(m.id, 'products', item.id, item);
   }
-  // Notification propriétaire
   StockNotif.push(m.id, {
     type:   isEdit ? 'product_edit' : 'product_add',
     icon:   isEdit ? '✏️' : '➕',
     title:  isEdit ? `Produit modifié : ${nom}` : `Nouveau produit : ${nom}`,
-    detail: `Prix : ${fmtMoney(prix, getConfig().devise||'FCFA')}${stkVal !== '' ? ' · Stock : ' + stkVal + ' unité(s)' : ''}`
+    detail: `Prix : ${fmtMoney(prix, getConfig().devise||'FCFA')}${coutVal !== '' ? ' · Coût : ' + fmtMoney(parseFloat(coutVal), getConfig().devise||'FCFA') : ''}${stkVal !== '' ? ' · Stock : ' + stkVal : ''}`
   });
   showToast('✅ Produit ' + (isEdit ? 'mis à jour' : 'ajouté'), 'success');
   closeMo('mo-prod'); renderProducts(); renderPOS();
@@ -4624,10 +5563,36 @@ function renderProducts() {
   const prods = DB.forM('products', m.id), q = (document.getElementById('prod-srch')?.value || '').toLowerCase();
   const f = prods.filter(p => p.nom.toLowerCase().includes(q));
   const dev = getConfig().devise || 'FCFA';
+  // Update table headers to include Coût & Marge
+  const thead = document.querySelector('#s-products .dt thead tr');
+  if (thead && thead.children.length < 6) {
+    thead.innerHTML = '<th>Produit</th><th>Prix vente</th><th>Coût unit.</th><th>Marge</th><th>Stock</th><th>Actions</th>';
+  }
   document.getElementById('prod-tbody').innerHTML = f.length ? f.map(p => {
     const sb = p.stock === null ? '<span class="sbdg s-ok">∞</span>' : p.stock === 0 ? '<span class="sbdg s-zero">Rupture</span>' : p.stock <= 5 ? '<span class="sbdg s-low">' + p.stock + '</span>' : '<span class="sbdg s-ok">' + p.stock + '</span>';
-    return '<tr><td><strong>' + p.nom + '</strong>' + (p.categorie ? '<br/><small style="color:var(--text-dim)">' + p.categorie + '</small>' : '') + '</td><td><strong style="color:var(--accent)">' + fmtMoney(p.prix, dev) + '</strong></td><td>' + sb + '</td><td><div class="tacts"><button class="tbtn" data-edit-pid="' + p.id + '">✏️ Modifier</button>' + (p.photo_url ? '<a class="tbtn" href="' + p.photo_url + '" target="_blank">📷</a>' : '<button class="tbtn" onclick="openProductPhotoModal(\'' + p.id + '\')">📷</button>') + '<button class="tbtn d" data-del-pid="' + p.id + '">🗑️</button></div></td></tr>';
-  }).join('') : '<tr><td colspan="4" class="empty">Aucun produit trouvé.</td></tr>';
+    const coutCell = p.cout != null ? fmtMoney(p.cout, dev) : '<span style="color:var(--text-dim)">—</span>';
+    let margeCell = '<span style="color:var(--text-dim)">—</span>';
+    if (p.cout != null && p.prix != null) {
+      const marge = p.prix - p.cout;
+      const margePct = p.prix > 0 ? Math.round((marge / p.prix) * 100) : 0;
+      const col = marge >= 0 ? 'var(--success)' : 'var(--danger)';
+      margeCell = `<span style="color:${col};font-weight:700">${fmtMoney(marge, dev)}</span><br><small style="color:${col};opacity:.7">${margePct}%</small>`;
+    }
+    const imgEl = p.image_b64
+      ? `<img src="${p.image_b64}" class="prod-thumb" alt="${p.nom}"/>`
+      : `<div style="width:36px;height:36px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">📦</div>`;
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:8px">${imgEl}<div><strong>${p.nom}</strong>${p.categorie ? '<br><small style="color:var(--text-dim)">' + p.categorie + '</small>' : ''}</div></div></td>
+      <td><strong style="color:var(--accent)">${fmtMoney(p.prix, dev)}</strong></td>
+      <td>${coutCell}</td>
+      <td>${margeCell}</td>
+      <td>${sb}</td>
+      <td><div class="tacts">
+        <button class="tbtn" data-edit-pid="${p.id}">✏️ Modifier</button>
+        <button class="tbtn d" data-del-pid="${p.id}">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="6" class="empty">Aucun produit trouvé.</td></tr>';
   // Bind events
   document.querySelectorAll('[data-edit-pid]').forEach(btn => {
     btn.onclick = () => { const p = DB.forM('products', m.id).find(x => x.id === btn.dataset.editPid); if (p) openProductModal(p); };
@@ -4644,20 +5609,75 @@ let currentSaleName = '';
 let currentPrintFmt = '80';
 
 function renderPOS() {
-  const m = Auth.current(); if (!m) return;
-  const prods = DB.forM('products', m.id), q = (document.getElementById('pos-srch')?.value || '').toLowerCase();
-  const f = prods.filter(p => p.nom.toLowerCase().includes(q));
+  const m = Auth.current();
+  const grid = document.getElementById('pos-grid');
+  if (!grid) return;
+  // Si l'utilisateur n'est pas encore chargé, réessayer dans 300ms (fix disparition catalogue)
+  if (!m) {
+    grid.innerHTML = '<p class="empty" style="color:var(--text-muted)">⏳ Chargement du catalogue...</p>';
+    setTimeout(renderPOS, 300);
+    return;
+  }
+  const prods = DB.forM('products', m.id);
+  const q = (document.getElementById('pos-srch')?.value || '').toLowerCase();
+  const f = prods.filter(p => p.nom && p.nom.toLowerCase().includes(q));
   const dev = getConfig().devise || 'FCFA';
   const catEmos = {boisson:'🥤',plat:'🍽️',dessert:'🍰',pain:'🥖',viande:'🥩',poisson:'🐟',légume:'🥦',électronique:'📱',vêtement:'👕',médicament:'💊',chambre:'🛏️'};
-  const grid = document.getElementById('pos-grid');
-  grid.innerHTML = f.length ? f.map(p => {
+
+  if (!f.length) {
+    grid.innerHTML = prods.length === 0
+      ? '<div style="text-align:center;padding:40px 20px"><div style="font-size:2.5rem;margin-bottom:12px">📦</div><p class="empty">Aucun produit dans le catalogue.<br><small style="color:var(--text-dim)">Ajoutez des produits dans la section "Produits".</small></p></div>'
+      : '<p class="empty">Aucun produit correspondant à votre recherche.</p>';
+    // Supprime le listener existant pour éviter doublons
+    grid.onclick = null;
+    fillCliSelect();
+    return;
+  }
+
+  grid.innerHTML = f.map(p => {
     const oos = p.stock !== null && p.stock === 0;
+    const low = p.stock !== null && p.stock > 0 && p.stock <= 5;
     const cat = (p.categorie || '').toLowerCase();
     const emo = Object.entries(catEmos).find(([k]) => cat.includes(k))?.[1] || '📦';
-    return '<div class="ppc' + (oos ? ' oos' : '') + '" data-pid="' + p.id + '"><span class="ppc-emo">' + emo + '</span><div class="ppc-name">' + p.nom + '</div><div class="ppc-price">' + fmtMoney(p.prix, dev) + '</div>' + (p.stock !== null ? '<div class="ppc-stk">Stock: ' + p.stock + '</div>' : '') + '</div>';
-  }).join('') : '<p class="empty">Aucun produit. Ajoutez-en dans Produits.</p>';
-  grid.onclick = e => { const c = e.target.closest('.ppc'); if (c && !c.classList.contains('oos')) addToCart(c.dataset.pid); };
-  // Fill client select
+    const stockBadge = p.stock === null ? '' :
+      p.stock === 0 ? '<div class="ppc-stk" style="color:var(--danger);font-weight:700">⛔ Rupture</div>' :
+      p.stock <= 5  ? '<div class="ppc-stk" style="color:var(--warning)">⚠️ Stock: ' + p.stock + '</div>' :
+                      '<div class="ppc-stk">Stock: ' + p.stock + '</div>';
+    const imgTop = p.image_b64
+      ? `<img src="${p.image_b64}" class="ppc-img" alt="${p.nom}"/>`
+      : '';
+    return '<div class="ppc' + (oos ? ' oos' : '') + '" data-pid="' + p.id + '" title="' + (oos ? 'Rupture de stock' : p.nom) + '">'
+      + imgTop
+      + (imgTop ? '' : '<span class="ppc-emo">' + emo + '</span>')
+      + '<div class="ppc-name">' + p.nom + '</div>'
+      + '<div class="ppc-price">' + fmtMoney(p.prix, dev) + '</div>'
+      + stockBadge
+      + '</div>';
+  }).join('');
+
+  // Réassigner le listener onclick proprement (évite les doublons)
+  grid.onclick = null;
+  grid.onclick = function(e) {
+    const c = e.target.closest('.ppc');
+    if (c && !c.classList.contains('oos')) addToCart(c.dataset.pid);
+  };
+
+  // Vérifier ruptures et avertir le gérant si nécessaire
+  const ruptures = prods.filter(p => p.stock !== null && p.stock === 0).length;
+  const stockFaible = prods.filter(p => p.stock !== null && p.stock > 0 && p.stock <= 5).length;
+  const ruptureBadge = document.getElementById('pos-rupture-badge');
+  if (ruptureBadge) {
+    if (ruptures > 0 || stockFaible > 0) {
+      ruptureBadge.style.display = 'flex';
+      ruptureBadge.innerHTML = (ruptures > 0 ? '<span style="color:var(--danger)">⛔ ' + ruptures + ' rupture(s)</span>' : '')
+        + (ruptures > 0 && stockFaible > 0 ? ' · ' : '')
+        + (stockFaible > 0 ? '<span style="color:var(--warning)">⚠️ ' + stockFaible + ' stock(s) faible(s)</span>' : '')
+        + '<button onclick="openRuptureModal()" style="background:none;border:none;color:var(--accent);font-size:.75rem;cursor:pointer;text-decoration:underline;margin-left:8px">Voir détails →</button>';
+    } else {
+      ruptureBadge.style.display = 'none';
+    }
+  }
+
   fillCliSelect();
 }
 
@@ -4755,13 +5775,30 @@ function processCheckout() {
   }
   const tot = cartTotal();
   const sale = DB.insert('sales', {client_id:cliId, client_nom:cliNom, client_wa:cliWA, items:JSON.parse(JSON.stringify(cart)), total:tot, devise:dev}, m.id);
-  // Update stocks
-  const allP = DB.get('products');
   // Update stocks — ignore les produits libres (depuis commandes file d'attente)
+  const allP = DB.get('products');
+  const caissierNom = (Auth.currentCashier && Auth.currentCashier.nom) || m.proprietaire || 'Propriétaire';
   cart.forEach(ci => {
     if (!ci.pid || ci.pid.startsWith('__free_')) return;
     const idx = allP.findIndex(p => p.id === ci.pid && p.merchant_id === m.id);
-    if (idx !== -1 && allP[idx].stock !== null) allP[idx].stock = Math.max(0, allP[idx].stock - ci.qty);
+    if (idx !== -1 && allP[idx].stock !== null) {
+      const oldStock = allP[idx].stock;
+      allP[idx].stock = Math.max(0, oldStock - ci.qty);
+      // ── Tracer le mouvement de stock
+      StkLog.push(m.id, {
+        type:       'vente',
+        icon:       '🛒',
+        prod_id:    ci.pid,
+        prod_nom:   ci.nom,
+        delta:      -ci.qty,
+        old_stock:  oldStock,
+        new_stock:  allP[idx].stock,
+        auteur:     caissierNom,
+        auteur_role:'caissier',
+        sale_id:    sale.id,
+        motif:      'Vente POS — client : ' + cliNom
+      });
+    }
   });
   DB.set('products', allP);
   // Sync API — vente + stock en arrière-plan
@@ -4786,8 +5823,10 @@ function processCheckout() {
   // Marketing toast
   showToast('🎉 ' + (cfg.message_accueil || 'Merci pour votre achat chez ' + m.nom_commerce + ' !'), 'success');
   clearCart(); // réinitialise cart + champs client + replié le panneau
+  _cmdMarkEncaisseeOnCheckout(); // marquer la commande serveuse comme encaissée
   renderPOS();
   renderDashboard();
+  _updateGerantStockBadge();
 }
 
 // ---- PRINT FORMAT ----
@@ -5889,9 +6928,26 @@ function confirmCancelSale() {
 
   // Restauration stock automatique
   const allP = DB.get('products') || [];
+  const cancelAuteur = pinUnlocked ? m.proprietaire || 'Propriétaire' : (Auth.currentCashier?.nom || 'Gérant');
   (sale.items || []).forEach(ci => {
     const pi = allP.findIndex(p => p.id === ci.pid && p.merchant_id === m.id);
-    if (pi !== -1 && allP[pi].stock !== null) allP[pi].stock += (ci.qty || 1);
+    if (pi !== -1 && allP[pi].stock !== null) {
+      const oldStock = allP[pi].stock;
+      allP[pi].stock += (ci.qty || 1);
+      StkLog.push(m.id, {
+        type:       'annulation',
+        icon:       '↩️',
+        prod_id:    ci.pid,
+        prod_nom:   ci.nom,
+        delta:      +(ci.qty || 1),
+        old_stock:  oldStock,
+        new_stock:  allP[pi].stock,
+        auteur:     cancelAuteur,
+        auteur_role: pinUnlocked ? 'proprietaire' : 'gerant',
+        sale_id:    sale.id,
+        motif:      'Annulation vente — motif : ' + selectedMotif + (detail ? ' · ' + detail.substring(0,60) : '')
+      });
+    }
   });
   DB.set('products', allP);
 
@@ -6345,8 +7401,23 @@ function applyStockAdj() {
   // Sync Firebase
   fbSet(m.id, 'products', allP[idx].id, allP[idx]);
   const reason = document.getElementById('stk-reason').value.trim();
-  const opLabel = {add:'Entrée', sub:'Sortie', set:'Ajustement'}[stkOp];
+  const opLabel = {add:'Entrée', sub:'Sortie', set:'Inventaire/Correction'}[stkOp];
   const opIcon  = {add:'📦', sub:'📤', set:'🔧'}[stkOp];
+  const oldStock = p.stock === null ? 0 : p.stock;
+  const deltaVal = stkOp === 'set' ? (newStock - oldStock) : stkOp === 'add' ? +qty : -qty;
+  // ── Tracer le mouvement dans StkLog global
+  StkLog.push(m.id, {
+    type:       {add:'entree', sub:'sortie', set:'inventaire'}[stkOp],
+    icon:       opIcon,
+    prod_id:    pid,
+    prod_nom:   p.nom,
+    delta:      deltaVal,
+    old_stock:  oldStock,
+    new_stock:  newStock,
+    auteur:     m.proprietaire || 'Propriétaire',
+    auteur_role:'proprietaire',
+    motif:      reason || opLabel
+  });
   // Notification propriétaire
   StockNotif.push(m.id, {
     type:   'stock_adj',
@@ -6359,6 +7430,77 @@ function applyStockAdj() {
   renderStock();
   renderProducts();
 }
+
+// ============================================================
+// STKLOG — Journal global des mouvements de stock
+// Stocké en localStorage, 500 entrées max par marchand
+// ============================================================
+const StkLog = {
+  _key: mid => 'ds_stklog_' + mid,
+  get(mid)  { try { return JSON.parse(localStorage.getItem(this._key(mid)) || '[]'); } catch { return []; } },
+  save(mid, list) { localStorage.setItem(this._key(mid), JSON.stringify(list.slice(0, 500))); },
+
+  push(mid, entry) {
+    const list = this.get(mid);
+    list.unshift({
+      id:       'sl_' + Date.now().toString(36) + Math.random().toString(36).slice(2,5),
+      ts:       new Date().toISOString(),
+      ...entry
+    });
+    this.save(mid, list);
+  },
+
+  // Retourne les mouvements filtrés par produit/type/auteur/période
+  query(mid, { prod_id, type, auteur_role, from, to } = {}) {
+    return this.get(mid).filter(e => {
+      if (prod_id     && e.prod_id     !== prod_id)     return false;
+      if (type        && e.type        !== type)         return false;
+      if (auteur_role && e.auteur_role !== auteur_role)  return false;
+      if (from && new Date(e.ts) < new Date(from))       return false;
+      if (to   && new Date(e.ts) > new Date(to))         return false;
+      return true;
+    });
+  },
+
+  // Statistiques stock par produit : initial, vendu, restant
+  statsParProduit(mid, products, sales) {
+    const prodMap = {};
+    products.forEach(p => {
+      prodMap[p.id] = {
+        prod:         p,
+        stock_initial: p.stock_initial ?? p.stock ?? 0, // stock_initial sauvegardé à la création
+        stock_actuel:  p.stock ?? 0,
+        qte_vendue:    0,
+        ca_vendu:      0,
+        cout_vendu:    0,
+        qte_entree:    0,
+        qte_sortie:    0
+      };
+    });
+
+    // Calculer qte vendue depuis les ventes
+    sales.filter(s => s.statut !== 'cancelled').forEach(s => {
+      (s.items || []).forEach(item => {
+        const entry = item.pid ? prodMap[item.pid] : Object.values(prodMap).find(e => e.prod.nom === item.nom);
+        if (entry) {
+          entry.qte_vendue += item.qty || 1;
+          entry.ca_vendu   += (item.prix || 0) * (item.qty || 1);
+          if (entry.prod.cout != null) entry.cout_vendu += entry.prod.cout * (item.qty || 1);
+        }
+      });
+    });
+
+    // Cumul entrées/sorties depuis StkLog
+    this.get(mid).forEach(e => {
+      const entry = prodMap[e.prod_id];
+      if (!entry) return;
+      if (e.type === 'entree' || e.type === 'inventaire') entry.qte_entree += Math.max(0, e.delta || 0);
+      if (e.type === 'sortie')                            entry.qte_sortie += Math.abs(e.delta || 0);
+    });
+
+    return Object.values(prodMap);
+  }
+};
 
 // ============================================================
 // FIREBASE / CONNEXION TEMPS RÉEL
@@ -7058,7 +8200,11 @@ async function initApp(){
   // Démarrer le polling file d'attente
   _triggerQueueRefresh(m.id);
 
-  // Charger données fraîches depuis l'API en arrière-plan
+  // Démarrer l'écoute des commandes serveuses en temps réel
+  setTimeout(() => {
+    _cmdStartListener(m.id);
+    renderCommandes(); // pré-rendre depuis localStorage
+  }, 800);
   API.get('data', { merchant_id: m.id }).then(res => {
     if (res.data) {
       ['products','sales','clients','configs'].forEach(col => {
@@ -7088,6 +8234,9 @@ function showPage(id){
   const target = document.getElementById(id);
   if(target) target.classList.add('active');
   if(id==='page-app') initApp();
+  if(id==='page-serveur') {
+    // Déjà géré par initServeurPage() via l'URL ?serveur=
+  }
   if(id==='page-login') { setTimeout(initLoginPage, 50); }
   if(id==='page-admin'){
     if(!AdminAuth.isLogged()){
@@ -9610,6 +10759,14 @@ function saveWaProprio() {
 })();
 
 // ── Initialisation principale (DOMContentLoaded unique)
+// Variables mode serveuse (déclarées ici pour être disponibles dans DOMContentLoaded)
+let _srvCart    = [];
+let _srvName    = '';
+let _srvMid     = null;
+let _srvCmdId   = null;
+let _srvListener= null;
+let _srvRelanceTimer = null;
+
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Appliquer le thème
   const savedTheme = localStorage.getItem('ds_theme') || 'dark';
@@ -9660,6 +10817,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 6. Route utilisateur normale — Auth.current() lit localStorage (session persistante)
+  // ── Détection mode serveuse ?serveur=Fatou ──────────────
+  const srvParam = params.get('serveur');
+  if (srvParam && srvParam.trim()) {
+    _srvName = decodeURIComponent(srvParam.trim());
+    // Laisser le DOM se stabiliser puis init page serveuse
+    setTimeout(initServeurPage, 300);
+    return; // ne pas afficher la landing/app
+  }
+
   const m = typeof Auth !== 'undefined' ? Auth.current() : null;
   if (m) {
     showPage('page-app');
@@ -10868,12 +12034,1781 @@ async function _validatePatronPin() {
   }
 }
 
-// ── Démarrer la surveillance auto-save et activer l'onglet semaine par défaut
-const _origStartPatronDashboard = _startPatronDashboard;
+// ============================================================
+// MODULE AUDIT STOCK ADMIN — PIN Propriétaire
+// Stock initial · Vendu · Restant · Mouvements · Inventaire
+// ============================================================
+
+let _asTab        = 'produits';   // onglet actif
+let _asDetailPid  = null;         // produit affiché en détail
+
+// ── Navigation onglets ─────────────────────────────────────
+function asSetTab(tab, btn) {
+  _asTab = tab;
+  ['produits','mouvements','inventaire'].forEach(t => {
+    const b = document.getElementById('as-tab-' + t);
+    const p = document.getElementById('as-pane-' + t);
+    if (!b || !p) return;
+    if (t === tab) {
+      b.style.background = 'rgba(232,115,12,.08)'; b.style.color = 'var(--accent)'; b.style.borderBottom = '2px solid var(--accent)';
+      p.style.display = 'block';
+    } else {
+      b.style.background = 'none'; b.style.color = 'var(--text-muted)'; b.style.borderBottom = 'none';
+      p.style.display = 'none';
+    }
+  });
+  if (tab === 'produits')    renderAdminStock();
+  if (tab === 'mouvements')  renderAdminMovements();
+  if (tab === 'inventaire')  renderAdminInventaireHistory();
+}
+
+function renderAdminStock() {
+  const m = Auth.current(); if (!m) return;
+  const dev    = getConfig()?.devise || 'FCFA';
+  const prods  = DB.forM('products', m.id);
+  const sales  = DB.forM('sales', m.id);
+  const statsL = StkLog.statsParProduit(m.id, prods, sales);
+  const q      = (document.getElementById('as-srch')?.value || '').toLowerCase();
+  const fltCat = document.getElementById('as-flt-cat')?.value || '';
+  const fltAl  = document.getElementById('as-flt-alerte')?.value || '';
+
+  // Mettre à jour filtre catégories
+  const catSel = document.getElementById('as-flt-cat');
+  if (catSel) {
+    const cats = [...new Set(prods.map(p => p.categorie).filter(Boolean))];
+    const cv = catSel.value;
+    catSel.innerHTML = '<option value="">Toutes catégories</option>' +
+      cats.map(c => `<option value="${c}" ${cv===c?'selected':''}>${c}</option>`).join('');
+  }
+
+  // Calcul écarts : stock théorique vs réel
+  const statsAvecEcart = statsL.map(s => {
+    const stockTheorique = (s.stock_initial || 0) + s.qte_entree - s.qte_vendue;
+    const ecart = s.stock_actuel - stockTheorique; // si ≠ 0 → perte/erreur non déclarée
+    return { ...s, stockTheorique, ecart };
+  });
+
+  // KPIs globaux
+  const totalValeur  = statsAvecEcart.reduce((a, s) => {
+    const cout = s.prod.cout ?? s.prod.prix;
+    return a + (s.stock_actuel > 0 ? s.stock_actuel * cout : 0);
+  }, 0);
+  const totalCA      = statsAvecEcart.reduce((a, s) => a + s.ca_vendu, 0);
+  const totalEcarts  = statsAvecEcart.filter(s => s.prod.stock !== null && s.ecart !== 0).length;
+  const rotations    = statsAvecEcart.filter(s => (s.stock_initial || 0) > 0).map(s => s.qte_vendue / (s.stock_initial || 1));
+  const avgRotation  = rotations.length ? (rotations.reduce((a,b) => a+b, 0) / rotations.length * 100).toFixed(0) + '%' : '—';
+
+  const set = (id, v) => { const e = document.getElementById(id); if (e) e.innerHTML = v; };
+  set('as-kpi-valeur',   fmtMoney(totalValeur, dev));
+  set('as-kpi-ca',       fmtMoney(totalCA, dev));
+  set('as-kpi-ecarts',   `<span style="color:${totalEcarts>0?'var(--danger)':'var(--success)'}">${totalEcarts}</span>`);
+  set('as-kpi-rotation', avgRotation);
+
+  // Filtre
+  let f = statsAvecEcart;
+  if (q)       f = f.filter(s => s.prod.nom.toLowerCase().includes(q));
+  if (fltCat)  f = f.filter(s => s.prod.categorie === fltCat);
+  if (fltAl === 'ecart')   f = f.filter(s => s.prod.stock !== null && s.ecart !== 0);
+  if (fltAl === 'rupture') f = f.filter(s => s.prod.stock === 0);
+  if (fltAl === 'faible')  f = f.filter(s => s.prod.stock !== null && s.prod.stock > 0 && s.prod.stock <= 5);
+
+  const tbody = document.getElementById('as-prod-tbody');
+  if (!tbody) return;
+
+  if (!f.length) {
+    tbody.innerHTML = '<tr><td colspan="10" class="empty">Aucun produit trouvé.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = f.map(s => {
+    const p = s.prod;
+    const ecartAbs = Math.abs(s.ecart);
+    const ecartCell = p.stock === null ? '<span class="ecart-ok">— ∞</span>' :
+      s.ecart === 0 ? '<span class="ecart-ok">✅ 0</span>' :
+      s.ecart > 0   ? `<span class="ecart-warn">+${s.ecart} ⚠️</span>` :
+                      `<span class="ecart-danger">${s.ecart} 🚨</span>`;
+
+    const marge = p.cout != null ? s.ca_vendu - s.cout_vendu : null;
+    const margeCell = marge !== null
+      ? `<span style="color:${marge>=0?'var(--success)':'var(--danger)'};font-weight:700">${fmtMoney(marge,dev)}</span>`
+      : '<span style="color:var(--text-dim)">—</span>';
+
+    const imgEl = p.image_b64
+      ? `<img src="${p.image_b64}" style="width:28px;height:28px;object-fit:cover;border-radius:4px;margin-right:6px;vertical-align:middle" />`
+      : '';
+
+    return `<tr>
+      <td><div style="display:flex;align-items:center">${imgEl}<div><strong>${p.nom}</strong>${p.categorie ? '<br><small style="color:var(--text-dim)">' + p.categorie + '</small>' : ''}</div></div></td>
+      <td style="text-align:center">${s.stock_initial ?? '<span style="color:var(--text-dim)">—</span>'}</td>
+      <td style="text-align:center;color:var(--success)">+${s.qte_entree}</td>
+      <td style="text-align:center;color:var(--danger)">−${s.qte_vendue}</td>
+      <td style="text-align:center;font-weight:700">${p.stock === null ? '∞' : s.stockTheorique}</td>
+      <td style="text-align:center"><strong style="color:${p.stock===0?'var(--danger)':p.stock!==null&&p.stock<=5?'var(--warning)':'var(--success)'}">${p.stock !== null ? p.stock : '∞'}</strong></td>
+      <td style="text-align:center">${ecartCell}</td>
+      <td style="color:var(--accent)">${fmtMoney(s.ca_vendu, dev)}</td>
+      <td>${margeCell}</td>
+      <td><div class="tacts">
+        <button class="tbtn" data-as-detail="${p.id}">🔍 Détail</button>
+        <button class="tbtn" data-stk-pid="${p.id}">📦 Ajuster</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+
+  // Bind
+  document.querySelectorAll('[data-as-detail]').forEach(btn => {
+    btn.onclick = () => openAsDetail(btn.dataset.asDetail);
+  });
+  document.querySelectorAll('#as-prod-tbody [data-stk-pid]').forEach(btn => {
+    btn.onclick = () => openStockAdjModal(btn.dataset.stkPid);
+  });
+}
+
+// ── Détail produit (mouvements filtrés par ce produit) ─────
+let _asDetailProdId = null;
+function openAsDetail(pid) {
+  const m = Auth.current(); if (!m) return;
+  const dev   = getConfig()?.devise || 'FCFA';
+  const prods = DB.forM('products', m.id);
+  const p     = prods.find(x => x.id === pid); if (!p) return;
+  _asDetailProdId = pid;
+
+  const log = StkLog.query(m.id, { prod_id: pid });
+  const sales = DB.forM('sales', m.id).filter(s => s.statut !== 'cancelled');
+  const qteV  = sales.reduce((a, s) => a + (s.items||[]).filter(it => it.pid === pid || it.nom === p.nom).reduce((b,it) => b + (it.qty||1), 0), 0);
+  const caV   = sales.reduce((a, s) => a + (s.items||[]).filter(it => it.pid === pid || it.nom === p.nom).reduce((b,it) => b + (it.prix||0)*(it.qty||1), 0), 0);
+
+  document.getElementById('as-detail-title').textContent = '🔍 ' + p.nom;
+
+  const html = `
+    <!-- Stats produit -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px 16px">
+      <div style="text-align:center;background:var(--surface2);padding:10px;border-radius:var(--rsm)">
+        <div style="font-size:1.2rem;font-weight:800;color:var(--accent)">${p.stock !== null ? p.stock : '∞'}</div>
+        <div style="font-size:.68rem;color:var(--text-muted)">Stock réel</div>
+      </div>
+      <div style="text-align:center;background:var(--surface2);padding:10px;border-radius:var(--rsm)">
+        <div style="font-size:1.2rem;font-weight:800;color:var(--danger)">${qteV}</div>
+        <div style="font-size:.68rem;color:var(--text-muted)">Unités vendues</div>
+      </div>
+      <div style="text-align:center;background:var(--surface2);padding:10px;border-radius:var(--rsm)">
+        <div style="font-size:1.2rem;font-weight:800;color:var(--success)">${fmtMoney(caV, dev)}</div>
+        <div style="font-size:.68rem;color:var(--text-muted)">CA généré</div>
+      </div>
+    </div>
+    <div style="padding:0 16px 10px;font-size:.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em">
+      Historique des ${log.length} mouvement(s)
+    </div>
+    ${log.length ? log.map(e => _renderMvItem(e, dev)).join('') : '<div class="empty" style="padding:24px">Aucun mouvement tracé pour ce produit.</div>'}
+  `;
+  document.getElementById('as-detail-content').innerHTML = html;
+  document.getElementById('mo-as-detail').classList.remove('hidden');
+}
+
+function asDetailExport() {
+  if (!_asDetailProdId) return;
+  const m = Auth.current(); if (!m) return;
+  const dev = getConfig()?.devise || 'FCFA';
+  const log = StkLog.query(m.id, { prod_id: _asDetailProdId });
+  _exportMvCSV(log, 'mouvements_produit_' + _asDetailProdId, dev);
+}
+
+// ── Rendu d'un item mouvement ──────────────────────────────
+function _renderMvItem(e, dev) {
+  const dt = new Date(e.ts);
+  const dateStr = dt.toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit', year:'2-digit'}) + ' ' + dt.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+  const deltaPos = (e.delta || 0) >= 0;
+  const deltaStr = (deltaPos ? '+' : '') + (e.delta || 0);
+  const roleCls = {proprietaire:'role-proprio', gerant:'role-gerant', caissier:'role-caissier'}[e.auteur_role] || 'role-gerant';
+  const roleLabel = {proprietaire:'👑 Propriétaire', gerant:'👤 Gérant', caissier:'💰 Caissier'}[e.auteur_role] || e.auteur_role;
+  const typeColors = {vente:'var(--danger)',entree:'var(--success)',sortie:'var(--warning)',annulation:'#4FC3F7',inventaire:'var(--text-muted)'};
+
+  return `<div class="as-mv-item">
+    <div class="as-mv-icon">${e.icon || '📦'}</div>
+    <div class="as-mv-body">
+      <div class="as-mv-title">${e.prod_nom || '—'}</div>
+      <div class="as-mv-meta">
+        <span style="color:${typeColors[e.type]||'var(--accent)'}">● ${_typeLabel(e.type)}</span>
+        <span class="role-badge ${roleCls}">${roleLabel}</span>
+        <span>${e.auteur || '—'}</span>
+        <span>${dateStr}</span>
+        ${e.sale_id ? '<span style="color:var(--text-dim)">Vente #' + e.sale_id.slice(-6).toUpperCase() + '</span>' : ''}
+      </div>
+      ${e.motif ? `<div class="as-mv-motif">${e.motif}</div>` : ''}
+    </div>
+    <div class="as-mv-right">
+      <div class="as-mv-delta" style="color:${deltaPos?'var(--success)':'var(--danger)'}">${deltaStr}</div>
+      <div class="as-mv-stocks">${e.old_stock ?? '?'} → ${e.new_stock ?? '?'}</div>
+    </div>
+  </div>`;
+}
+
+function _typeLabel(type) {
+  return {vente:'Vente POS', entree:'Entrée stock', sortie:'Sortie manuelle', annulation:'Annulation', inventaire:'Inventaire/Correction'}[type] || type;
+}
+
+// ── Journal mouvements global ──────────────────────────────
+function renderAdminMovements() {
+  const m = Auth.current(); if (!m) return;
+  const dev    = getConfig()?.devise || 'FCFA';
+  const q      = (document.getElementById('as-mv-srch')?.value    || '').toLowerCase();
+  const type   = document.getElementById('as-mv-type')?.value    || '';
+  const auteur = document.getElementById('as-mv-auteur')?.value  || '';
+  const period = document.getElementById('as-mv-period')?.value  || '';
+
+  const now    = new Date();
+  const today  = now.toISOString().slice(0,10);
+  const weekStart = new Date(now); weekStart.setDate(now.getDate() - ((now.getDay()+6)%7)); weekStart.setHours(0,0,0,0);
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  let log = StkLog.get(m.id);
+  if (type)   log = log.filter(e => e.type === type);
+  if (auteur) log = log.filter(e => e.auteur_role === auteur);
+  if (period === 'today') log = log.filter(e => e.ts?.slice(0,10) === today);
+  else if (period === 'week')  log = log.filter(e => new Date(e.ts) >= weekStart);
+  else if (period === 'month') log = log.filter(e => new Date(e.ts) >= monthStart);
+  if (q) log = log.filter(e =>
+    (e.prod_nom||'').toLowerCase().includes(q) ||
+    (e.auteur  ||'').toLowerCase().includes(q) ||
+    (e.motif   ||'').toLowerCase().includes(q)
+  );
+
+  const countEl = document.getElementById('as-mv-count');
+  if (countEl) countEl.textContent = log.length + ' mouvement(s)' + (type || auteur || period || q ? ' (filtrés)' : '');
+
+  const el = document.getElementById('as-mv-list');
+  if (!el) return;
+  if (!log.length) {
+    el.innerHTML = '<div class="empty" style="padding:40px">Aucun mouvement trouvé avec ces filtres.</div>';
+    return;
+  }
+  el.innerHTML = log.map(e => _renderMvItem(e, dev)).join('');
+}
+
+function asMvExportCSV() {
+  const m = Auth.current(); if (!m) return;
+  const dev = getConfig()?.devise || 'FCFA';
+  let log = StkLog.get(m.id);
+  _exportMvCSV(log, 'journal_stock_' + new Date().toISOString().slice(0,10), dev);
+}
+
+function _exportMvCSV(log, filename, dev) {
+  const rows = [['Date','Produit','Type','Delta','Stock avant','Stock après','Auteur','Rôle','Motif']];
+  log.forEach(e => {
+    rows.push([
+      new Date(e.ts).toLocaleString('fr-FR'),
+      e.prod_nom || '',
+      _typeLabel(e.type),
+      (e.delta >= 0 ? '+' : '') + (e.delta || 0),
+      e.old_stock ?? '',
+      e.new_stock ?? '',
+      e.auteur || '',
+      {proprietaire:'Propriétaire', gerant:'Gérant', caissier:'Caissier'}[e.auteur_role] || '',
+      e.motif || ''
+    ]);
+  });
+  const csv = '\uFEFF' + rows.map(r => r.map(v => '"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+  a.download = filename + '.csv'; a.click();
+  showToast('📥 CSV téléchargé', 'success');
+}
+
+// ── Inventaire physique ────────────────────────────────────
+let _invData = {}; // { prod_id: qty_comptee }
+
+function openInventaireModal() {
+  const m = Auth.current(); if (!m) return;
+  const prods = DB.forM('products', m.id).filter(p => p.stock !== null);
+  _invData = {};
+
+  const el = document.getElementById('inv-prod-list');
+  if (!el) return;
+
+  el.innerHTML = prods.length ? prods.map(p => `
+    <div class="inv-row" id="inv-row-${p.id}">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:.88rem">${p.nom}</div>
+        <div style="font-size:.72rem;color:var(--text-muted)">${p.categorie||''} · Système : <strong>${p.stock}</strong> unités</div>
+      </div>
+      <input type="number" class="inv-input" min="0" placeholder="—" id="inv-qty-${p.id}"
+        oninput="_invUpdate('${p.id}',${p.stock})"
+        style="width:70px"/>
+      <div id="inv-ecart-${p.id}" style="width:80px;text-align:right;font-size:.8rem;color:var(--text-muted)">—</div>
+    </div>
+  `).join('') : '<div class="empty" style="padding:24px">Aucun produit avec stock suivi.</div>';
+
+  document.getElementById('mo-inventaire').classList.remove('hidden');
+}
+
+function _invUpdate(pid, stockSys) {
+  const val = parseInt(document.getElementById('inv-qty-'+pid)?.value);
+  const ecartEl = document.getElementById('inv-ecart-'+pid);
+  if (isNaN(val)) { _invData[pid] = null; if (ecartEl) ecartEl.textContent = '—'; return; }
+  _invData[pid] = val;
+  const ecart = val - stockSys;
+  if (ecartEl) {
+    if (ecart === 0) { ecartEl.textContent = '✅ 0'; ecartEl.className = 'inv-ecart-zero'; }
+    else if (ecart > 0) { ecartEl.textContent = '+'+ecart+' 🟠'; ecartEl.className = 'inv-ecart-pos'; }
+    else { ecartEl.textContent = ecart+' 🔴'; ecartEl.className = 'inv-ecart-neg'; }
+  }
+}
+
+function invFillFromSystem() {
+  const m = Auth.current(); if (!m) return;
+  const prods = DB.forM('products', m.id).filter(p => p.stock !== null);
+  prods.forEach(p => {
+    const input = document.getElementById('inv-qty-'+p.id);
+    if (input) { input.value = p.stock; _invUpdate(p.id, p.stock); }
+  });
+}
+
+function saveInventaire() {
+  const m = Auth.current(); if (!m) return;
+  const dev   = getConfig()?.devise || 'FCFA';
+  const prods = DB.forM('products', m.id).filter(p => p.stock !== null);
+  const entered = Object.entries(_invData).filter(([k,v]) => v !== null);
+  if (!entered.length) { showToast('⚠️ Entrez au moins une quantité', 'error'); return; }
+
+  const ecarts = [];
+  const allP = DB.get('products');
+
+  entered.forEach(([pid, qteCpt]) => {
+    const p = prods.find(x => x.id === pid); if (!p) return;
+    const ecart = qteCpt - p.stock;
+    ecarts.push({ pid, nom: p.nom, stock_sys: p.stock, qty_comptee: qteCpt, ecart });
+
+    if (ecart !== 0) {
+      // Corriger le stock réel
+      const idx = allP.findIndex(x => x.id === pid && x.merchant_id === m.id);
+      if (idx !== -1) {
+        const oldStock = allP[idx].stock;
+        allP[idx].stock = qteCpt;
+        // Tracer le mouvement
+        StkLog.push(m.id, {
+          type:       'inventaire',
+          icon:       '📋',
+          prod_id:    pid,
+          prod_nom:   p.nom,
+          delta:      ecart,
+          old_stock:  oldStock,
+          new_stock:  qteCpt,
+          auteur:     m.proprietaire || 'Propriétaire',
+          auteur_role:'proprietaire',
+          motif:      'Inventaire physique — correction de ' + (ecart >= 0 ? '+' : '') + ecart + ' unité(s)'
+        });
+      }
+    }
+  });
+  DB.set('products', allP);
+  DB.forM('products', m.id).forEach(p => fbSet(m.id, 'products', p.id, p));
+
+  // Sauvegarder le rapport d'inventaire
+  const invKey = 'ds_inv_' + m.id;
+  const invList = (() => { try { return JSON.parse(localStorage.getItem(invKey)||'[]'); } catch { return []; } })();
+  invList.unshift({ ts: new Date().toISOString(), auteur: m.proprietaire, ecarts, nb: entered.length });
+  localStorage.setItem(invKey, JSON.stringify(invList.slice(0, 20)));
+
+  closeMo('mo-inventaire');
+  showToast('✅ Inventaire validé — ' + ecarts.filter(e => e.ecart !== 0).length + ' correction(s) appliquée(s)', 'success');
+  renderAdminStock();
+  renderProducts();
+
+  // Rapport imprimable automatique si écarts
+  const avecEcarts = ecarts.filter(e => e.ecart !== 0);
+  if (avecEcarts.length) _printInventaireRapport(m, entered.length, avecEcarts, dev);
+}
+
+function renderAdminInventaireHistory() {
+  const m = Auth.current(); if (!m) return;
+  const dev = getConfig()?.devise || 'FCFA';
+  const invList = (() => { try { return JSON.parse(localStorage.getItem('ds_inv_'+m.id)||'[]'); } catch { return []; } })();
+  const el = document.getElementById('as-inv-history');
+  if (!el) return;
+  if (!invList.length) {
+    el.innerHTML = '<p class="empty" style="padding:24px">Aucun inventaire physique enregistré.</p>';
+    return;
+  }
+  el.innerHTML = invList.map((inv, i) => {
+    const dt = new Date(inv.ts).toLocaleString('fr-FR', {day:'2-digit', month:'2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit'});
+    const avecEcarts = (inv.ecarts||[]).filter(e => e.ecart !== 0);
+    return `<div class="dash-card" style="margin-bottom:12px">
+      <div class="dc-hdr">
+        <div>
+          <div style="font-weight:700">📋 Inventaire du ${dt}</div>
+          <div style="font-size:.75rem;color:var(--text-muted)">Par ${inv.auteur} · ${inv.nb} produits comptés · ${avecEcarts.length} écart(s)</div>
+        </div>
+        <button class="btn-g sm" onclick="_printInventaireRapport(Auth.current(), ${inv.nb}, ${JSON.stringify(avecEcarts)}, '${dev}')">🖨️ Rapport</button>
+      </div>
+      ${avecEcarts.length ? `<div style="padding:0 14px 14px">
+        ${avecEcarts.map(e => `<div style="display:flex;justify-content:space-between;font-size:.8rem;padding:5px 0;border-bottom:1px solid var(--border)">
+          <span>${e.nom}</span>
+          <span>Sys: ${e.stock_sys} · Compté: ${e.qty_comptee} · <strong style="color:${e.ecart<0?'var(--danger)':'var(--warning)'}">${e.ecart>=0?'+':''}${e.ecart}</strong></span>
+        </div>`).join('')}
+      </div>` : '<div style="padding:10px 14px;font-size:.8rem;color:var(--success)">✅ Aucun écart détecté.</div>'}
+    </div>`;
+  }).join('');
+}
+
+function _printInventaireRapport(m, nb, ecarts, dev) {
+  if (!m) return;
+  const dt = new Date().toLocaleString('fr-FR');
+  let html = `<html><head><title>Rapport inventaire</title><style>body{font-family:monospace;font-size:9pt;margin:20px}table{width:100%;border-collapse:collapse;font-size:8.5pt}th,td{border:1px solid #ccc;padding:4px 8px}th{background:#eee}h2,h3{text-align:center;margin:4px 0}.danger{color:red}.warn{color:orange}</style></head><body>`;
+  html += `<h2>${m.nom_commerce}</h2><h3>FICHE D'INVENTAIRE PHYSIQUE</h3>`;
+  html += `<p style="text-align:center;font-size:8pt">Date : ${dt} · Signé par : ${m.proprietaire} · ${nb} produit(s) comptés</p>`;
+  html += `<table><tr><th>Produit</th><th>Stock système</th><th>Compté</th><th>Écart</th><th>Statut</th></tr>`;
+  ecarts.forEach(e => {
+    const cls = e.ecart === 0 ? '' : e.ecart < 0 ? 'danger' : 'warn';
+    html += `<tr><td>${e.nom}</td><td style="text-align:center">${e.stock_sys}</td><td style="text-align:center">${e.qty_comptee}</td><td style="text-align:center;font-weight:bold" class="${cls}">${e.ecart>=0?'+':''}${e.ecart}</td><td>${e.ecart===0?'✅ OK':e.ecart<0?'🔴 Perte / Manquant':'🟠 Surplus'}</td></tr>`;
+  });
+  html += `</table><p style="margin-top:20px;font-size:8pt;text-align:center">Rapport généré par Digitale Solution · ${dt}</p>`;
+  html += `<p style="margin-top:40px;font-size:8pt">Signature propriétaire : _________________________</p>`;
+  html += `<script>window.print();<\/script></body></html>`;
+  const w = window.open('', '_blank');
+  if (w) { w.document.write(html); w.document.close(); }
+}
+
+// ============================================================
+// MODULE SERVEUR — Page ?serveur=Fatou
+// Catalogue produit · Panier · Firebase commandes temps réel
+// ============================================================
+
+const SRV_ALERT_SOUND = (function(){
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    return function() {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = 880; gain.gain.value = 0.3;
+      osc.start(); gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+      osc.stop(ctx.currentTime + 0.4);
+    };
+  } catch(e) { return () => {}; }
+})();
+
+// ── Détection URL ?serveur=Fatou au chargement ─────────────
+// ── initServeurPage est maintenant appelé depuis DOMContentLoaded via ?serveur= param
+function initServeurPage() {
+  // Récupérer le marchand (premier merchant disponible)
+  const merchants = DB.get('merchants') || [];
+  if (!merchants.length) {
+    // Pas de marchand configuré — afficher message
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const pg = document.getElementById('page-serveur');
+    if (pg) {
+      pg.classList.add('active');
+      pg.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px;text-align:center;gap:16px">
+        <div style="font-size:3rem">⚠️</div>
+        <h2>Commerce non configuré</h2>
+        <p style="color:var(--text-muted);font-size:.88rem">Ce lien n'est pas encore associé à un commerce. Demandez au propriétaire de configurer l'application.</p>
+      </div>`;
+    }
+    return;
+  }
+  _srvMid = merchants[0].id;
+  const m = merchants[0];
+
+  // Afficher la page serveuse
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pg = document.getElementById('page-serveur');
+  if (pg) pg.classList.add('active');
+
+  // Mettre à jour nom + commerce
+  document.getElementById('srv-name-display').textContent = _srvName;
+  document.getElementById('srv-status-name').textContent  = _srvName;
+  document.getElementById('srv-commerce-name').textContent = m.nom_commerce || 'Commerce';
+
+  // Appliquer thème sauvegardé
+  const theme = localStorage.getItem('ds_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', theme);
+
+  // Init Firebase pour écouter les statuts
+  if (!_fbDb) initFirestoreWith(getFirebaseConfig());
+
+  srvRenderCatalogue();
+  _srvListenMyOrders();
+}
+
+// ── Catalogue serveuse ──────────────────────────────────────
+function srvRenderCatalogue() {
+  if (!_srvMid) return;
+  const prods = DB.forM('products', _srvMid);
+  const dev   = (() => { try { const cfgs = DB.get('configs')||[]; const c=cfgs.find(x=>x.merchant_id===_srvMid); return c?.devise||'FCFA'; } catch{return 'FCFA';} })();
+  const q     = (document.getElementById('srv-srch')?.value || '').toLowerCase();
+  const f     = prods.filter(p => !q || p.nom.toLowerCase().includes(q));
+  const catEmos = {boisson:'🥤',plat:'🍽️',dessert:'🍰',pain:'🥖',viande:'🥩',poisson:'🐟',légume:'🥦',électronique:'📱',vêtement:'👕',médicament:'💊',chambre:'🛏️'};
+
+  const grid = document.getElementById('srv-grid');
+  if (!grid) return;
+
+  if (!f.length) {
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1;padding:40px">Aucun produit disponible.</div>';
+    return;
+  }
+
+  grid.innerHTML = f.map(p => {
+    const oos     = p.stock !== null && p.stock === 0;
+    const cat     = (p.categorie||'').toLowerCase();
+    const emo     = Object.entries(catEmos).find(([k])=>cat.includes(k))?.[1] || '📦';
+    const inCart  = _srvCart.find(c=>c.pid===p.id);
+    const qty     = inCart?.qty || 0;
+    const imgTop  = p.image_b64 ? `<img src="${p.image_b64}" class="srv-card-img" alt="${p.nom}"/>` : `<div class="srv-card-emo">${emo}</div>`;
+    return `<div class="srv-card${oos?' oos':''}${qty>0?' in-cart':''}" onclick="srvToggleCart('${p.id}','${p.nom.replace(/'/g,"\\'")}',${p.prix})">
+      ${qty > 0 ? `<div class="srv-card-badge">${qty}</div>` : ''}
+      ${imgTop}
+      <div class="srv-card-name">${p.nom}</div>
+      <div class="srv-card-price">${fmtMoney(p.prix, dev)}</div>
+      ${oos ? '<div class="srv-card-oos">⛔ Rupture</div>' : ''}
+    </div>`;
+  }).join('');
+
+  _srvUpdateCartBar();
+}
+
+function srvToggleCart(pid, nom, prix) {
+  const idx = _srvCart.findIndex(c => c.pid === pid);
+  if (idx === -1) {
+    _srvCart.push({ pid, nom, prix, qty: 1 });
+  } else {
+    _srvCart[idx].qty++;
+    if (_srvCart[idx].qty > 20) _srvCart[idx].qty = 0; // reset à 0 → sera supprimé
+    if (_srvCart[idx].qty === 0) _srvCart.splice(idx, 1);
+  }
+  srvRenderCatalogue();
+}
+
+function _srvUpdateCartBar() {
+  const count  = _srvCart.reduce((a, c) => a + c.qty, 0);
+  const dev    = (() => { try { const cfgs=DB.get('configs')||[]; const c=cfgs.find(x=>x.merchant_id===_srvMid); return c?.devise||'FCFA'; } catch{return 'FCFA';} })();
+  const total  = _srvCart.reduce((a, c) => a + c.prix * c.qty, 0);
+  const cntEl  = document.getElementById('srv-cart-count');
+  const totEl  = document.getElementById('srv-cart-total');
+  const btnEl  = document.getElementById('srv-send-btn');
+  if (cntEl) cntEl.textContent = count > 0 ? `${count} article${count>1?'s':''} dans le panier` : 'Panier vide';
+  if (totEl) totEl.textContent = count > 0 ? fmtMoney(total, dev) : '';
+  if (btnEl) { btnEl.disabled = count === 0; btnEl.textContent = count > 0 ? `📤 Envoyer (${fmtMoney(total,dev)})` : '📤 Envoyer'; }
+}
+
+// ── Envoi commande ──────────────────────────────────────────
+function srvSendOrder() {
+  if (!_srvCart.length) return;
+  const dev   = (() => { try { const cfgs=DB.get('configs')||[]; const c=cfgs.find(x=>x.merchant_id===_srvMid); return c?.devise||'FCFA'; } catch{return 'FCFA';} })();
+  const total = _srvCart.reduce((a,c) => a+c.prix*c.qty, 0);
+  const recap = document.getElementById('srv-cart-recap');
+  if (recap) {
+    recap.innerHTML = `
+      <div style="font-size:.78rem;color:var(--text-muted);margin-bottom:8px">Serveuse : <strong>${_srvName}</strong>${document.getElementById('srv-table')?.value ? ' · Table : <strong>' + document.getElementById('srv-table').value + '</strong>' : ''}</div>
+      ${_srvCart.map(c=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:.85rem"><span>${c.nom} <strong>×${c.qty}</strong></span><span style="color:var(--accent)">${fmtMoney(c.prix*c.qty,dev)}</span></div>`).join('')}
+      <div style="display:flex;justify-content:space-between;padding:10px 0 0;font-weight:800">Total<span style="color:var(--accent)">${fmtMoney(total,dev)}</span></div>`;
+  }
+  document.getElementById('srv-mo-cart').style.display = 'flex';
+}
+
+function srvCloseMoCart() { document.getElementById('srv-mo-cart').style.display = 'none'; }
+
+async function srvConfirmSend() {
+  srvCloseMoCart();
+  const dev   = (() => { try { const cfgs=DB.get('configs')||[]; const c=cfgs.find(x=>x.merchant_id===_srvMid); return c?.devise||'FCFA'; } catch{return 'FCFA';} })();
+  const table = document.getElementById('srv-table')?.value?.trim() || '';
+  const total = _srvCart.reduce((a,c) => a+c.prix*c.qty, 0);
+
+  const cmd = {
+    id:          'cmd_' + Date.now().toString(36) + Math.random().toString(36).slice(2,5),
+    serveur:     _srvName,
+    merchant_id: _srvMid,
+    table:       table,
+    items:       JSON.parse(JSON.stringify(_srvCart)),
+    total,
+    devise:      dev,
+    statut:      'new',
+    created_at:  new Date().toISOString(),
+    updated_at:  new Date().toISOString()
+  };
+
+  // Sauvegarder local
+  _cmdSaveLocal(cmd);
+  _srvCmdId = cmd.id;
+
+  // Push Firebase
+  if (_fbDb) {
+    try {
+      await _fbDb.collection('merchants').doc(_srvMid).collection('commandes').doc(cmd.id).set(cmd);
+    } catch(e) { console.warn('[SRV] Firebase push failed:', e.message); }
+  }
+
+  // Afficher écran statut
+  _srvShowStatusScreen(cmd);
+
+  // Vider le panier
+  _srvCart = [];
+  srvRenderCatalogue();
+
+  // Démarrer timer relance (3 min)
+  clearTimeout(_srvRelanceTimer);
+  _srvRelanceTimer = setTimeout(() => {
+    const btn = document.getElementById('srv-relance-btn');
+    if (btn) btn.style.display = 'block';
+  }, 180000);
+}
+
+function _srvShowStatusScreen(cmd) {
+  const screen = document.getElementById('srv-status-screen');
+  if (!screen) return;
+  screen.style.display = 'flex';
+
+  const dev = cmd.devise || 'FCFA';
+  // Step initial
+  _srvSetStep(1);
+
+  // Recap
+  const recap = document.getElementById('srv-st-recap');
+  if (recap) {
+    recap.innerHTML = `
+      <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:8px">🕐 ${new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}${cmd.table?' · 🪑 Table '+cmd.table:''}</div>
+      ${cmd.items.map(it=>`<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:.82rem;border-bottom:1px solid var(--border)"><span>${it.nom} ×${it.qty}</span><span style="color:var(--accent)">${fmtMoney(it.prix*it.qty,dev)}</span></div>`).join('')}
+      <div style="display:flex;justify-content:space-between;padding:8px 0 0;font-weight:800;font-size:.88rem">Total <span style="color:var(--accent)">${fmtMoney(cmd.total,dev)}</span></div>`;
+  }
+
+  // Écouter le statut Firebase
+  if (_fbDb) {
+    if (_srvListener) _srvListener();
+    _srvListener = _fbDb.collection('merchants').doc(_srvMid).collection('commandes').doc(cmd.id)
+      .onSnapshot(snap => {
+        if (!snap.exists) return;
+        const data = snap.data();
+        _srvUpdateStatus(data.statut);
+        // Mettre à jour local
+        _cmdSaveLocal(data);
+      });
+  }
+}
+
+function _srvSetStep(active) {
+  [1,2,3].forEach(n => {
+    const step = document.getElementById('srv-step-' + n);
+    if (!step) return;
+    step.classList.remove('active','done');
+    if (n < active) step.classList.add('done');
+    else if (n === active) step.classList.add('active');
+  });
+  [1,2].forEach(n => {
+    const line = document.getElementById('srv-line-' + n);
+    if (line) line.classList.toggle('done', n < active);
+  });
+}
+
+function _srvUpdateStatus(statut) {
+  const iconEl  = document.getElementById('srv-st-icon');
+  const titleEl = document.getElementById('srv-st-title');
+  const subEl   = document.getElementById('srv-st-sub');
+  if (statut === 'new') {
+    if (iconEl)  iconEl.textContent  = '📤';
+    if (titleEl) titleEl.textContent = 'Commande envoyée !';
+    if (subEl)   subEl.textContent   = 'En attente de la caissière...';
+    _srvSetStep(1);
+  } else if (statut === 'vue') {
+    if (iconEl)  iconEl.textContent  = '👀';
+    if (titleEl) titleEl.textContent = 'Commande prise en charge';
+    if (subEl)   subEl.textContent   = 'La caissière prépare votre encaissement';
+    _srvSetStep(2);
+    clearTimeout(_srvRelanceTimer);
+    const relBtn = document.getElementById('srv-relance-btn');
+    if (relBtn) relBtn.style.display = 'none';
+    SRV_ALERT_SOUND();
+  } else if (statut === 'encaissee') {
+    if (iconEl)  iconEl.textContent  = '✅';
+    if (titleEl) titleEl.textContent = 'Commande encaissée !';
+    if (subEl)   subEl.textContent   = 'Le client a été servi. Bonne continuation !';
+    _srvSetStep(3);
+    SRV_ALERT_SOUND();
+    if (_srvListener) { _srvListener(); _srvListener = null; }
+  } else if (statut === 'annulee') {
+    if (iconEl)  iconEl.textContent  = '❌';
+    if (titleEl) titleEl.textContent = 'Commande annulée';
+    if (subEl)   subEl.textContent   = 'La commande a été annulée par la caissière.';
+    _srvSetStep(1);
+    if (_srvListener) { _srvListener(); _srvListener = null; }
+  }
+}
+
+function srvNewOrder() {
+  document.getElementById('srv-status-screen').style.display = 'none';
+  if (_srvListener) { _srvListener(); _srvListener = null; }
+  _srvCmdId = null;
+  clearTimeout(_srvRelanceTimer);
+  const relBtn = document.getElementById('srv-relance-btn');
+  if (relBtn) relBtn.style.display = 'none';
+}
+
+async function srvRelance() {
+  if (!_srvCmdId || !_fbDb) return;
+  const relBtn = document.getElementById('srv-relance-btn');
+  if (relBtn) { relBtn.disabled = true; relBtn.textContent = '⏳ Relance envoyée...'; }
+  try {
+    await _fbDb.collection('merchants').doc(_srvMid).collection('commandes').doc(_srvCmdId)
+      .update({ relance: firebase.firestore.FieldValue.serverTimestamp(), relance_by: _srvName });
+    setTimeout(() => {
+      if (relBtn) { relBtn.disabled = false; relBtn.textContent = '🔔 Relancer la caissière'; }
+    }, 30000);
+  } catch(e) { if (relBtn) { relBtn.disabled = false; relBtn.textContent = '🔔 Relancer la caissière'; } }
+}
+
+// ── Mes commandes (historique serveuse) ────────────────────
+function srvViewOrders() {
+  const dev = (() => { try { const cfgs=DB.get('configs')||[]; const c=cfgs.find(x=>x.merchant_id===_srvMid); return c?.devise||'FCFA'; } catch{return 'FCFA';} })();
+  const allCmds = _cmdGetLocal(_srvMid).filter(c => c.serveur === _srvName);
+  const el = document.getElementById('srv-orders-list');
+  if (el) {
+    if (!allCmds.length) {
+      el.innerHTML = '<div class="empty" style="padding:24px">Aucune commande envoyée aujourd\'hui.</div>';
+    } else {
+      el.innerHTML = allCmds.slice(0,20).map(c => {
+        const t = new Date(c.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+        const stLabels = {new:'📤 En attente',vue:'👀 Vue',encaissee:'✅ Encaissée',annulee:'❌ Annulée'};
+        const stColors = {new:'var(--accent)',vue:'#4FC3F7',encaissee:'var(--success)',annulee:'var(--danger)'};
+        return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);padding:12px;margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <span style="font-size:.78rem;color:var(--text-muted)">${t}${c.table?' · 🪑 '+c.table:''}</span>
+            <span style="font-size:.72rem;font-weight:700;color:${stColors[c.statut]||'var(--text)'}">${stLabels[c.statut]||c.statut}</span>
+          </div>
+          <div style="font-size:.82rem">${(c.items||[]).map(it=>it.nom+' ×'+it.qty).join(' · ')}</div>
+          <div style="font-weight:800;color:var(--accent);font-size:.88rem;margin-top:4px">${fmtMoney(c.total,dev)}</div>
+        </div>`;
+      }).join('');
+    }
+  }
+  document.getElementById('srv-mo-orders').style.display = 'flex';
+}
+
+// ── Écouter ses propres commandes (badge) ──────────────────
+function _srvListenMyOrders() {
+  if (!_fbDb || !_srvMid || !_srvName) return;
+  _fbDb.collection('merchants').doc(_srvMid).collection('commandes')
+    .where('serveur','==',_srvName)
+    .onSnapshot(snap => {
+      snap.docChanges().forEach(change => {
+        const cmd = change.doc.data();
+        _cmdSaveLocal(cmd);
+        if (change.type === 'modified' && cmd.statut !== 'new') SRV_ALERT_SOUND();
+      });
+      const pending = snap.docs.filter(d => ['new','vue'].includes(d.data().statut)).length;
+      const badge = document.getElementById('srv-orders-badge');
+      if (badge) { badge.textContent = pending; badge.style.display = pending > 0 ? 'flex' : 'none'; }
+    });
+}
+
+// ============================================================
+// MODULE COMMANDES CAISSIÈRE
+// Écran de gestion des commandes serveuses — temps réel
+// ============================================================
+
+let _cmdListener    = null;
+let _currentPrintCmd= null;
+const CMD_ALERT_SOUND = SRV_ALERT_SOUND;
+
+// ── Stockage local des commandes (fallback sans Firebase) ──
+const CMD_LOCAL_KEY = mid => 'ds_cmds_' + mid;
+function _cmdGetLocal(mid) {
+  try { return JSON.parse(localStorage.getItem(CMD_LOCAL_KEY(mid)) || '[]'); } catch { return []; }
+}
+function _cmdSaveLocal(cmd) {
+  const list = _cmdGetLocal(cmd.merchant_id);
+  const idx  = list.findIndex(c => c.id === cmd.id);
+  if (idx !== -1) list[idx] = cmd; else list.unshift(cmd);
+  localStorage.setItem(CMD_LOCAL_KEY(cmd.merchant_id), JSON.stringify(list.slice(0, 200)));
+}
+
+// ── Liste des serveuses (sauvegardées) ────────────────────
+function _getServeurs(mid) {
+  try { return JSON.parse(localStorage.getItem('ds_serveurs_' + mid) || '[]'); } catch { return []; }
+}
+function _saveServeurs(mid, list) {
+  localStorage.setItem('ds_serveurs_' + mid, JSON.stringify(list));
+}
+
+function addServeur() {
+  const m = Auth.current(); if (!m) return;
+  const input = document.getElementById('new-srv-name');
+  const name  = input?.value?.trim();
+  if (!name) return;
+  const list = _getServeurs(m.id);
+  if (!list.includes(name)) { list.push(name); _saveServeurs(m.id, list); }
+  if (input) input.value = '';
+  renderCmdLinks();
+}
+
+function renderCmdLinks() {
+  const m = Auth.current(); if (!m) return;
+  const list = _getServeurs(m.id);
+  const base = window.location.href.split('?')[0];
+  const el   = document.getElementById('cmd-links-list');
+  if (!el) return;
+  if (!list.length) {
+    el.innerHTML = '<p class="empty" style="padding:12px">Aucune serveuse configurée.</p>';
+    return;
+  }
+  el.innerHTML = list.map(name => {
+    const url = base + '?serveur=' + encodeURIComponent(name);
+    return `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);padding:12px;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-weight:700">👩‍🍳 ${name}</span>
+        <button onclick="removeServeur('${name}')" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:.8rem">🗑️ Supprimer</button>
+      </div>
+      <div style="font-size:.72rem;color:var(--text-dim);word-break:break-all;margin-bottom:8px;font-family:monospace">${url}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button onclick="navigator.clipboard?.writeText('${url}').then(()=>showToast('✅ Lien copié !','success'))" class="btn-g sm">📋 Copier</button>
+        <button onclick="window.open('${url}','_blank')" class="btn-p sm">🔗 Ouvrir</button>
+        <button onclick="_showQR('${name}','${url}')" class="btn-g sm">📲 QR Code</button>
+        <a href="https://wa.me/?text=${encodeURIComponent('Ton lien de commande : '+url)}" target="_blank" class="btn-g sm" style="display:inline-flex;align-items:center;text-decoration:none;color:var(--text)">💬 WhatsApp</a>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function removeServeur(name) {
+  const m = Auth.current(); if (!m) return;
+  if (!confirm('Supprimer ' + name + ' ?')) return;
+  const list = _getServeurs(m.id).filter(n => n !== name);
+  _saveServeurs(m.id, list);
+  renderCmdLinks();
+}
+
+function _showQR(name, url) {
+  // Génération QR via API externe (no-lib)
+  const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=' + encodeURIComponent(url);
+  const w = window.open('','_blank','width=360,height=420');
+  if (w) {
+    w.document.write(`<html><head><title>QR ${name}</title><style>body{font-family:sans-serif;text-align:center;padding:20px;background:#fff}</style></head><body>
+      <h3>👩‍🍳 ${name}</h3>
+      <img src="${qrUrl}" style="max-width:280px;margin:10px auto"/>
+      <p style="font-size:12px;color:#666;word-break:break-all">${url}</p>
+      <button onclick="window.print()" style="margin-top:10px;padding:8px 20px;font-size:14px;cursor:pointer">🖨️ Imprimer</button>
+      <script>document.querySelector('img').onload=()=>{}<\/script>
+    </body></html>`);
+    w.document.close();
+  }
+}
+
+function showCmdLinks() {
+  renderCmdLinks();
+  document.getElementById('mo-cmd-links').classList.remove('hidden');
+}
+
+// ── Rendu principal écran commandes caissière ──────────────
+function renderCommandes() {
+  const m = Auth.current(); if (!m) return;
+  const dev     = getConfig()?.devise || 'FCFA';
+  const fltSt   = document.getElementById('cmd-flt-status')?.value || '';
+  const fltSrv  = document.getElementById('cmd-flt-srv')?.value   || '';
+  const today   = new Date().toISOString().slice(0,10);
+
+  let cmds = _cmdGetLocal(m.id)
+    .filter(c => (c.created_at||'').slice(0,10) === today);
+
+  // KPIs
+  const allToday = _cmdGetLocal(m.id).filter(c => (c.created_at||'').slice(0,10) === today);
+  const kNew = allToday.filter(c=>c.statut==='new').length;
+  const kVue = allToday.filter(c=>c.statut==='vue').length;
+  const kEnc = allToday.filter(c=>c.statut==='encaissee').length;
+  const srvNames = [...new Set(allToday.map(c=>c.serveur).filter(Boolean))];
+
+  const set = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=v; };
+  set('cmd-kpi-new', kNew);
+  set('cmd-kpi-vue', kVue);
+  set('cmd-kpi-enc', kEnc);
+  set('cmd-kpi-srv', srvNames.length);
+
+  // Badge nav
+  const navBadge = document.getElementById('cmd-nav-badge');
+  if (navBadge) { navBadge.textContent = kNew; navBadge.style.display = kNew > 0 ? 'inline-block' : 'none'; }
+
+  // Filtre serveuse select
+  const srvSel = document.getElementById('cmd-flt-srv');
+  if (srvSel) {
+    const cv = srvSel.value;
+    srvSel.innerHTML = '<option value="">Toutes les serveuses</option>' +
+      srvNames.map(n=>`<option value="${n}" ${cv===n?'selected':''}>${n}</option>`).join('');
+  }
+
+  if (fltSt)  cmds = cmds.filter(c => c.statut === fltSt);
+  if (fltSrv) cmds = cmds.filter(c => c.serveur === fltSrv);
+
+  const el = document.getElementById('cmd-list');
+  if (!el) return;
+
+  if (!cmds.length) {
+    el.innerHTML = `<div class="empty" style="grid-column:1/-1;padding:40px;text-align:center">
+      ${kNew+kVue+kEnc === 0 ? '📭 Aucune commande reçue aujourd\'hui.<br><small style="color:var(--text-dim)">Les commandes des serveuses apparaîtront ici en temps réel.</small>' : '🔍 Aucune commande pour ce filtre.'}
+    </div>`;
+    return;
+  }
+
+  // Trier : new en premier, puis vue, puis encaissee
+  const ORDER = {new:0,vue:1,encaissee:2,annulee:3};
+  cmds.sort((a,b) => (ORDER[a.statut]??9) - (ORDER[b.statut]??9) || new Date(b.created_at)-new Date(a.created_at));
+
+  el.innerHTML = cmds.map(cmd => {
+    const t = new Date(cmd.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    const stLabels = {new:'📤 En attente',vue:'👀 Vue',encaissee:'✅ Encaissée',annulee:'❌ Annulée'};
+    const stCls    = {new:'st-new',vue:'st-vue',encaissee:'st-encaissee',annulee:'st-annulee'};
+    const cardCls  = {new:'new',vue:'vue',encaissee:'encaissee',annulee:''}[cmd.statut] || '';
+    const items    = cmd.items || [];
+    const relance  = cmd.relance ? '<span style="font-size:.65rem;color:var(--warning);font-weight:700">🔔 RELANCE</span>' : '';
+
+    return `<div class="cmd-card ${cardCls}" id="cmd-card-${cmd.id}">
+      <div class="cmd-header">
+        <div>
+          <div class="cmd-serveur">👩‍🍳 ${cmd.serveur || '—'}${relance ? ' ' + relance : ''}</div>
+          <div class="cmd-table">${cmd.table ? '🪑 Table ' + cmd.table : ''}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          <span class="cmd-status-badge ${stCls[cmd.statut]||''}">${stLabels[cmd.statut]||cmd.statut}</span>
+          <div class="cmd-time">${t}</div>
+        </div>
+      </div>
+      <div class="cmd-items">
+        ${items.map(it=>`<div class="cmd-item-row"><span><strong>${it.qty}×</strong> ${it.nom}</span><span style="color:var(--accent)">${fmtMoney(it.prix*it.qty,dev)}</span></div>`).join('')}
+      </div>
+      <div class="cmd-total"><span>Total</span><span>${fmtMoney(cmd.total,dev)}</span></div>
+      <div class="cmd-actions">
+        ${cmd.statut === 'new' ? `<button class="btn-p sm" style="flex:1" onclick="cmdMarkVue('${cmd.id}')">👀 Prendre en charge</button>` : ''}
+        ${['new','vue'].includes(cmd.statut) ? `<button class="btn-p sm" style="flex:2;background:var(--success)" onclick="cmdLoadInPOS('${cmd.id}')">🛒 Charger dans POS</button>` : ''}
+        ${cmd.statut !== 'annulee' && cmd.statut !== 'encaissee' ? `<button class="btn-d sm" onclick="cmdCancel('${cmd.id}')">❌</button>` : ''}
+        <button class="btn-g sm" onclick="cmdOpenPrint('${cmd.id}')">🖨️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function cmdRefresh() {
+  renderCommandes();
+  showToast('🔄 Actualisé', 'success');
+}
+
+// ── Actions caissière ──────────────────────────────────────
+async function _cmdUpdate(cmdId, updates) {
+  const m = Auth.current(); if (!m) return;
+  const list = _cmdGetLocal(m.id);
+  const idx  = list.findIndex(c => c.id === cmdId);
+  if (idx === -1) return;
+  Object.assign(list[idx], updates, { updated_at: new Date().toISOString() });
+  localStorage.setItem(CMD_LOCAL_KEY(m.id), JSON.stringify(list.slice(0,200)));
+  // Firebase
+  if (_fbDb) {
+    try {
+      await _fbDb.collection('merchants').doc(m.id).collection('commandes').doc(cmdId).update({ ...updates, updated_at: new Date().toISOString() });
+    } catch(e) { console.warn('[CMD] Firebase update:', e.message); }
+  }
+  renderCommandes();
+}
+
+function cmdMarkVue(cmdId) { _cmdUpdate(cmdId, { statut: 'vue' }); }
+function cmdCancel(cmdId)  { if (confirm('Annuler cette commande ?')) _cmdUpdate(cmdId, { statut: 'annulee' }); }
+
+function cmdLoadInPOS(cmdId) {
+  const m = Auth.current(); if (!m) return;
+  const cmd = _cmdGetLocal(m.id).find(c => c.id === cmdId);
+  if (!cmd) return;
+  // Marquer comme vue
+  _cmdUpdate(cmdId, { statut: 'vue' });
+  // Charger les articles dans le cart POS
+  cart = cmd.items.map(it => ({ pid: it.pid, nom: it.nom, prix: it.prix, qty: it.qty }));
+  // Préremplir le nom client avec serveuse + table
+  const clientName = cmd.serveur + (cmd.table ? ' — Table ' + cmd.table : '');
+  const cliInput = document.getElementById('cart-cli-nom');
+  if (cliInput) cliInput.value = clientName;
+  // Naviguer vers POS
+  showSection('pos');
+  renderCart();
+  showToast('✅ Commande chargée dans le POS — ' + cmd.serveur, 'success');
+  // Marquer dans les métadonnées du cart la commande d'origine
+  window._pendingCmdId = cmdId;
+}
+
+// ── Impression commandes ───────────────────────────────────
+function cmdOpenPrint(cmdId) {
+  const m = Auth.current(); if (!m) return;
+  _currentPrintCmd = _cmdGetLocal(m.id).find(c => c.id === cmdId);
+  if (!_currentPrintCmd) return;
+  document.getElementById('mo-cmd-print').classList.remove('hidden');
+}
+
+function cmdPrintBonCuisine(cmd) {
+  if (!cmd) return;
+  closeMo('mo-cmd-print');
+  const t = new Date(cmd.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  let html = `<html><head><title>Bon cuisine</title><style>
+    body{font-family:'Courier New',monospace;font-size:11pt;margin:0;padding:16px;max-width:300px}
+    h2{text-align:center;font-size:13pt;margin:4px 0}
+    .sep{border-top:2px dashed #000;margin:8px 0}
+    .row{display:flex;justify-content:space-between;padding:3px 0;font-size:11pt}
+    .qty{font-weight:900;font-size:14pt}
+    .footer{text-align:center;font-size:9pt;margin-top:10px;color:#555}
+  </style></head><body>
+    <h2>🍽️ BON DE COMMANDE</h2>
+    <div class="sep"></div>
+    <div class="row"><span>Serveuse :</span><strong>${cmd.serveur}</strong></div>
+    ${cmd.table?`<div class="row"><span>Table :</span><strong>${cmd.table}</strong></div>`:''}
+    <div class="row"><span>Heure :</span><strong>${t}</strong></div>
+    <div class="sep"></div>
+    ${cmd.items.map(it=>`<div class="row"><span class="qty">${it.qty}×</span><span>${it.nom}</span></div>`).join('')}
+    <div class="sep"></div>
+    <div class="footer">Digitale Solution</div>
+    <script>window.print();<\/script>
+  </body></html>`;
+  const w = window.open('','_blank'); if(w){w.document.write(html);w.document.close();}
+}
+
+function cmdPrintTicket(cmd) {
+  if (!cmd) return;
+  closeMo('mo-cmd-print');
+  const m   = Auth.current(); if (!m) return;
+  const dev = cmd.devise || 'FCFA';
+  const t   = new Date(cmd.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  let html = `<html><head><title>Ticket</title><style>
+    body{font-family:'Courier New',monospace;font-size:10pt;margin:0;padding:16px;max-width:300px}
+    h2{text-align:center;font-size:12pt;margin:4px 0}
+    .sep{border-top:2px dashed #000;margin:8px 0}
+    .row{display:flex;justify-content:space-between;padding:2px 0}
+    .total{font-size:13pt;font-weight:900}
+    .footer{text-align:center;font-size:8pt;margin-top:12px;color:#555}
+  </style></head><body>
+    <h2>${m.nom_commerce||'Commerce'}</h2>
+    <div class="sep"></div>
+    <div class="row"><span>Serveuse</span><span>${cmd.serveur}</span></div>
+    ${cmd.table?`<div class="row"><span>Table</span><span>${cmd.table}</span></div>`:''}
+    <div class="row"><span>Heure</span><span>${t}</span></div>
+    <div class="sep"></div>
+    ${cmd.items.map(it=>`<div class="row"><span>${it.qty}× ${it.nom}</span><span>${fmtMoney(it.prix*it.qty,dev)}</span></div>`).join('')}
+    <div class="sep"></div>
+    <div class="row total"><span>TOTAL</span><span>${fmtMoney(cmd.total,dev)}</span></div>
+    <div class="sep"></div>
+    <div class="footer">Merci pour votre visite !<br>Digitale Solution</div>
+    <script>window.print();<\/script>
+  </body></html>`;
+  const w = window.open('','_blank'); if(w){w.document.write(html);w.document.close();}
+}
+
+function cmdPrintAll() {
+  const m = Auth.current(); if (!m) return;
+  const pending = _cmdGetLocal(m.id).filter(c => c.statut === 'new' || c.statut === 'vue');
+  if (!pending.length) { showToast('Aucune commande en attente à imprimer', 'info'); return; }
+  pending.forEach(cmd => cmdPrintBonCuisine(cmd));
+}
+
+// ── Écoute Firebase temps réel (caissière) ─────────────────
+function _cmdStartListener(mid) {
+  if (!_fbDb || !mid) return;
+  if (_cmdListener) { _cmdListener(); _cmdListener = null; }
+  const today = new Date().toISOString().slice(0,10);
+  let firstLoad = true;
+
+  _cmdListener = _fbDb.collection('merchants').doc(mid).collection('commandes')
+    .where('created_at','>=', today)
+    .orderBy('created_at','desc')
+    .onSnapshot(snap => {
+      snap.docChanges().forEach(change => {
+        const cmd = change.doc.data();
+        _cmdSaveLocal(cmd);
+        // Alerte son + badge pour les nouvelles commandes
+        if (!firstLoad && change.type === 'added' && cmd.statut === 'new') {
+          CMD_ALERT_SOUND();
+          showToast(`📨 Nouvelle commande — ${cmd.serveur}${cmd.table?' (Table '+cmd.table+')':''}`, 'success');
+        }
+        // Relance
+        if (!firstLoad && change.type === 'modified' && change.doc.data().relance) {
+          CMD_ALERT_SOUND(); CMD_ALERT_SOUND();
+          showToast(`🔔 RELANCE de ${cmd.serveur} !`, 'error');
+        }
+      });
+      firstLoad = false;
+      renderCommandes();
+    }, err => { console.warn('[CMD] Firebase listener error:', err.message); });
+}
+
+// ── Marquer encaissée depuis POS après checkout ─────────────
+function _cmdMarkEncaisseeOnCheckout() {
+  if (window._pendingCmdId) {
+    const m = Auth.current();
+    if (m) _cmdUpdate(window._pendingCmdId, { statut: 'encaissee' });
+    window._pendingCmdId = null;
+  }
+}
+
 _startPatronDashboard = function() {
   _origStartPatronDashboard();
   _scheduleWeekAutoSave();
 };
+
+// ============================================================
+// VENTES JOURNALIÈRES — Module complet
+// Lundi→Dimanche, marge par produit (coût unitaire), rapport CSV
+// ============================================================
+
+let _vjWeekOffset = 0; // 0 = semaine courante, -1 = précédente, +1 = suivante
+let _vjSelDay = null;  // date ISO sélectionnée pour le détail
+
+const VJ_DAYS = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+const VJ_DAYS_FULL = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+
+// ── Calcule le lundi de la semaine courante + offset
+function _vjGetWeekStart(offset) {
+  const now = new Date();
+  const day = now.getDay(); // 0=dim,1=lun...
+  const diff = (day === 0 ? -6 : 1 - day); // décalage vers lundi
+  const mon = new Date(now);
+  mon.setDate(now.getDate() + diff + offset * 7);
+  mon.setHours(0, 0, 0, 0);
+  return mon;
+}
+
+// ── Retourne un tableau de 7 objets {date ISO, label court, label long}
+function _vjGetWeekDays(weekStart) {
+  return Array.from({length: 7}, (_, i) => {
+    const d = new Date(weekStart);
+    d.setDate(weekStart.getDate() + i);
+    return {
+      iso:   d.toISOString().slice(0, 10),
+      short: VJ_DAYS[i],
+      full:  VJ_DAYS_FULL[i],
+      date:  d
+    };
+  });
+}
+
+// ── Calcule CA, coût total et marge pour une liste de ventes
+function _vjCalcMetrics(sales, products) {
+  let ca = 0, coutTotal = 0, nbVentes = 0;
+  const prodMap = {};
+  products.forEach(p => { prodMap[p.id] = p; });
+  const topProds = {};
+
+  sales.filter(s => s.statut !== 'cancelled').forEach(s => {
+    ca += s.total || 0;
+    nbVentes++;
+    (s.items || []).forEach(item => {
+      // Coût unitaire depuis le catalogue produit
+      const prod = prodMap[item.pid] || products.find(p => p.nom === item.nom);
+      const cout = prod?.cout;
+      const qty  = item.qty || 1;
+      if (cout != null) coutTotal += cout * qty;
+      // Top produits
+      const key = item.nom || '—';
+      if (!topProds[key]) topProds[key] = { ca: 0, qty: 0 };
+      topProds[key].ca  += (item.prix || 0) * qty;
+      topProds[key].qty += qty;
+    });
+  });
+
+  const marge    = ca - coutTotal;
+  const margePct = ca > 0 ? Math.round((marge / ca) * 100) : 0;
+  const topList  = Object.entries(topProds).sort((a, b) => b[1].ca - a[1].ca);
+  return { ca, coutTotal, marge, margePct, nbVentes, topList };
+}
+
+function vjNavWeek(dir) {
+  if (dir === 0) _vjWeekOffset = 0;
+  else _vjWeekOffset += dir;
+  renderVentesJour();
+}
+
+function renderVentesJour() {
+  const m = Auth.current(); if (!m) return;
+  const dev    = getConfig()?.devise || 'FCFA';
+  const prods  = DB.forM('products', m.id);
+  const sales  = DB.forM('sales', m.id);
+  const today  = new Date().toISOString().slice(0, 10);
+
+  const weekStart = _vjGetWeekStart(_vjWeekOffset);
+  const weekEnd   = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 7);
+  const days      = _vjGetWeekDays(weekStart);
+
+  // Label semaine
+  const fmtD = d => d.toLocaleDateString('fr-FR', {day:'2-digit', month:'short'});
+  const lbl = document.getElementById('vj-week-label');
+  if (lbl) lbl.textContent = 'Semaine du ' + fmtD(weekStart) + ' au ' + fmtD(new Date(weekEnd.getTime() - 86400000));
+
+  // Métriques par jour
+  const dayData = days.map(day => {
+    const daySales = sales.filter(s => (s.created_at || '').slice(0, 10) === day.iso);
+    return { ...day, ...(_vjCalcMetrics(daySales, prods)), sales: daySales };
+  });
+
+  // KPIs semaine totaux
+  const totCA     = dayData.reduce((a, d) => a + d.ca, 0);
+  const totMarge  = dayData.reduce((a, d) => a + d.marge, 0);
+  const totVentes = dayData.reduce((a, d) => a + d.nbVentes, 0);
+  const totPct    = totCA > 0 ? Math.round((totMarge / totCA) * 100) : 0;
+
+  const set = (id, v) => { const e = document.getElementById(id); if (e) e.innerHTML = v; };
+  set('vj-kpi-ca',     fmtMoney(totCA, dev));
+  set('vj-kpi-marge',  `<span class="${totMarge >= 0 ? 'marge-pos' : 'marge-neg'}">${fmtMoney(totMarge, dev)}</span>`);
+  set('vj-kpi-ventes', totVentes);
+  set('vj-kpi-pct',    `<span class="${totPct >= 0 ? 'marge-pos' : 'marge-neg'}">${totPct}%</span>`);
+
+  // Graphique barres
+  const maxCA = Math.max(...dayData.map(d => d.ca), 1);
+  const chartEl  = document.getElementById('vj-chart');
+  const chartLbl = document.getElementById('vj-chart-lbl');
+  if (chartEl) {
+    chartEl.innerHTML = dayData.map(d => {
+      const hCA    = Math.max(4, Math.round((d.ca / maxCA) * 120));
+      const hMarge = d.ca > 0 ? Math.max(2, Math.round((Math.max(0, d.marge) / maxCA) * 120)) : 0;
+      const isToday = d.iso === today;
+      return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px">
+        <div style="position:relative;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:120px">
+          <div style="width:60%;background:var(--accent);opacity:${isToday?1:.6};border-radius:3px 3px 0 0;height:${hCA}px;position:absolute;bottom:0;left:50%;transform:translateX(-50%)" title="CA: ${fmtMoney(d.ca,dev)}"></div>
+          <div style="width:35%;background:var(--success);opacity:${isToday?1:.7};border-radius:2px 2px 0 0;height:${hMarge}px;position:absolute;bottom:0;right:8%" title="Marge: ${fmtMoney(d.marge,dev)}"></div>
+        </div>
+      </div>`;
+    }).join('');
+    if (chartLbl) chartLbl.innerHTML = dayData.map(d => `<div style="flex:1;text-align:center;${d.iso===today?'color:var(--accent);font-weight:700':''}">${d.short}</div>`).join('');
+  }
+
+  // Cartes journalières
+  const bestDay = dayData.reduce((best, d) => d.ca > (best?.ca || 0) ? d : best, null);
+  const grid = document.getElementById('vj-days-grid');
+  if (grid) {
+    grid.innerHTML = dayData.map(d => {
+      const isToday   = d.iso === today;
+      const isSel     = d.iso === _vjSelDay;
+      const noData    = d.nbVentes === 0;
+      const margeCol  = d.marge >= 0 ? 'var(--success)' : 'var(--danger)';
+      const isBest    = bestDay?.iso === d.iso && d.ca > 0;
+      return `<div class="vj-day-card${isToday?' today':''}${isSel?' selected':''}${noData?' no-data':''}" onclick="vjSelectDay('${d.iso}')">
+        ${isBest ? '<div class="vj-best-badge">🏆 Meilleur</div>' : ''}
+        <div class="vj-day-name">${d.short}</div>
+        <div class="vj-day-date">${new Date(d.iso+'T12:00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})}</div>
+        ${noData
+          ? '<div style="font-size:.7rem;color:var(--text-dim);margin-top:4px">Aucune vente</div>'
+          : `<div class="vj-day-ca">${fmtMoney(d.ca, dev)}</div>
+             <div class="vj-day-marge" style="color:${margeCol}">${d.marge>=0?'+':''}${fmtMoney(d.marge,dev)}</div>
+             <div class="vj-day-count">${d.nbVentes} vente${d.nbVentes>1?'s':''}</div>`
+        }
+      </div>`;
+    }).join('');
+  }
+
+  // Si un jour était sélectionné, rafraîchir le détail
+  if (_vjSelDay) vjSelectDay(_vjSelDay, true);
+
+  // Rapport tableau
+  _vjRenderReportTable(dayData, dev);
+}
+
+function vjSelectDay(isoDate, forceRefresh) {
+  const m = Auth.current(); if (!m) return;
+  const dev   = getConfig()?.devise || 'FCFA';
+  const prods = DB.forM('products', m.id);
+  const sales = DB.forM('sales', m.id);
+
+  if (_vjSelDay === isoDate && !forceRefresh) {
+    // Deselect
+    _vjSelDay = null;
+    document.getElementById('vj-day-detail').style.display = 'none';
+    document.querySelectorAll('.vj-day-card').forEach(c => c.classList.remove('selected'));
+    return;
+  }
+  _vjSelDay = isoDate;
+
+  // Highlight carte sélectionnée
+  document.querySelectorAll('.vj-day-card').forEach(c => {
+    c.classList.toggle('selected', c.getAttribute('onclick')?.includes(isoDate));
+  });
+
+  const daySales = sales.filter(s => (s.created_at || '').slice(0, 10) === isoDate);
+  const metrics  = _vjCalcMetrics(daySales, prods);
+  const dayObj   = _vjGetWeekDays(_vjGetWeekStart(_vjWeekOffset)).find(d => d.iso === isoDate);
+  const dayName  = dayObj ? dayObj.full : isoDate;
+
+  const set = (id, v) => { const e = document.getElementById(id); if (e) e.innerHTML = v; };
+  set('vj-detail-title', dayName + ' ' + new Date(isoDate + 'T12:00:00').toLocaleDateString('fr-FR', {day:'2-digit', month:'long', year:'numeric'}));
+  set('vj-d-ca',     fmtMoney(metrics.ca, dev));
+  set('vj-d-marge',  `<span class="${metrics.marge>=0?'marge-pos':'marge-neg'}">${fmtMoney(metrics.marge,dev)}</span>`);
+  set('vj-d-ventes', metrics.nbVentes);
+  set('vj-d-pct',    `<span class="${metrics.margePct>=0?'marge-pos':'marge-neg'}">${metrics.margePct}%</span>`);
+
+  // Top produits du jour
+  const topEl = document.getElementById('vj-d-top');
+  if (topEl) {
+    if (!metrics.topList.length) {
+      topEl.innerHTML = '<div style="color:var(--text-dim);font-size:.78rem;padding:4px 0">Aucune vente ce jour</div>';
+    } else {
+      const maxQ = metrics.topList[0]?.[1].qty || 1;
+      topEl.innerHTML = metrics.topList.slice(0, 5).map(([nom, d]) => `
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${nom}</div>
+            <div style="height:5px;background:var(--surface2);border-radius:2px;margin-top:3px">
+              <div style="height:5px;background:var(--accent);border-radius:2px;width:${Math.round(d.qty/maxQ*100)}%"></div>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:.8rem;font-weight:700;color:var(--accent)">${fmtMoney(d.ca,dev)}</div>
+            <div style="font-size:.68rem;color:var(--text-muted)">${d.qty} unité${d.qty>1?'s':''}</div>
+          </div>
+        </div>`).join('');
+    }
+  }
+
+  // Liste des ventes du jour
+  const listEl = document.getElementById('vj-d-list');
+  if (listEl) {
+    const validSales = daySales.filter(s => s.statut !== 'cancelled');
+    if (!validSales.length) {
+      listEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-dim);font-size:.82rem">Aucune vente validée ce jour.</div>';
+    } else {
+      listEl.innerHTML = validSales.sort((a,b) => new Date(b.created_at)-new Date(a.created_at)).map((s, i) => {
+        const t = new Date(s.created_at).toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+        const items = (s.items || []).map(it => it.nom + (it.qty > 1 ? ' ×' + it.qty : '')).join(', ');
+        // Calcul marge de cette vente
+        let venteMarge = null;
+        let hasCout = false;
+        (s.items || []).forEach(item => {
+          const prod = prods.find(p => p.id === item.pid || p.nom === item.nom);
+          if (prod?.cout != null) { hasCout = true; if (venteMarge === null) venteMarge = 0; venteMarge += (item.prix - prod.cout) * (item.qty||1); }
+        });
+        const margeCell = hasCout && venteMarge !== null
+          ? `<span style="color:${venteMarge>=0?'var(--success)':'var(--danger)'};font-size:.75rem;font-weight:700">${venteMarge>=0?'+':''}${fmtMoney(venteMarge,dev)}</span>`
+          : '';
+        return `<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);font-size:.82rem">
+          <span style="color:var(--text-dim);font-size:.7rem;flex-shrink:0;width:24px;text-align:right">${validSales.length-i}</span>
+          <span style="color:var(--text-muted);flex-shrink:0">${t}</span>
+          <div style="flex:1;min-width:0"><div style="font-weight:600">${s.client_nom||'Client'}</div><div style="color:var(--text-dim);font-size:.7rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${items}</div></div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-weight:700;color:var(--accent)">${fmtMoney(s.total,dev)}</div>
+            ${margeCell}
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  document.getElementById('vj-day-detail').style.display = 'block';
+  document.getElementById('vj-day-detail').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function _vjRenderReportTable(dayData, dev) {
+  const tbody = document.getElementById('vj-report-tbody');
+  if (!tbody) return;
+  const today = new Date().toISOString().slice(0, 10);
+  let totCA = 0, totCout = 0, totMarge = 0, totVentes = 0;
+
+  const rows = dayData.map(d => {
+    totCA     += d.ca;
+    totCout   += d.coutTotal;
+    totMarge  += d.marge;
+    totVentes += d.nbVentes;
+    const isToday = d.iso === today;
+    const margeColor = d.marge > 0 ? 'var(--success)' : d.marge < 0 ? 'var(--danger)' : 'var(--text-muted)';
+    const topProd = d.topList[0]?.[0] || '—';
+    return `<tr style="${isToday ? 'background:rgba(232,115,12,.05)' : ''}">
+      <td><strong${isToday ? ' style="color:var(--accent)"' : ''}>${d.full}${isToday ? ' <span style="font-size:.65rem;background:var(--accent);color:#fff;padding:1px 5px;border-radius:100px">Aujourd\'hui</span>' : ''}</strong></td>
+      <td style="font-size:.8rem;color:var(--text-muted)">${new Date(d.iso+'T12:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})}</td>
+      <td>${d.nbVentes}</td>
+      <td><strong style="color:var(--accent)">${fmtMoney(d.ca, dev)}</strong></td>
+      <td style="color:var(--text-muted)">${d.coutTotal > 0 ? fmtMoney(d.coutTotal, dev) : '—'}</td>
+      <td><strong style="color:${margeColor}">${d.marge !== 0 || d.ca > 0 ? fmtMoney(d.marge, dev) : '—'}</strong></td>
+      <td><span style="color:${margeColor};font-weight:700">${d.ca > 0 ? d.margePct + '%' : '—'}</span></td>
+      <td style="font-size:.78rem;color:var(--text-muted);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${topProd}</td>
+    </tr>`;
+  });
+
+  // Ligne totaux
+  const totPct = totCA > 0 ? Math.round((totMarge / totCA) * 100) : 0;
+  const totCol = totMarge > 0 ? 'var(--success)' : totMarge < 0 ? 'var(--danger)' : 'var(--text-muted)';
+  rows.push(`<tr style="background:var(--surface2);font-weight:800;border-top:2px solid var(--border)">
+    <td colspan="2">📊 Total semaine</td>
+    <td>${totVentes}</td>
+    <td style="color:var(--accent)">${fmtMoney(totCA, dev)}</td>
+    <td style="color:var(--text-muted)">${totCout > 0 ? fmtMoney(totCout, dev) : '—'}</td>
+    <td style="color:${totCol}">${fmtMoney(totMarge, dev)}</td>
+    <td style="color:${totCol}">${totCA > 0 ? totPct + '%' : '—'}</td>
+    <td>—</td>
+  </tr>`);
+
+  tbody.innerHTML = rows.join('');
+}
+
+// ── Export CSV rapport semaine
+function vjExportCSV() {
+  const m = Auth.current(); if (!m) return;
+  const dev = getConfig()?.devise || 'FCFA';
+  const prods = DB.forM('products', m.id);
+  const sales = DB.forM('sales', m.id);
+  const weekStart = _vjGetWeekStart(_vjWeekOffset);
+  const days = _vjGetWeekDays(weekStart);
+  const rows = [['Jour','Date','Nb ventes','CA ('+dev+')','Coût total ('+dev+')','Marge brute ('+dev+')','Taux marge %','Top produit']];
+  days.forEach(d => {
+    const ds = sales.filter(s => (s.created_at||'').slice(0,10) === d.iso);
+    const m2 = _vjCalcMetrics(ds, prods);
+    rows.push([d.full, d.iso, m2.nbVentes, m2.ca, m2.coutTotal, m2.marge, m2.margePct+'%', m2.topList[0]?.[0]||'—']);
+  });
+  const csv = '\uFEFF' + rows.map(r => r.join(';')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8;'}));
+  a.download = 'rapport_semaine_' + weekStart.toISOString().slice(0,10) + '.csv';
+  a.click();
+  showToast('📥 CSV téléchargé', 'success');
+}
+
+// ── Impression rapport semaine
+function vjPrintReport() {
+  const m = Auth.current(); if (!m) return;
+  const dev = getConfig()?.devise || 'FCFA';
+  const prods = DB.forM('products', m.id);
+  const sales = DB.forM('sales', m.id);
+  const weekStart = _vjGetWeekStart(_vjWeekOffset);
+  const days = _vjGetWeekDays(weekStart);
+  let html = '<div style="font-family:\'Courier New\',monospace;font-size:9pt;max-width:720px;margin:0 auto;padding:12px">';
+  html += '<h2 style="text-align:center;font-size:12pt;margin-bottom:4px">' + m.nom_commerce + '</h2>';
+  html += '<p style="text-align:center;font-size:9pt;margin-bottom:12px">Rapport semaine du ' + weekStart.toLocaleDateString('fr-FR') + '</p>';
+  html += '<table style="width:100%;border-collapse:collapse;font-size:8pt">';
+  html += '<tr style="background:#eee"><th style="border:1px solid #ccc;padding:4px 6px">Jour</th><th style="border:1px solid #ccc;padding:4px 6px">Ventes</th><th style="border:1px solid #ccc;padding:4px 6px">CA</th><th style="border:1px solid #ccc;padding:4px 6px">Marge</th><th style="border:1px solid #ccc;padding:4px 6px">%</th><th style="border:1px solid #ccc;padding:4px 6px">Top produit</th></tr>';
+  let totCA = 0, totMarge = 0, totV = 0;
+  days.forEach(d => {
+    const ds = sales.filter(s => (s.created_at||'').slice(0,10) === d.iso);
+    const mt = _vjCalcMetrics(ds, prods);
+    totCA += mt.ca; totMarge += mt.marge; totV += mt.nbVentes;
+    html += `<tr><td style="border:1px solid #ddd;padding:4px 6px">${d.full}</td><td style="border:1px solid #ddd;padding:4px 6px;text-align:center">${mt.nbVentes}</td><td style="border:1px solid #ddd;padding:4px 6px;text-align:right">${fmtMoney(mt.ca,dev)}</td><td style="border:1px solid #ddd;padding:4px 6px;text-align:right">${fmtMoney(mt.marge,dev)}</td><td style="border:1px solid #ddd;padding:4px 6px;text-align:center">${mt.ca>0?mt.margePct+'%':'—'}</td><td style="border:1px solid #ddd;padding:4px 6px">${mt.topList[0]?.[0]||'—'}</td></tr>`;
+  });
+  const totPct = totCA > 0 ? Math.round((totMarge/totCA)*100) : 0;
+  html += `<tr style="background:#eee;font-weight:bold"><td style="border:1px solid #ccc;padding:4px 6px">TOTAL</td><td style="border:1px solid #ccc;padding:4px 6px;text-align:center">${totV}</td><td style="border:1px solid #ccc;padding:4px 6px;text-align:right">${fmtMoney(totCA,dev)}</td><td style="border:1px solid #ccc;padding:4px 6px;text-align:right">${fmtMoney(totMarge,dev)}</td><td style="border:1px solid #ccc;padding:4px 6px;text-align:center">${totPct}%</td><td style="border:1px solid #ccc;padding:4px 6px">—</td></tr>`;
+  html += '</table></div>';
+  const w = window.open('', '_blank');
+  w.document.write('<html><head><title>Rapport semaine</title></head><body>' + html + '<script>window.print();</sc'+'ript></body></html>');
+  w.document.close();
+}
+
+// ============================================================
+// MODULE GÉRANT STOCK — accessible sans PIN
+// ============================================================
+
+let _gsOp = 'add'; // 'add' | 'sub'
+let _ruptTab = 'zero'; // onglet actif fenêtre ruptures
+const GS_HISTORY_KEY = (mid) => 'ds_gs_history_' + mid;
+
+function _gsGetHistory(mid) {
+  try { return JSON.parse(localStorage.getItem(GS_HISTORY_KEY(mid)) || '[]'); } catch { return []; }
+}
+function _gsSaveHistory(mid, list) {
+  localStorage.setItem(GS_HISTORY_KEY(mid), JSON.stringify(list.slice(0, 50)));
+}
+
+// ── Rendu principal module gérant stock ─────────────────────
+function renderGerantStock() {
+  const m = Auth.current(); if (!m) return;
+  const prods = DB.forM('products', m.id);
+  const q = (document.getElementById('gs-srch')?.value || '').toLowerCase();
+  const flt = document.getElementById('gs-filter')?.value || '';
+  const dev = getConfig()?.devise || 'FCFA';
+  const catEmos = {boisson:'🥤',plat:'🍽️',dessert:'🍰',pain:'🥖',viande:'🥩',poisson:'🐟',légume:'🥦',électronique:'📱',vêtement:'👕',médicament:'💊',chambre:'🛏️'};
+
+  // KPIs
+  const totalZero = prods.filter(p => p.stock !== null && p.stock === 0).length;
+  const totalLow  = prods.filter(p => p.stock !== null && p.stock > 0 && p.stock <= 5).length;
+  const totalOk   = prods.filter(p => p.stock === null || p.stock > 5).length;
+  const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+  set('gs-kpi-total', prods.length);
+  set('gs-kpi-zero',  totalZero);
+  set('gs-kpi-low',   totalLow);
+  set('gs-kpi-ok',    totalOk);
+
+  // Badge nav sidebar
+  const navBadge = document.getElementById('gerant-stock-badge');
+  if (navBadge) navBadge.style.display = (totalZero + totalLow) > 0 ? 'inline-block' : 'none';
+
+  // Bouton voir ruptures
+  const ruptBtn = document.getElementById('gerant-rupture-btn');
+  if (ruptBtn) ruptBtn.style.display = (totalZero + totalLow) > 0 ? '' : 'none';
+
+  // Alerte ruptures inline
+  const alertBox = document.getElementById('gs-rupture-alert');
+  const alertTitle = document.getElementById('gs-alert-title');
+  const alertList = document.getElementById('gs-alert-list');
+  if (alertBox && totalZero > 0) {
+    alertBox.style.display = 'flex';
+    const ruptNames = prods.filter(p => p.stock !== null && p.stock === 0).slice(0, 5).map(p => p.nom).join(', ');
+    if (alertTitle) alertTitle.textContent = totalZero + ' produit(s) en rupture de stock !';
+    if (alertList) alertList.textContent = ruptNames + (totalZero > 5 ? ' et ' + (totalZero - 5) + ' autre(s)...' : '');
+  } else if (alertBox) {
+    alertBox.style.display = 'none';
+  }
+
+  // Filtre
+  let f = prods.filter(p => !q || p.nom.toLowerCase().includes(q));
+  if (flt === 'rupture') f = f.filter(p => p.stock !== null && p.stock === 0);
+  else if (flt === 'faible') f = f.filter(p => p.stock !== null && p.stock > 0 && p.stock <= 5);
+  else if (flt === 'ok') f = f.filter(p => p.stock === null || p.stock > 5);
+
+  // Tableau
+  const tbody = document.getElementById('gs-tbody');
+  if (!tbody) return;
+  if (!f.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="empty">Aucun produit trouvé.</td></tr>';
+    _renderGsHistory(m.id);
+    return;
+  }
+
+  tbody.innerHTML = f.map(p => {
+    const cat = (p.categorie || '').toLowerCase();
+    const emo = Object.entries(catEmos).find(([k]) => cat.includes(k))?.[1] || '📦';
+    let statusHtml, stockColor;
+    if (p.stock === null) {
+      statusHtml = '<span class="sbdg s-ok">∞ Illimité</span>'; stockColor = 'var(--success)';
+    } else if (p.stock === 0) {
+      statusHtml = '<span class="sbdg s-zero">⛔ Rupture</span>'; stockColor = 'var(--danger)';
+    } else if (p.stock <= 5) {
+      statusHtml = '<span class="sbdg s-low">⚠️ Faible</span>'; stockColor = 'var(--warning)';
+    } else {
+      statusHtml = '<span class="sbdg s-ok">✅ OK</span>'; stockColor = 'var(--success)';
+    }
+    const stockDisp = p.stock === null
+      ? '<span style="color:var(--text-dim)">∞</span>'
+      : '<strong style="font-size:1.1rem;color:' + stockColor + '">' + p.stock + '</strong>';
+    return `<tr>
+      <td><strong>${p.nom}</strong></td>
+      <td><span style="font-size:.8rem;color:var(--text-dim)">${p.categorie || '—'}</span></td>
+      <td style="text-align:center">${stockDisp}</td>
+      <td>${statusHtml}</td>
+      <td><div class="tacts">
+        <button class="tbtn" data-gs-pid="${p.id}" title="Ajuster">📦 Ajuster</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+
+  // Bind
+  document.querySelectorAll('[data-gs-pid]').forEach(btn => {
+    btn.onclick = () => openGerantStockAdj(btn.dataset.gsPid);
+  });
+
+  _renderGsHistory(m.id);
+}
+
+// ── Historique mouvements gérant ────────────────────────────
+function _renderGsHistory(mid) {
+  const list = _gsGetHistory(mid);
+  const el = document.getElementById('gs-history');
+  if (!el) return;
+  if (!list.length) { el.innerHTML = '<p class="empty" style="padding:16px">Aucun mouvement enregistré.</p>'; return; }
+  el.innerHTML = list.map(h => {
+    const dt = new Date(h.ts);
+    const now = new Date();
+    const diff = Math.floor((now - dt) / 60000);
+    const lbl = diff < 1 ? 'À l\'instant' : diff < 60 ? diff + ' min' : diff < 1440 ? Math.floor(diff/60) + 'h' : dt.toLocaleDateString('fr-FR', {day:'2-digit', month:'short'});
+    return `<div class="gs-history-item">
+      <span class="gs-history-icon">${h.icon}</span>
+      <div class="gs-history-body">
+        <div class="gs-history-title">${h.title}</div>
+        <div class="gs-history-sub">${h.detail || ''}</div>
+      </div>
+      <span class="gs-history-time">${lbl}</span>
+    </div>`;
+  }).join('');
+}
+
+function clearGerantHistory() {
+  const m = Auth.current(); if (!m) return;
+  if (!confirm('Effacer l\'historique des mouvements ?')) return;
+  _gsSaveHistory(m.id, []);
+  _renderGsHistory(m.id);
+  showToast('🗑️ Historique effacé', 'success');
+}
+
+// ── Modal ajustement gérant ─────────────────────────────────
+function openGerantStockAdj(pid) {
+  const m = Auth.current(); if (!m) return;
+  const prods = DB.forM('products', m.id);
+  const sel = document.getElementById('gs-prod-sel');
+  sel.innerHTML = '<option value="">— Sélectionner un produit —</option>' +
+    prods.map(p => `<option value="${p.id}">${p.nom} (Stock: ${p.stock !== null ? p.stock : '∞'})</option>`).join('');
+  if (pid) { sel.value = pid; onGsProdChange(); }
+  _gsOp = 'add';
+  document.querySelectorAll('[id^="gs-op-"]').forEach(b => b.classList.remove('active'));
+  document.getElementById('gs-op-add')?.classList.add('active');
+  document.getElementById('gs-qty-label').textContent = 'Quantité à ajouter *';
+  document.getElementById('gs-qty').value = '';
+  document.getElementById('gs-reason').value = '';
+  document.getElementById('mo-gerant-stk').classList.remove('hidden');
+}
+
+function onGsProdChange() {
+  const m = Auth.current(); if (!m) return;
+  const pid = document.getElementById('gs-prod-sel').value;
+  const info = document.getElementById('gs-current-info');
+  if (!pid) { if (info) info.style.display = 'none'; return; }
+  const p = DB.forM('products', m.id).find(x => x.id === pid);
+  if (p && info) {
+    const cv = document.getElementById('gs-current-val');
+    if (cv) {
+      cv.textContent = p.stock !== null ? p.stock + ' unités' : '∞ (Illimité)';
+      cv.style.color = p.stock === null ? 'var(--success)' : p.stock === 0 ? 'var(--danger)' : p.stock <= 5 ? 'var(--warning)' : 'var(--success)';
+    }
+    info.style.display = 'block';
+  }
+}
+
+function setGsOp(op, btn) {
+  _gsOp = op;
+  document.querySelectorAll('[id^="gs-op-"]').forEach(b => b.classList.remove('active'));
+  btn?.classList.add('active');
+  document.getElementById('gs-qty-label').textContent = op === 'add' ? 'Quantité à ajouter *' : 'Quantité à retirer *';
+}
+
+function applyGerantStockAdj() {
+  const m = Auth.current(); if (!m) return;
+  const pid = document.getElementById('gs-prod-sel').value;
+  if (!pid) { showToast('⚠️ Sélectionnez un produit', 'error'); return; }
+  const qty = parseInt(document.getElementById('gs-qty').value);
+  if (isNaN(qty) || qty <= 0) { showToast('⚠️ Quantité invalide (doit être > 0)', 'error'); return; }
+  const reason = document.getElementById('gs-reason').value.trim();
+
+  const allP = DB.get('products');
+  const idx = allP.findIndex(p => p.id === pid && p.merchant_id === m.id);
+  if (idx === -1) { showToast('⚠️ Produit introuvable', 'error'); return; }
+
+  const p = allP[idx];
+  const oldStock = p.stock !== null ? p.stock : 0;
+  let newStock;
+  if (_gsOp === 'add') {
+    newStock = oldStock + qty;
+  } else {
+    newStock = Math.max(0, oldStock - qty);
+  }
+  allP[idx].stock = newStock;
+  DB.set('products', allP);
+
+  // Sync Firebase
+  fbSet(m.id, 'products', allP[idx].id, allP[idx]);
+
+  const opIcon  = _gsOp === 'add' ? '📦' : '📤';
+  const opLabel = _gsOp === 'add' ? 'Entrée stock' : 'Sortie stock';
+  const delta   = _gsOp === 'add' ? +qty : -qty;
+
+  // ── Tracer le mouvement dans StkLog global
+  StkLog.push(m.id, {
+    type:       _gsOp === 'add' ? 'entree' : 'sortie',
+    icon:       opIcon,
+    prod_id:    pid,
+    prod_nom:   p.nom,
+    delta,
+    old_stock:  oldStock,
+    new_stock:  newStock,
+    auteur:     m.proprietaire || 'Gérant',
+    auteur_role:'gerant',
+    motif:      reason || opLabel
+  });
+
+  // Historique local gérant
+  const hist = _gsGetHistory(m.id);
+  hist.unshift({
+    ts: new Date().toISOString(),
+    icon: opIcon,
+    title: opLabel + ' — ' + p.nom,
+    detail: delta + ' unités → nouveau stock : ' + newStock + (reason ? ' · ' + reason : '')
+  });
+  _gsSaveHistory(m.id, hist);
+
+  // Notification propriétaire
+  StockNotif.push(m.id, {
+    type:   'stock_gerant',
+    icon:   opIcon,
+    title:  '[Gérant] ' + opLabel + ' — ' + p.nom,
+    detail: delta + ' → ' + newStock + ' unité(s)' + (reason ? ' · ' + reason : '')
+  });
+
+  // Sync API
+  API.post('sync', { merchant_id: m.id, collection: 'products', item: allP[idx] }).catch(() => {});
+
+  showToast('✅ ' + opLabel + ' enregistrée — ' + p.nom + ' : ' + newStock + ' unités', 'success');
+  closeMo('mo-gerant-stk');
+  renderGerantStock();
+  renderPOS(); // rafraîchir le catalogue POS
+}
+
+// ── Fenêtre Ruptures / Alertes Stock ───────────────────────
+function openRuptureModal() {
+  const m = Auth.current(); if (!m) return;
+  _ruptTab = 'zero';
+  _renderRuptureModal(m);
+  document.getElementById('mo-rupture').classList.remove('hidden');
+}
+
+function setRuptTab(tab, btn) {
+  _ruptTab = tab;
+  // Reset styles
+  ['zero', 'low'].forEach(t => {
+    const b = document.getElementById('rupt-tab-' + t);
+    if (!b) return;
+    if (t === tab) {
+      b.style.background = t === 'zero' ? 'rgba(231,76,60,.08)' : 'rgba(243,156,18,.08)';
+      b.style.color = t === 'zero' ? 'var(--danger)' : 'var(--warning)';
+      b.style.borderBottom = '2px solid ' + (t === 'zero' ? 'var(--danger)' : 'var(--warning)');
+    } else {
+      b.style.background = 'none';
+      b.style.color = 'var(--text-muted)';
+      b.style.borderBottom = 'none';
+    }
+  });
+  const m = Auth.current(); if (!m) return;
+  _renderRuptureModal(m);
+}
+
+function _renderRuptureModal(m) {
+  const prods = DB.forM('products', m.id);
+  const dev = getConfig()?.devise || 'FCFA';
+  const zeros = prods.filter(p => p.stock !== null && p.stock === 0);
+  const lows  = prods.filter(p => p.stock !== null && p.stock > 0 && p.stock <= 5);
+  const catEmos = {boisson:'🥤',plat:'🍽️',dessert:'🍰',pain:'🥖',viande:'🥩',poisson:'🐟',légume:'🥦',électronique:'📱',vêtement:'👕',médicament:'💊',chambre:'🛏️'};
+
+  // Comptes
+  const cntZero = document.getElementById('rupt-cnt-zero');
+  const cntLow  = document.getElementById('rupt-cnt-low');
+  if (cntZero) cntZero.textContent = zeros.length;
+  if (cntLow)  cntLow.textContent  = lows.length;
+
+  const list = _ruptTab === 'zero' ? zeros : lows;
+  const el = document.getElementById('rupt-list');
+  if (!el) return;
+
+  if (!list.length) {
+    const msg = _ruptTab === 'zero'
+      ? '✅ Aucune rupture de stock — tous les produits sont disponibles !'
+      : '✅ Aucun produit en stock faible.';
+    el.innerHTML = '<div style="text-align:center;padding:32px 20px;color:var(--success)">' + msg + '</div>';
+    return;
+  }
+
+  el.innerHTML = list.map(p => {
+    const cat = (p.categorie || '').toLowerCase();
+    const emo = Object.entries(catEmos).find(([k]) => cat.includes(k))?.[1] || '📦';
+    const isZero = p.stock === 0;
+    const stockColor = isZero ? 'var(--danger)' : 'var(--warning)';
+    return `<div class="rupt-item" onclick="closeMo('mo-rupture');openGerantStockAdj('${p.id}')">
+      <span style="font-size:1.4rem">${emo}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:.9rem">${p.nom}</div>
+        <div style="font-size:.75rem;color:var(--text-muted)">${p.categorie || 'Sans catégorie'}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-family:var(--fh);font-size:1.3rem;font-weight:800;color:${stockColor}">${p.stock}</div>
+        <span class="rupt-item-badge ${isZero ? 'rupt-zero' : 'rupt-low'}">${isZero ? '⛔ Rupture' : '⚠️ Faible'}</span>
+      </div>
+      <span style="font-size:.75rem;color:var(--accent);margin-left:8px">📦 Ajuster →</span>
+    </div>`;
+  }).join('');
+}
+
+// ── Mettre à jour le badge sidebar au chargement ────────────
+function _updateGerantStockBadge() {
+  const m = Auth.current(); if (!m) return;
+  const prods = DB.forM('products', m.id);
+  const alertCount = prods.filter(p => p.stock !== null && p.stock <= 5).length;
+  const badge = document.getElementById('gerant-stock-badge');
+  if (badge) {
+    badge.style.display = alertCount > 0 ? 'inline-block' : 'none';
+    badge.textContent = alertCount > 9 ? '9+' : alertCount;
+  }
+}
 
 </script>
 
