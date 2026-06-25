@@ -5615,7 +5615,10 @@ function renderPOS() {
   // Si l'utilisateur n'est pas encore chargé, réessayer dans 300ms (fix disparition catalogue)
   if (!m) {
     grid.innerHTML = '<p class="empty" style="color:var(--text-muted)">⏳ Chargement du catalogue...</p>';
-    setTimeout(renderPOS, 300);
+    // Retry uniquement si la section POS est toujours active
+    if (document.getElementById('s-pos')?.classList.contains('active')) {
+      setTimeout(renderPOS, 300);
+    }
     return;
   }
   const prods = DB.forM('products', m.id);
@@ -7218,7 +7221,7 @@ async function loginMerchant(e) {
 // Charger toutes les données d'un marchand depuis Firestore vers localStorage
 function demoLogin() {
   const ph = '0700000001';
-  // Always wipe and recreate for clean demo
+  // Wipe et recréer pour une démo propre
   const old = DB.get('merchants').find(m => m.telephone === ph);
   if (old) {
     ['products','sales','clients','configs'].forEach(t => DB.set(t, DB.get(t).filter(r => r.merchant_id !== old.id)));
@@ -7227,22 +7230,29 @@ function demoLogin() {
   Auth.register({nom_commerce:'Restaurant Djolof',proprietaire:'Aminata Diallo',telephone:ph,ville:'Dakar',password:'demo1234',type:'restaurant'});
   const dm = DB.get('merchants').find(m => m.telephone === ph);
   if (dm) {
-    [{nom:'Thiéboudienne',prix:3500,stock:50,categorie:'Plat'},{nom:'Yassa Poulet',prix:2800,stock:40,categorie:'Plat'},
-     {nom:'Mafé',prix:3000,stock:35,categorie:'Plat'},{nom:'Jus de Bissap',prix:800,stock:100,categorie:'Boisson'},
-     {nom:'Thiakry',prix:1200,stock:30,categorie:'Dessert'},{nom:'Eau minérale',prix:500,stock:200,categorie:'Boisson'}]
-    .forEach(p => DB.insert('products', p, dm.id));
+    [{nom:'Thiéboudienne',prix:3500,stock:50,categorie:'Plat',cout:1800},
+     {nom:'Yassa Poulet',prix:2800,stock:40,categorie:'Plat',cout:1200},
+     {nom:'Mafé',prix:3000,stock:35,categorie:'Plat',cout:1400},
+     {nom:'Jus de Bissap',prix:800,stock:100,categorie:'Boisson',cout:200},
+     {nom:'Thiakry',prix:1200,stock:30,categorie:'Dessert',cout:400},
+     {nom:'Eau minérale',prix:500,stock:200,categorie:'Boisson',cout:150}]
+    .forEach(p => DB.insert('products', {...p, stock_initial: p.stock}, dm.id));
     [{nom:'Modou Gueye',whatsapp:'221770123456'},{nom:'Fatou Sow',whatsapp:'221760987654'},{nom:'Ibrahima Diallo',whatsapp:''}]
     .forEach(c => DB.insert('clients', c, dm.id));
     const c1 = DB.forM('clients', dm.id)[0];
     DB.insert('sales',{client_id:c1.id,client_nom:c1.nom,client_wa:c1.whatsapp,
-      items:[{product_id:'d1',nom:'Thiéboudienne',prix:3500,qty:2},{product_id:'d2',nom:'Jus de Bissap',prix:800,qty:2}],
+      items:[{pid:'d1',nom:'Thiéboudienne',prix:3500,qty:2},{pid:'d2',nom:'Jus de Bissap',prix:800,qty:2}],
       total:8600,devise:'FCFA'},dm.id);
     const c2 = DB.forM('clients', dm.id)[1];
     DB.insert('sales',{client_id:c2.id,client_nom:c2.nom,client_wa:c2.whatsapp,
-      items:[{product_id:'d3',nom:'Yassa Poulet',prix:2800,qty:1},{product_id:'d4',nom:'Thiakry',prix:1200,qty:2}],
+      items:[{pid:'d3',nom:'Yassa Poulet',prix:2800,qty:1},{pid:'d4',nom:'Thiakry',prix:1200,qty:2}],
       total:5200,devise:'FCFA'},dm.id);
   }
+  // Connexion — attendre que Auth.current() soit stable avant d'init l'app
   Auth.login(ph, 'demo1234');
+  // Double vérification : s'assurer que l'utilisateur est bien loggué
+  const check = Auth.current();
+  if (!check) { showToast('⚠️ Erreur chargement démo', 'error'); return; }
   showPage('page-app');
   showToast('👋 Démo Restaurant Djolof chargée !', 'success');
 }
@@ -8207,18 +8217,29 @@ async function initApp(){
   }, 800);
   API.get('data', { merchant_id: m.id }).then(res => {
     if (res.data) {
+      let changed = false;
       ['products','sales','clients','configs'].forEach(col => {
         if (res.data[col]?.length) {
-          const all = DB.get(col).filter(r => r.merchant_id !== m.id);
-          DB.set(col, [...all, ...res.data[col]]);
+          // Fusionner sans écraser les données locales existantes
+          const local  = DB.get(col).filter(r => r.merchant_id !== m.id);
+          const remote = res.data[col];
+          // Garder les locaux + ajouter les distants manquants
+          const localIds = new Set(DB.forM(col, m.id).map(r => r.id));
+          const toAdd = remote.filter(r => !localIds.has(r.id));
+          if (toAdd.length) {
+            DB.set(col, [...DB.get(col), ...toAdd]);
+            changed = true;
+          }
         }
       });
-      // Rafraîchir la vue active
-      const active = document.querySelector('.section.active');
-      if (active) {
-        const sec = active.id.replace('s-','');
-        const renderers = {dashboard:renderDashboard,pos:renderPOS,products:renderProducts,stock:renderStock,clients:renderClients,sales:renderSales};
-        renderers[sec]?.();
+      if (changed) {
+        // Rafraîchir la vue active seulement si des données ont changé
+        const active = document.querySelector('.section.active');
+        if (active) {
+          const sec = active.id.replace('s-','');
+          const renderers = {dashboard:renderDashboard,pos:renderPOS,products:renderProducts,stock:renderStock,clients:renderClients,sales:renderSales};
+          renderers[sec]?.();
+        }
       }
     }
   }).catch(e => console.warn('Chargement API:', e));
@@ -12488,41 +12509,101 @@ const SRV_ALERT_SOUND = (function(){
 // ── Détection URL ?serveur=Fatou au chargement ─────────────
 // ── initServeurPage est maintenant appelé depuis DOMContentLoaded via ?serveur= param
 function initServeurPage() {
-  // Récupérer le marchand (premier merchant disponible)
-  const merchants = DB.get('merchants') || [];
-  if (!merchants.length) {
-    // Pas de marchand configuré — afficher message
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    const pg = document.getElementById('page-serveur');
-    if (pg) {
-      pg.classList.add('active');
-      pg.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px;text-align:center;gap:16px">
-        <div style="font-size:3rem">⚠️</div>
-        <h2>Commerce non configuré</h2>
-        <p style="color:var(--text-muted);font-size:.88rem">Ce lien n'est pas encore associé à un commerce. Demandez au propriétaire de configurer l'application.</p>
-      </div>`;
-    }
-    return;
-  }
-  _srvMid = merchants[0].id;
-  const m = merchants[0];
+  const params   = new URLSearchParams(window.location.search);
+  const midParam = params.get('mid'); // ← id établissement dans l'URL
 
-  // Afficher la page serveuse
+  // Afficher la page serveuse immédiatement (loading state)
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const pg = document.getElementById('page-serveur');
   if (pg) pg.classList.add('active');
 
-  // Mettre à jour nom + commerce
-  document.getElementById('srv-name-display').textContent = _srvName;
-  document.getElementById('srv-status-name').textContent  = _srvName;
-  document.getElementById('srv-commerce-name').textContent = m.nom_commerce || 'Commerce';
-
-  // Appliquer thème sauvegardé
+  // Appliquer thème
   const theme = localStorage.getItem('ds_theme') || 'dark';
   document.documentElement.setAttribute('data-theme', theme);
 
-  // Init Firebase pour écouter les statuts
+  // Chercher le marchand par mid (URL) ou à défaut le premier local
+  const merchants  = DB.get('merchants') || [];
+  let m = midParam ? merchants.find(x => x.id === midParam) : null;
+
+  // Si pas trouvé localement, essayer de charger depuis Firebase
+  if (!m && midParam) {
+    // Afficher écran de chargement
+    const grid = document.getElementById('srv-grid');
+    if (grid) grid.innerHTML = '<div class="empty" style="grid-column:1/-1;padding:40px">⏳ Chargement du catalogue...</div>';
+
+    // Init Firebase et charger les données du marchand
+    if (!_fbDb) initFirestoreWith(getFirebaseConfig());
+    if (_fbDb) {
+      _fbDb.collection('merchants').doc(midParam).get().then(snap => {
+        if (snap.exists) {
+          const merchant = { ...snap.data(), id: midParam };
+          // Sauvegarder localement pour les prochains accès
+          const allM = DB.get('merchants');
+          if (!allM.find(x => x.id === midParam)) {
+            allM.push(merchant);
+            DB.set('merchants', allM);
+          }
+          // Charger les produits depuis Firebase
+          return _fbDb.collection('merchants').doc(midParam).collection('products').get().then(pSnap => {
+            const allP = DB.get('products').filter(p => p.merchant_id !== midParam);
+            pSnap.forEach(d => allP.push({ ...d.data(), id: d.id, merchant_id: midParam }));
+            DB.set('products', allP);
+            _srvMid = midParam;
+            _srvFinishInit(merchant);
+          });
+        } else {
+          _srvShowError('Commerce introuvable. Vérifiez le lien avec le propriétaire.');
+        }
+      }).catch(() => {
+        // Firebase indisponible — chercher parmi tous les marchands locaux
+        m = merchants[0];
+        if (m) { _srvMid = m.id; _srvFinishInit(m); }
+        else _srvShowError('Impossible de charger le catalogue. Vérifiez votre connexion.');
+      });
+      return; // attendre la réponse Firebase
+    }
+    // Pas de Firebase — fallback premier marchand
+    m = merchants[0];
+  }
+
+  if (!m) {
+    _srvShowError('Ce lien n\'est pas configuré. Demandez un nouveau lien au propriétaire.');
+    return;
+  }
+
+  _srvMid = m.id;
+  _srvFinishInit(m);
+}
+
+function _srvShowError(msg) {
+  const pg = document.getElementById('page-serveur');
+  if (pg) pg.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px;text-align:center;gap:16px">
+    <div style="font-size:3rem">⚠️</div><h2>Lien invalide</h2>
+    <p style="color:var(--text-muted);font-size:.88rem">${msg}</p>
+  </div>`;
+}
+
+function _srvFinishInit(m) {
+  // Init Firebase
   if (!_fbDb) initFirestoreWith(getFirebaseConfig());
+
+  // Mettre à jour nom + commerce
+  const nameEl = document.getElementById('srv-name-display');
+  const stName = document.getElementById('srv-status-name');
+  const comEl  = document.getElementById('srv-commerce-name');
+  if (nameEl) nameEl.textContent = _srvName;
+  if (stName) stName.textContent = _srvName;
+  if (comEl)  comEl.textContent  = m.nom_commerce || 'Commerce';
+
+  // Charger catalogue depuis Firebase pour avoir les données fraîches
+  if (_fbDb && _srvMid) {
+    _fbDb.collection('merchants').doc(_srvMid).collection('products').get().then(snap => {
+      const allP = DB.get('products').filter(p => p.merchant_id !== _srvMid);
+      snap.forEach(d => allP.push({ ...d.data(), id: d.id, merchant_id: _srvMid }));
+      DB.set('products', allP);
+      srvRenderCatalogue(); // re-rendre avec données fraîches Firebase
+    }).catch(() => {}); // silencieux — les données locales suffisent
+  }
 
   srvRenderCatalogue();
   _srvListenMyOrders();
@@ -12668,17 +12749,18 @@ function _srvShowStatusScreen(cmd) {
       <div style="display:flex;justify-content:space-between;padding:8px 0 0;font-weight:800;font-size:.88rem">Total <span style="color:var(--accent)">${fmtMoney(cmd.total,dev)}</span></div>`;
   }
 
-  // Écouter le statut Firebase
+  // Écouter le statut Firebase sur le DOCUMENT DIRECT (pas une query) → instantané
   if (_fbDb) {
-    if (_srvListener) _srvListener();
-    _srvListener = _fbDb.collection('merchants').doc(_srvMid).collection('commandes').doc(cmd.id)
+    if (_srvListener) { _srvListener(); _srvListener = null; }
+    _srvListener = _fbDb
+      .collection('merchants').doc(_srvMid)
+      .collection('commandes').doc(cmd.id)
       .onSnapshot(snap => {
         if (!snap.exists) return;
-        const data = snap.data();
+        const data = { ...snap.data(), id: snap.id };
         _srvUpdateStatus(data.statut);
-        // Mettre à jour local
         _cmdSaveLocal(data);
-      });
+      }, err => console.warn('[SRV] Listener:', err.message));
   }
 }
 
@@ -12779,21 +12861,29 @@ function srvViewOrders() {
   document.getElementById('srv-mo-orders').style.display = 'flex';
 }
 
-// ── Écouter ses propres commandes (badge) ──────────────────
+// ── Écouter les commandes de cette serveuse (badge) ─────────
+// Écoute toute la collection (pas de filtre by serveur qui nécessite un index)
+// puis filtre côté client par nom de serveuse
 function _srvListenMyOrders() {
-  if (!_fbDb || !_srvMid || !_srvName) return;
+  if (!_fbDb || !_srvMid || !_srvName) {
+    // Firebase pas encore prêt, réessayer
+    setTimeout(_srvListenMyOrders, 1000);
+    return;
+  }
   _fbDb.collection('merchants').doc(_srvMid).collection('commandes')
-    .where('serveur','==',_srvName)
     .onSnapshot(snap => {
-      snap.docChanges().forEach(change => {
-        const cmd = change.doc.data();
-        _cmdSaveLocal(cmd);
-        if (change.type === 'modified' && cmd.statut !== 'new') SRV_ALERT_SOUND();
-      });
-      const pending = snap.docs.filter(d => ['new','vue'].includes(d.data().statut)).length;
-      const badge = document.getElementById('srv-orders-badge');
+      snap.forEach(d => _cmdSaveLocal({ ...d.data(), id: d.id }));
+      // Filtrer les commandes de cette serveuse
+      const myCmds  = _cmdGetLocal(_srvMid).filter(c => c.serveur === _srvName);
+      const pending = myCmds.filter(c => ['new','vue'].includes(c.statut)).length;
+      const badge   = document.getElementById('srv-orders-badge');
       if (badge) { badge.textContent = pending; badge.style.display = pending > 0 ? 'flex' : 'none'; }
-    });
+      // Détecter changement de statut sur commande en cours
+      if (_srvCmdId) {
+        const current = myCmds.find(c => c.id === _srvCmdId);
+        if (current) _srvUpdateStatus(current.statut);
+      }
+    }, err => console.warn('[SRV] Orders listener:', err.message));
 }
 
 // ============================================================
@@ -12847,7 +12937,8 @@ function renderCmdLinks() {
     return;
   }
   el.innerHTML = list.map(name => {
-    const url = base + '?serveur=' + encodeURIComponent(name);
+    // ── mid obligatoire pour éviter le mélange entre établissements ──
+    const url = base + '?serveur=' + encodeURIComponent(name) + '&mid=' + encodeURIComponent(m.id);
     return `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);padding:12px;margin-bottom:8px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <span style="font-weight:700">👩‍🍳 ${name}</span>
@@ -13096,33 +13187,62 @@ function cmdPrintAll() {
 }
 
 // ── Écoute Firebase temps réel (caissière) ─────────────────
-function _cmdStartListener(mid) {
-  if (!_fbDb || !mid) return;
-  if (_cmdListener) { _cmdListener(); _cmdListener = null; }
-  const today = new Date().toISOString().slice(0,10);
-  let firstLoad = true;
+// ── Listener Firebase commandes (caissière) ─────────────────
+// Idempotent : un seul listener actif à la fois, sans orderBy (pas d'index requis)
+let _cmdListenerMid = null; // mid du listener actif
 
+function _cmdStartListener(mid) {
+  if (!mid) return;
+  // Idempotent : ne pas recréer si même mid
+  if (_cmdListener && _cmdListenerMid === mid) return;
+  // Arrêter l'ancien listener si mid différent
+  if (_cmdListener) { _cmdListener(); _cmdListener = null; _cmdListenerMid = null; }
+
+  // Attendre Firebase
+  if (!_fbDb) {
+    setTimeout(() => _cmdStartListener(mid), 1500);
+    return;
+  }
+
+  let firstLoad = true;
+  _cmdListenerMid = mid;
+
+  // Écouter TOUTE la collection commandes sans filtre date ni orderBy
+  // → pas d'index composite requis, instantané
   _cmdListener = _fbDb.collection('merchants').doc(mid).collection('commandes')
-    .where('created_at','>=', today)
-    .orderBy('created_at','desc')
     .onSnapshot(snap => {
       snap.docChanges().forEach(change => {
-        const cmd = change.doc.data();
+        const cmd = { ...change.doc.data(), id: change.doc.id };
         _cmdSaveLocal(cmd);
-        // Alerte son + badge pour les nouvelles commandes
-        if (!firstLoad && change.type === 'added' && cmd.statut === 'new') {
-          CMD_ALERT_SOUND();
-          showToast(`📨 Nouvelle commande — ${cmd.serveur}${cmd.table?' (Table '+cmd.table+')':''}`, 'success');
-        }
-        // Relance
-        if (!firstLoad && change.type === 'modified' && change.doc.data().relance) {
-          CMD_ALERT_SOUND(); CMD_ALERT_SOUND();
-          showToast(`🔔 RELANCE de ${cmd.serveur} !`, 'error');
+        if (!firstLoad) {
+          if (change.type === 'added' && cmd.statut === 'new') {
+            CMD_ALERT_SOUND();
+            showToast(`📨 Nouvelle commande — ${cmd.serveur}${cmd.table ? ' · Table ' + cmd.table : ''}`, 'success');
+          }
+          if (change.type === 'modified' && cmd.relance) {
+            CMD_ALERT_SOUND(); CMD_ALERT_SOUND();
+            showToast(`🔔 RELANCE de ${cmd.serveur} !`, 'error');
+          }
         }
       });
       firstLoad = false;
-      renderCommandes();
-    }, err => { console.warn('[CMD] Firebase listener error:', err.message); });
+      // Mettre à jour badge nav sans re-rendre tout si section non active
+      const isActive = document.getElementById('s-commandes')?.classList.contains('active');
+      if (isActive) renderCommandes();
+      else _cmdUpdateNavBadge(mid);
+    }, err => {
+      console.warn('[CMD] Firebase listener:', err.message);
+      // Retry après 3s
+      _cmdListener = null; _cmdListenerMid = null;
+      setTimeout(() => _cmdStartListener(mid), 3000);
+    });
+}
+
+function _cmdUpdateNavBadge(mid) {
+  const today  = new Date().toISOString().slice(0,10);
+  const kNew   = _cmdGetLocal(mid).filter(c => c.statut === 'new' && (c.created_at||'').slice(0,10) === today).length;
+  const badge  = document.getElementById('cmd-nav-badge');
+  if (badge) { badge.textContent = kNew; badge.style.display = kNew > 0 ? 'inline-block' : 'none'; }
 }
 
 // ── Marquer encaissée depuis POS après checkout ─────────────
