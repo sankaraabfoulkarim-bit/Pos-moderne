@@ -2137,8 +2137,6 @@ table{table-layout:auto}
 // URL de base de l'API — auto-détectée selon l'environnement
 const API_BASE = window.location.origin;
 
-// Lit la réponse en JSON de façon sûre — si le serveur renvoie du HTML (erreur Vercel),
-// on lance une erreur claire au lieu de "Unexpected token 'A'"
 async function _safeJson(res) {
   const ct = res.headers.get('content-type') || '';
   if (!ct.includes('application/json')) {
@@ -2149,25 +2147,17 @@ async function _safeJson(res) {
   return res.json();
 }
 
-// Client API simple — toutes les communications passent par /api/
+// API — sync géré par Firebase Firestore
+// post() et get() sont des no-ops silencieux (Firebase remplace l'API REST)
+// admin() reste actif pour le panel administrateur
 const API = {
   async post(endpoint, body) {
-    const res = await fetch(API_BASE + '/api/' + endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    const data = await _safeJson(res);
-    if (!res.ok) throw new Error(data.error || 'Erreur serveur ' + res.status);
-    return data;
+    // Sync géré par Firebase — pas d'API REST nécessaire
+    return { ok: true };
   },
   async get(endpoint, params = {}) {
-    const qs = new URLSearchParams(params).toString();
-    const url = API_BASE + '/api/' + endpoint + (qs ? '?' + qs : '');
-    const res = await fetch(url);
-    const data = await _safeJson(res);
-    if (!res.ok) throw new Error(data.error || 'Erreur serveur ' + res.status);
-    return data;
+    // Données lues depuis localStorage/Firestore — pas d'API REST nécessaire
+    return { ok: true, data: null };
   },
   async admin(action, body = {}) {
     const cfg = ADB?.getCfg?.() || {};
@@ -4554,6 +4544,11 @@ const Auth = {
       wa_message:'Merci {nom} pour votre achat de {total} chez {commerce} 🙏 Revenez bientôt !',
       pin:'',created_at:new Date().toISOString()});
     DB.set('configs',cfgs);
+    // ── Push vers Firestore immédiatement (multi-appareil) ──
+    if (typeof _fbDb !== 'undefined' && _fbDb) {
+      const mNoPass = {...m}; // stocker le hash, pas le mot de passe clair
+      _fbDb.collection('merchants').doc(mid).set(mNoPass, {merge:true}).catch(()=>{});
+    }
     return m;
   },
   login(telephone,password){
@@ -7120,7 +7115,7 @@ function registerMerchant(e) {
   }
 }
 
-// Connexion locale (localStorage + Firebase)
+// Connexion locale (localStorage) puis Firebase si besoin
 async function loginMerchant(e) {
   e.preventDefault();
   const er = document.getElementById('login-err'); er.classList.add('hidden');
@@ -7129,82 +7124,115 @@ async function loginMerchant(e) {
   const btn = e.target.querySelector('button[type="submit"]');
   const fbStatus = document.getElementById('fb-login-status');
 
-  if (btn) { btn.disabled = true; btn.textContent = 'Connexion...'; }
+  if (!tel || !pwd) {
+    er.textContent = 'Numéro et mot de passe requis.';
+    er.classList.remove('hidden');
+    return;
+  }
+
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Connexion...'; }
   if (fbStatus) { fbStatus.textContent = '🔄 Vérification...'; fbStatus.style.display = 'block'; }
 
   try {
     let merchant = null;
 
-    // ── Étape 1 : tentative locale (localStorage) ──
+    // ── Étape 1 : tentative locale (localStorage) ──────────
     try {
       merchant = Auth.login(tel, pwd);
+      // Connexion locale réussie ✅
     } catch(localErr) {
-      // Compte introuvable en local → tenter Firebase
-      if (_fbDb) {
-        if (fbStatus) { fbStatus.textContent = '🔄 Compte non trouvé en local — recherche Firebase...'; fbStatus.style.display = 'block'; }
-        const clean = tel.replace(/\D/g, '');
-        // Chercher par téléphone (brut ou nettoyé)
-        let snap = await _fbDb.collection('merchants').where('telephone', '==', tel).limit(1).get();
-        if (snap.empty) snap = await _fbDb.collection('merchants').where('telephone', '==', clean).limit(1).get();
 
-        if (snap.empty) {
-          throw new Error('Aucun compte trouvé pour ce numéro.');
+      // ── Étape 2 : compte non trouvé localement → Firebase ──
+      // S'assurer que Firebase est initialisé
+      if (!_fbDb) {
+        if (fbStatus) fbStatus.textContent = '🔄 Initialisation Firebase...';
+        try {
+          initFirestoreWith(getFirebaseConfig());
+          // Attendre que Firestore soit prêt (max 5s)
+          await new Promise((res, rej) => {
+            let tries = 0;
+            const check = setInterval(() => {
+              tries++;
+              if (_fbDb) { clearInterval(check); res(); }
+              if (tries > 25) { clearInterval(check); rej(new Error('Firebase indisponible')); }
+            }, 200);
+          });
+        } catch(fbInitErr) {
+          throw new Error('Connexion impossible. Vérifiez votre connexion internet et réessayez.');
         }
-
-        const fbData = snap.docs[0].data();
-        const mid    = snap.docs[0].id;
-
-        // Vérifier le mot de passe (hash identique)
-        if (fbData.password && fbData.password !== DB._hash(pwd)) {
-          throw new Error('Mot de passe incorrect.');
-        }
-
-        // ── Restaurer le compte dans localStorage ──
-        const merchants = DB.get('merchants');
-        if (!merchants.find(m => m.id === mid)) {
-          merchants.push({ ...fbData, id: mid });
-          DB.set('merchants', merchants);
-        } else {
-          // Mettre à jour si existant
-          const idx = merchants.findIndex(m => m.id === mid);
-          merchants[idx] = { ...fbData, id: mid };
-          DB.set('merchants', merchants);
-        }
-
-        // ── Restaurer les données (products, clients, sales, configs) ──
-        if (fbStatus) fbStatus.textContent = '🔄 Chargement des données...';
-        for (const col of ['products','clients','sales','configs','cashiers']) {
-          try {
-            const colSnap = await _fbDb.collection('merchants').doc(mid).collection(col).get();
-            const items = colSnap.docs
-              .map(d => ({ ...d.data(), id: d.id, merchant_id: mid }))
-              .filter(x => x.id !== '_init');
-            const all = DB.get(col).filter(r => r.merchant_id !== mid);
-            DB.set(col, [...all, ...items]);
-          } catch(colErr) { /* col optionnel */ }
-        }
-
-        // ── Se connecter avec les données restaurées ──
-        merchant = Auth.login(fbData.telephone || tel, pwd);
-        if (fbStatus) fbStatus.textContent = '✅ Compte restauré depuis Firebase !';
-
-      } else {
-        // Pas de Firebase — remonter l'erreur originale
-        throw localErr;
       }
+
+      if (fbStatus) fbStatus.textContent = '🔄 Recherche du compte...';
+
+      // Chercher par téléphone dans Firestore
+      const cleanTel = tel.replace(/\D/g, '');
+      let snap = null;
+      try {
+        snap = await _fbDb.collection('merchants').where('telephone', '==', tel).limit(1).get();
+        if (snap.empty && cleanTel !== tel) {
+          snap = await _fbDb.collection('merchants').where('telephone', '==', cleanTel).limit(1).get();
+        }
+      } catch(queryErr) {
+        throw new Error('Erreur réseau. Vérifiez votre connexion et réessayez.');
+      }
+
+      if (!snap || snap.empty) {
+        throw new Error('Aucun compte trouvé pour ce numéro de téléphone.');
+      }
+
+      const fbData = snap.docs[0].data();
+      const mid    = snap.docs[0].id;
+
+      // Vérifier le mot de passe (hash SHA-256)
+      if (fbData.password && fbData.password !== DB._hash(pwd)) {
+        throw new Error('Mot de passe incorrect.');
+      }
+      if (!fbData.actif) {
+        throw new Error('Compte désactivé. Contactez le support.');
+      }
+
+      if (fbStatus) fbStatus.textContent = '🔄 Chargement des données...';
+
+      // ── Restaurer le compte dans localStorage ──
+      const merchants = DB.get('merchants');
+      const existIdx  = merchants.findIndex(m => m.id === mid);
+      if (existIdx === -1) merchants.push({ ...fbData, id: mid });
+      else merchants[existIdx] = { ...fbData, id: mid };
+      DB.set('merchants', merchants);
+
+      // ── Restaurer les données (produits, ventes, clients, configs, caissiers) ──
+      const cols = ['products','clients','sales','configs','cashiers'];
+      for (const col of cols) {
+        try {
+          const colSnap = await _fbDb.collection('merchants').doc(mid).collection(col).get();
+          const items   = colSnap.docs
+            .map(d => ({ ...d.data(), id: d.id, merchant_id: mid }))
+            .filter(x => x.id !== '_init');
+          const all = DB.get(col).filter(r => r.merchant_id !== mid);
+          DB.set(col, [...all, ...items]);
+        } catch(colErr) { /* collection optionnelle */ }
+      }
+
+      // ── Connecter avec les données restaurées ──
+      merchant = Auth.login(fbData.telephone || tel, pwd);
+      if (fbStatus) fbStatus.textContent = '✅ Données restaurées depuis le cloud !';
     }
 
-    // ── Connexion réussie ──
+    // ── Connexion réussie ───────────────────────────────────
     showPage('page-app');
     renderDashboard();
-    showToast('✅ Connecté — bienvenue ' + merchant.proprietaire + ' !', 'success');
+    showToast('✅ Bienvenue ' + merchant.proprietaire + ' !', 'success');
 
     if (typeof StockNotif !== 'undefined') StockNotif._updateBadge(merchant.id);
-    if (_fbDb) {
-      startFirebase();
-      const fbEmail = tel.replace(/\D/g, '') + '@digitalesolution.app';
-      fbSignInWithEmail(fbEmail, pwd).catch(() => {});
-    }
+
+    // Démarrer Firebase sync
+    if (!_fbDb) initFirestoreWith(getFirebaseConfig());
+    startFirebase();
+
+    // Firebase Auth email (optionnel, silencieux)
+    const fbEmail = tel.replace(/\D/g, '') + '@digitalesolution.app';
+    fbSignInWithEmail(fbEmail, pwd).catch(() => {});
+
     _initPushOnLogin();
     if (merchant.telephone) WAReport.scheduleDaily(merchant.telephone);
     setTimeout(() => { if (fbStatus) fbStatus.style.display = 'none'; }, 2500);
@@ -8215,34 +8243,7 @@ async function initApp(){
     _cmdStartListener(m.id);
     renderCommandes(); // pré-rendre depuis localStorage
   }, 800);
-  API.get('data', { merchant_id: m.id }).then(res => {
-    if (res.data) {
-      let changed = false;
-      ['products','sales','clients','configs'].forEach(col => {
-        if (res.data[col]?.length) {
-          // Fusionner sans écraser les données locales existantes
-          const local  = DB.get(col).filter(r => r.merchant_id !== m.id);
-          const remote = res.data[col];
-          // Garder les locaux + ajouter les distants manquants
-          const localIds = new Set(DB.forM(col, m.id).map(r => r.id));
-          const toAdd = remote.filter(r => !localIds.has(r.id));
-          if (toAdd.length) {
-            DB.set(col, [...DB.get(col), ...toAdd]);
-            changed = true;
-          }
-        }
-      });
-      if (changed) {
-        // Rafraîchir la vue active seulement si des données ont changé
-        const active = document.querySelector('.section.active');
-        if (active) {
-          const sec = active.id.replace('s-','');
-          const renderers = {dashboard:renderDashboard,pos:renderPOS,products:renderProducts,stock:renderStock,clients:renderClients,sales:renderSales};
-          renderers[sec]?.();
-        }
-      }
-    }
-  }).catch(e => console.warn('Chargement API:', e));
+  // Données chargées via Firebase onSnapshot (startFirebase) — pas d'API REST
 
   // Notification demande paiement en attente
   const pending = ADB.getPayReqs().filter(r=>r.merchant_id===m.id&&r.statut==='pending');
@@ -8786,45 +8787,89 @@ function startFirebase() {
   const unsubProds = base().collection('products')
     .onSnapshot(snap => {
       const prods = snap.docs.map(d => ({ ...d.data(), id: d.id, merchant_id: mid })).filter(p => p.id !== '_init');
-      const all = DB.get('products').filter(r => r.merchant_id !== mid);
-      DB.set('products', [...all, ...prods]);
-      const sec = _activeSec(); if (sec === 'products') renderProducts(); if (sec === 'pos') renderPOS(); if (sec === 'stock') renderStock();
+      const localProds = DB.forM('products', mid);
+      // Ne jamais écraser des données locales avec une réponse Firestore vide ou incomplète
+      if (prods.length === 0 && localProds.length > 0) {
+        // Firestore vide mais local non vide → pousser le local vers Firestore
+        localProds.forEach(p => { const {image_b64, ...pLight}=p; base().collection('products').doc(p.id).set(pLight,{merge:true}).catch(()=>{}); });
+        return;
+      }
+      // Fusionner : garder les locaux plus récents si Firestore n'a pas encore les derniers
+      const fbIds  = new Set(prods.map(p => p.id));
+      const extras = localProds.filter(p => !fbIds.has(p.id)); // locaux pas encore dans FB
+      const all    = DB.get('products').filter(r => r.merchant_id !== mid);
+      DB.set('products', [...all, ...prods, ...extras]);
+      const sec = _activeSec();
+      if (sec === 'products') renderProducts();
+      if (sec === 'pos') renderPOS();
+      if (sec === 'stock') renderStock();
+      if (sec === 'gerant-stock') renderGerantStock();
     }, onErr('products'));
 
   // ── Sales
   const unsubSales = base().collection('sales')
     .onSnapshot(snap => {
-      const sales = snap.docs.map(d => ({ ...d.data(), id: d.id, merchant_id: mid })).filter(s => s.id !== '_init');
-      const all = DB.get('sales').filter(r => r.merchant_id !== mid);
-      DB.set('sales', [...all, ...sales]);
-      const sec = _activeSec(); if (sec === 'sales') renderSales(); if (sec === 'dashboard') renderDashboard(); if (sec === 'analytics') renderAnalytics();
+      const sales    = snap.docs.map(d => ({ ...d.data(), id: d.id, merchant_id: mid })).filter(s => s.id !== '_init');
+      const localSales = DB.forM('sales', mid);
+      if (sales.length === 0 && localSales.length > 0) {
+        localSales.forEach(s => base().collection('sales').doc(s.id).set(s,{merge:true}).catch(()=>{}));
+        return;
+      }
+      const fbIds  = new Set(sales.map(s => s.id));
+      const extras = localSales.filter(s => !fbIds.has(s.id));
+      const all    = DB.get('sales').filter(r => r.merchant_id !== mid);
+      DB.set('sales', [...all, ...sales, ...extras]);
+      const sec = _activeSec();
+      if (sec === 'sales') renderSales();
+      if (sec === 'dashboard') renderDashboard();
+      if (sec === 'analytics') renderAnalytics();
+      if (sec === 'ventes-jour') renderVentesJour();
     }, onErr('sales'));
 
   // ── Clients
   const unsubClients = base().collection('clients')
     .onSnapshot(snap => {
-      const clients = snap.docs.map(d => ({ ...d.data(), id: d.id, merchant_id: mid }));
-      const all = DB.get('clients').filter(r => r.merchant_id !== mid);
-      DB.set('clients', [...all, ...clients]);
-      const sec = _activeSec(); if (sec === 'clients') renderClients();
+      const clients      = snap.docs.map(d => ({ ...d.data(), id: d.id, merchant_id: mid }));
+      const localClients = DB.forM('clients', mid);
+      if (clients.length === 0 && localClients.length > 0) {
+        localClients.forEach(c => base().collection('clients').doc(c.id).set(c,{merge:true}).catch(()=>{}));
+        return;
+      }
+      const fbIds  = new Set(clients.map(c => c.id));
+      const extras = localClients.filter(c => !fbIds.has(c.id));
+      const all    = DB.get('clients').filter(r => r.merchant_id !== mid);
+      DB.set('clients', [...all, ...clients, ...extras]);
+      const sec = _activeSec();
+      if (sec === 'clients') renderClients();
     }, onErr('clients'));
 
   // ── Configs
   const unsubConfigs = base().collection('configs')
     .onSnapshot(snap => {
-      if (snap.empty) return;
-      const configs = snap.docs.map(d => ({ ...d.data(), id: d.id, merchant_id: mid }));
-      const all = DB.get('configs').filter(r => r.merchant_id !== mid);
-      DB.set('configs', [...all, ...configs]);
+      if (snap.empty) return; // jamais écraser la config locale si FB vide
+      const configs      = snap.docs.map(d => ({ ...d.data(), id: d.id, merchant_id: mid }));
+      const localConfigs = DB.forM('configs', mid);
+      const fbIds        = new Set(configs.map(c => c.id));
+      const extras       = localConfigs.filter(c => !fbIds.has(c.id));
+      const all          = DB.get('configs').filter(r => r.merchant_id !== mid);
+      DB.set('configs', [...all, ...configs, ...extras]);
     }, onErr('configs'));
 
   // ── Caissiers
   const unsubCashiers = base().collection('cashiers')
     .onSnapshot(snap => {
-      const cashiers = snap.docs.map(d => ({ ...d.data(), id: d.id, merchant_id: mid }));
-      const all = DB.get('cashiers').filter(r => r.merchant_id !== mid);
-      DB.set('cashiers', [...all, ...cashiers]);
-      const sec = _activeSec(); if (sec === 'cashiers') renderCashiers();
+      const cashiers      = snap.docs.map(d => ({ ...d.data(), id: d.id, merchant_id: mid }));
+      const localCashiers = DB.forM('cashiers', mid);
+      if (cashiers.length === 0 && localCashiers.length > 0) {
+        localCashiers.forEach(c => base().collection('cashiers').doc(c.id).set(c,{merge:true}).catch(()=>{}));
+        return;
+      }
+      const fbIds  = new Set(cashiers.map(c => c.id));
+      const extras = localCashiers.filter(c => !fbIds.has(c.id));
+      const all    = DB.get('cashiers').filter(r => r.merchant_id !== mid);
+      DB.set('cashiers', [...all, ...cashiers, ...extras]);
+      const sec = _activeSec();
+      if (sec === 'cashiers') renderCashiers();
     }, onErr('cashiers'));
 
   // ── Dettes
@@ -8864,8 +8909,10 @@ function stopFirebase(mid) {
 // ── Écrit un document dans Firestore (sans bloquer l'UI)
 function fbSet(mid, collection, docId, data) {
   if (!_fbDb) return;
+  // Retirer image_b64 avant Firestore (trop lourd, max 1MB par doc)
+  const { image_b64, ...safeData } = (data || {});
   _fbDb.collection('merchants').doc(mid).collection(collection).doc(docId)
-    .set(data, { merge: true })
+    .set(safeData, { merge: true })
     .catch(e => {
       if (_fbOffline || e.code === 'unavailable') return;
       console.warn('[DS] fbSet', collection + '/' + docId + ':', e.message);
@@ -10153,31 +10200,37 @@ function _updateClDots() {
   }
 }
 
-function confirmCashierLogin() {
-  const m = Auth.current(); if (!m) return;
-  const login = document.getElementById('cl-login').value.trim().toLowerCase();
-  const err   = document.getElementById('cl-pin-err');
-  const cashiers = getCashiers(m.id);
-  const c = cashiers.find(x => x.login === login);
-  if (!c) { err.textContent = '❌ Identifiant introuvable.'; _clPinBuf = ''; _updateClDots(); return; }
-  if (DB._hash(_clPinBuf) !== c.pin_hash) { err.textContent = '❌ PIN incorrect.'; _clPinBuf = ''; _updateClDots(); return; }
-  _currentCashier = c;
-  sessionStorage.setItem('ds_cashier', JSON.stringify(c));
-  closeCashierLogin();
-  showToast('👤 Bonjour ' + c.nom + ' !', 'success');
-  document.getElementById('mm-av').textContent   = c.nom.charAt(0).toUpperCase();
-  document.getElementById('mm-name').textContent = c.nom;
-  document.getElementById('mm-city').textContent = 'Caissier';
-}
 
-function confirmCashierLogin() {
+async function confirmCashierLogin() {
   const m = Auth.current(); if (!m) return;
   const login = document.getElementById('cl-login').value.trim().toLowerCase();
   const err   = document.getElementById('cl-pin-err');
-  const cashiers = getCashiers(m.id);
-  const c = cashiers.find(x => x.login === login);
+  err.textContent = '';
+
+  // 1 — Chercher dans localStorage
+  let cashiers = getCashiers(m.id);
+  let c = cashiers.find(x => x.login === login);
+
+  // 2 — Si pas trouvé localement + Firebase dispo → chercher dans Firestore
+  if (!c && _fbDb) {
+    err.textContent = '🔄 Recherche...';
+    try {
+      const snap = await _fbDb.collection('merchants').doc(m.id)
+        .collection('cashiers').where('login','==',login).limit(1).get();
+      if (!snap.empty) {
+        c = { ...snap.docs[0].data(), id: snap.docs[0].id, merchant_id: m.id };
+        // Sauvegarder localement pour la prochaine fois
+        const allC = DB.get('cashiers').filter(x => !(x.login===login && x.merchant_id===m.id));
+        allC.push(c);
+        DB.set('cashiers', allC);
+      }
+    } catch(e) { console.warn('[CashierLogin]', e.message); }
+    err.textContent = '';
+  }
+
   if (!c) { err.textContent = '❌ Identifiant introuvable.'; _clPinBuf = ''; _updateClDots(); return; }
   if (DB._hash(_clPinBuf) !== c.pin_hash) { err.textContent = '❌ PIN incorrect.'; _clPinBuf = ''; _updateClDots(); return; }
+
   _currentCashier = c;
   sessionStorage.setItem('ds_cashier', JSON.stringify(c));
   closeCashierLogin();
@@ -10186,7 +10239,6 @@ function confirmCashierLogin() {
   document.getElementById('mm-av').textContent   = c.nom.charAt(0).toUpperCase();
   document.getElementById('mm-name').textContent = c.nom;
   document.getElementById('mm-city').textContent = c.role === 'vendeur' ? 'Vendeur' : 'Caissier';
-  // Adapter le bouton checkout + badge file d'attente selon le rôle
   _updateCheckoutBtn();
   _updateQueueBadge(m.id);
 }
@@ -10805,6 +10857,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // 4. Init système offline (indicateurs, listeners, queue)
   initOfflineSystem();
 
+  // ── CRITIQUE : initialiser Firebase dès le démarrage ──────
+  // Nécessaire pour que loginMerchant puisse chercher dans Firestore
+  // même sur un appareil qui n'a jamais eu de compte local
+  try {
+    if (typeof initFirestoreWith === 'function' && typeof getFirebaseConfig === 'function') {
+      const cfg = getFirebaseConfig();
+      if (cfg && cfg.apiKey) {
+        initFirestoreWith(cfg);
+        console.log('[DS] Firebase pré-initialisé pour login multi-appareil');
+      }
+    }
+  } catch(e) { console.warn('[DS] Pre-init Firebase:', e.message); }
+  // ─────────────────────────────────────────────────────────
+
   // 5. Vérifier admin token dans URL
   const params = new URLSearchParams(window.location.search);
   const urlToken = params.get('admin');
@@ -11191,47 +11257,6 @@ function _refreshPatronPinDots() {
       dot.classList.toggle('filled', i < _patronPin.length);
       dot.style.background = i < _patronPin.length ? 'var(--accent)' : '';
     }
-  }
-}
-
-async function _validatePatronPin() {
-  const errEl = document.getElementById('patron-pin-err');
-  errEl.textContent = '';
-
-  // Récupérer la config du marchand pour vérifier le PIN
-  let ownerPinHash = null;
-  const m = Auth.current();
-
-  if (m && m.id === _patronMid) {
-    // Même appareil — récupérer depuis la config locale
-    const cfg = getConfig ? getConfig() : null;
-    ownerPinHash = cfg?.owner_pin_hash || cfg?.patron_pin_hash || null;
-  } else if (_fbDb && _patronMid) {
-    // Autre appareil — récupérer depuis Firestore
-    try {
-      const snap = await _fbDb.collection('merchants').doc(_patronMid)
-        .collection('configs').get();
-      const configs = snap.docs.map(d => d.data());
-      const cfg = configs.find(c => c.owner_pin_hash || c.patron_pin_hash);
-      ownerPinHash = cfg?.owner_pin_hash || cfg?.patron_pin_hash || null;
-    } catch(e) {
-      console.warn('[Patron] Erreur lecture config:', e.message);
-    }
-  }
-
-  // Vérifier le PIN (hash avec DB._hash si disponible)
-  const inputHash = typeof DB !== 'undefined' ? DB._hash(_patronPin) : _simpleHash(_patronPin);
-  const valid = ownerPinHash
-    ? (inputHash === ownerPinHash)
-    : (_patronPin === '0000' || _patronPin === '1234'); // Fallback démo
-
-  if (valid) {
-    _startPatronDashboard();
-  } else {
-    errEl.textContent = '❌ PIN incorrect';
-    _patronPin = '';
-    _refreshPatronPinDots();
-    setTimeout(() => { errEl.textContent = ''; }, 2000);
   }
 }
 
@@ -12595,17 +12620,39 @@ function _srvFinishInit(m) {
   if (stName) stName.textContent = _srvName;
   if (comEl)  comEl.textContent  = m.nom_commerce || 'Commerce';
 
-  // Charger catalogue depuis Firebase pour avoir les données fraîches
+  // Afficher le catalogue local immédiatement (0 délai)
+  srvRenderCatalogue();
+
+  // Charger les produits frais depuis Firebase en arrière-plan
   if (_fbDb && _srvMid) {
-    _fbDb.collection('merchants').doc(_srvMid).collection('products').get().then(snap => {
-      const allP = DB.get('products').filter(p => p.merchant_id !== _srvMid);
-      snap.forEach(d => allP.push({ ...d.data(), id: d.id, merchant_id: _srvMid }));
-      DB.set('products', allP);
-      srvRenderCatalogue(); // re-rendre avec données fraîches Firebase
-    }).catch(() => {}); // silencieux — les données locales suffisent
+    _fbDb.collection('merchants').doc(_srvMid).collection('products').get()
+      .then(snap => {
+        const fbProds = snap.docs
+          .map(d => ({ ...d.data(), id: d.id, merchant_id: _srvMid }))
+          .filter(p => p.id !== '_init');
+
+        // ── Ne jamais écraser le local avec un résultat Firebase vide ──
+        const localProds = DB.forM('products', _srvMid);
+        if (fbProds.length === 0 && localProds.length > 0) {
+          // Firestore vide — garder le local, ne rien faire
+          return;
+        }
+
+        // Fusionner : FB + locaux pas encore dans FB
+        const fbIds  = new Set(fbProds.map(p => p.id));
+        const extras = localProds.filter(p => !fbIds.has(p.id));
+        const allOther = DB.get('products').filter(p => p.merchant_id !== _srvMid);
+        DB.set('products', [...allOther, ...fbProds, ...extras]);
+
+        // Re-rendre seulement si on a bien des produits
+        if (fbProds.length > 0 || extras.length > 0) {
+          srvRenderCatalogue();
+        }
+      })
+      .catch(() => {}); // silencieux — données locales déjà affichées
   }
 
-  srvRenderCatalogue();
+  // Démarrer l'écoute des statuts de commandes (badge uniquement, sans toucher aux produits)
   _srvListenMyOrders();
 }
 
@@ -12621,8 +12668,15 @@ function srvRenderCatalogue() {
   const grid = document.getElementById('srv-grid');
   if (!grid) return;
 
+  // ── Ne jamais effacer un catalogue existant avec 0 produit ──
+  // Si le grid a déjà des cartes et qu'on n'a rien → garder l'affichage actuel
   if (!f.length) {
-    grid.innerHTML = '<div class="empty" style="grid-column:1/-1;padding:40px">Aucun produit disponible.</div>';
+    const hasCards = grid.querySelector('.srv-card');
+    if (!hasCards) {
+      // Grid vraiment vide → afficher le message
+      grid.innerHTML = '<div class="empty" style="grid-column:1/-1;padding:40px">⏳ Chargement des produits...</div>';
+    }
+    // Si des cartes existent déjà → ne rien faire, laisser l'affichage intact
     return;
   }
 
