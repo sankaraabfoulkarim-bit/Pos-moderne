@@ -2134,6 +2134,7 @@ table{table-layout:auto}
 </div>
 
 <script>
+// DIGITALE SOLUTION v2.1.0 — build 20260626
 // URL de base de l'API — auto-détectée selon l'environnement
 const API_BASE = window.location.origin;
 
@@ -2353,6 +2354,9 @@ window.addEventListener('load', checkApiStatus);
       <button class="ni" onclick="showSection('caisse')"   data-s="caisse">  <span class="ni-ico">💰</span><span class="nl">Caisse</span></button>
       <button class="ni" onclick="showSection('products')" data-s="products"><span class="ni-ico">📦</span><span class="nl">Produits</span></button>
       <button class="ni" onclick="showSection('gerant-stock')" data-s="gerant-stock"><span class="ni-ico">📊</span><span class="nl">Gestion Stock</span><span id="gerant-stock-badge" style="display:none;background:var(--danger);color:#fff;font-size:.6rem;padding:1px 6px;border-radius:8px;margin-left:auto">!</span></button>
+      <button class="ni" onclick="showSection('ca-caissiere')" data-s="ca-caissiere"><span class="ni-ico">📈</span><span class="nl">CA Caissières</span></button>
+      <!-- Déconnexion session rôle -->
+      <button class="ni" id="ni-logout-role" onclick="logoutRoleSession()" style="display:none"><span class="ni-ico">🚪</span><span class="nl">Quitter ma session</span></button>
       <button class="ni" onclick="showSection('mysales')"  data-s="mysales"> <span class="ni-ico">🧾</span><span class="nl">Mes ventes</span><span style="font-size:.6rem;background:rgba(232,115,12,.18);color:var(--accent);padding:1px 6px;border-radius:8px;margin-left:auto">Caissier</span></button>
       <button class="ni" onclick="showSection('commandes')" data-s="commandes"><span class="ni-ico">📨</span><span class="nl">Commandes</span><span id="cmd-nav-badge" style="display:none;background:var(--danger);color:#fff;font-size:.6rem;padding:1px 7px;border-radius:8px;margin-left:auto;font-weight:800">0</span></button>
       <!-- PROPRIÉTAIRE — PIN requis -->
@@ -2770,6 +2774,106 @@ window.addEventListener('load', checkApiStatus);
         <div class="mftr"><button class="btn-g" onclick="closeMo('mo-cmd-print')">Fermer</button></div>
       </div>
     </div>
+
+    <!-- MODAL CONNEXION RÔLE (CAISSIER / GÉRANT) -->
+    <div id="mo-role-login" class="mo hidden" onclick="closeMoOv(event,'mo-role-login')">
+      <div class="modal" style="max-width:380px">
+        <div class="mhdr">
+          <h3 id="role-login-title">🔑 Connexion</h3>
+          <button class="mcls" onclick="closeMo('mo-role-login')">✕</button>
+        </div>
+        <div class="mbody">
+          <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:16px" id="role-login-desc">Entrez votre identifiant et votre PIN pour accéder à cette section.</p>
+          <div class="fg"><label>Identifiant</label>
+            <input id="rl-login" placeholder="Ex: fatou" autocomplete="off" oninput="this.value=this.value.toLowerCase().replace(/\s/g,'')"
+              style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:12px 14px;font-size:1rem;width:100%"/>
+          </div>
+          <div class="fg"><label>PIN</label>
+            <!-- Dots visuels -->
+            <div style="display:flex;gap:12px;justify-content:center;margin-bottom:12px" id="rl-dots">
+              <div class="pin-dot" id="rld-1"></div><div class="pin-dot" id="rld-2"></div>
+              <div class="pin-dot" id="rld-3"></div><div class="pin-dot" id="rld-4"></div>
+            </div>
+          <!-- Clavier numérique -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" id="rl-keypad">
+            <button onclick="rlPinAdd(1)" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">1</button>
+            <button onclick="rlPinAdd(2)" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">2</button>
+            <button onclick="rlPinAdd(3)" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">3</button>
+            <button onclick="rlPinAdd(4)" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">4</button>
+            <button onclick="rlPinAdd(5)" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">5</button>
+            <button onclick="rlPinAdd(6)" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">6</button>
+            <button onclick="rlPinAdd(7)" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">7</button>
+            <button onclick="rlPinAdd(8)" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">8</button>
+            <button onclick="rlPinAdd(9)" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">9</button>
+            <button disabled style="padding:14px;background:none;border:none;cursor:default;visibility:hidden">·</button>
+            <button onclick="rlPinAdd(0)" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">0</button>
+            <button onclick="rlPinDel()" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">⌫</button>
+          </div>
+          </div>
+          <div id="rl-err" style="color:var(--danger);font-size:.82rem;text-align:center;min-height:20px"></div>
+        </div>
+        <div class="mftr">
+          <button class="btn-g" onclick="closeMo('mo-role-login')">Annuler</button>
+          <button class="btn-p" onclick="confirmRoleLogin()">Connexion →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CA PAR CAISSIÈRE — MODULE GÉRANT -->
+    <section id="s-ca-caissiere" class="section">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+        <div>
+          <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:3px">📊 CA par Caissière</h3>
+          <p style="font-size:.78rem;color:var(--text-muted)">Suivi des ventes et CA par employé · Situer les responsabilités</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <select id="cac-period" onchange="renderCACaissiere()" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:8px 12px;font-size:.82rem">
+            <option value="today">Aujourd'hui</option>
+            <option value="week" selected>Cette semaine</option>
+            <option value="month">Ce mois</option>
+            <option value="all">Tout</option>
+          </select>
+          <button class="btn-g sm" onclick="cacExportCSV()">📥 CSV</button>
+        </div>
+      </div>
+
+      <!-- KPIs globaux -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
+        <div class="kpi acc"><div class="kpi-lbl">CA Total période</div><div class="kpi-val" id="cac-kpi-ca">0</div></div>
+        <div class="kpi"><div class="kpi-lbl">Ventes totales</div><div class="kpi-val" id="cac-kpi-nb">0</div></div>
+        <div class="kpi" style="border-color:rgba(46,204,113,.3)"><div class="kpi-lbl">Marge totale</div><div class="kpi-val" style="color:var(--success)" id="cac-kpi-marge">0</div></div>
+      </div>
+
+      <!-- Tableau CA par caissière -->
+      <div class="tbl-scroll">
+        <table class="dt">
+          <thead>
+            <tr>
+              <th>Employé</th>
+              <th>Rôle</th>
+              <th>Nb ventes</th>
+              <th>CA réalisé</th>
+              <th>Marge brute</th>
+              <th>Taux marge</th>
+              <th>Panier moyen</th>
+              <th>Détails</th>
+            </tr>
+          </thead>
+          <tbody id="cac-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Détail par caissière -->
+      <div id="cac-detail" style="display:none;margin-top:16px">
+        <div class="dash-card">
+          <div class="dc-hdr">
+            <h4 id="cac-detail-title">Détail</h4>
+            <button class="btn-g sm" onclick="document.getElementById('cac-detail').style.display='none'">✕</button>
+          </div>
+          <div id="cac-detail-list" style="max-height:400px;overflow-y:auto"></div>
+        </div>
+      </div>
+    </section>
 
     <!-- MODULE GÉRANT STOCK (accessible sans PIN) -->
     <section id="s-gerant-stock" class="section">
@@ -3316,11 +3420,39 @@ window.addEventListener('load', checkApiStatus);
           <p style="font-size:.75rem;color:var(--text-dim);margin-top:8px">Rapport automatique envoyé chaque soir à 21h00.</p>
         </div>
 
-        <!-- ACCÈS CAISSIER -->
-        <div class="sc">
-          <h4>👤 Accès caissier</h4>
-          <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:16px">Permettre à un caissier de se connecter avec son propre identifiant.</p>
-          <button class="btn-g" onclick="openCashierLogin()">🔑 Connexion caissier</button>
+        <!-- ACCÈS CAISSIER & GÉRANT — GESTION DES RÔLES -->
+        <div class="sc" style="grid-column:1/-1">
+          <h4>👥 Gestion des accès par rôle</h4>
+          <p style="font-size:.83rem;color:var(--text-muted);margin-bottom:14px">
+            Chaque employé dispose d'un <strong>login + PIN</strong> selon son rôle.<br>
+            <span style="color:var(--accent)">💰 Caissier</span> → POS · Caisse · Mes Ventes &nbsp;|&nbsp;
+            <span style="color:#4FC3F7">👤 Gérant</span> → Produits · Gestion Stock · CA Caissières
+          </p>
+
+          <!-- Liste des accès existants -->
+          <div id="roles-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px"></div>
+
+          <!-- Formulaire ajout/modif -->
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px">
+            <div style="font-size:.8rem;font-weight:700;margin-bottom:10px" id="roles-form-title">+ Nouvel accès</div>
+            <input type="hidden" id="role-edit-id"/>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+              <div class="fg" style="margin:0"><label>Nom *</label><input id="role-nom" placeholder="Ex: Fatou"/></div>
+              <div class="fg" style="margin:0"><label>Login (identifiant) *</label><input id="role-login" placeholder="Ex: fatou" style="text-transform:lowercase" oninput="this.value=this.value.toLowerCase().replace(/\s/g,'')"/></div>
+              <div class="fg" style="margin:0">
+                <label>Rôle *</label>
+                <select id="role-type" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:10px 12px;font-size:.88rem;width:100%">
+                  <option value="caissier">💰 Caissier — POS · Caisse · Mes Ventes</option>
+                  <option value="gerant">👤 Gérant — Produits · Stock · CA Caissières</option>
+                </select>
+              </div>
+              <div class="fg" style="margin:0"><label>PIN (4 chiffres) *</label><input type="password" id="role-pin" maxlength="4" placeholder="••••" inputmode="numeric"/></div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn-p sm" onclick="saveRoleAccess()">💾 Enregistrer</button>
+              <button class="btn-g sm" onclick="resetRoleForm()">Annuler</button>
+            </div>
+          </div>
         </div>
 
         <!-- MULTI-APPAREILS -->
@@ -3410,8 +3542,6 @@ window.addEventListener('load', checkApiStatus);
         <button class="btn-p" onclick="openCashierModal(null)">+ Nouveau caissier</button>
       </div>
       <div id="cashiers-list" style="display:flex;flex-direction:column;gap:10px"></div>
-    </section>
-
     </section>
 
     <!-- ═══════════════════════════════════════════════════════
@@ -4501,11 +4631,17 @@ alter table payments  enable row level security;</pre>
   </div>
 </div>
 <script>
-// ============================================================
-// DIGITALE SOLUTION — JavaScript
+// DIGITALE SOLUTION v2.1.0 — main
 // ============================================================
 
 // ---- DB ----
+// ── Variables PIN Rôles (déclarées tôt pour éviter temporal dead zone) ──
+var _currentGerant  = null;
+var _pendingSection = null;
+var _rlPinBuf       = '';
+var _CAISSIER_SECS  = ['pos','quick','caisse','mysales','commandes'];
+var _GERANT_SECS    = ['products','gerant-stock','ca-caissiere','admin-stock'];
+
 const DB = {
   get(t){try{return JSON.parse(localStorage.getItem('ds_'+t)||'[]')}catch{return[]}},
   set(t,d){localStorage.setItem('ds_'+t,JSON.stringify(d))},
@@ -4791,8 +4927,11 @@ function showSection(name) {
   document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
   document.getElementById('s-' + name)?.classList.add('active');
   document.querySelector('[data-s="' + name + '"]')?.classList.add('active');
-  const titles = {dashboard:'Dashboard',pos:'Point de Vente',quick:'Vente Rapide',caisse:'Caisse',products:'Produits',stock:'Gestion Stock',clients:'Clients',sales:'Ventes',settings:'Paramètres',analytics:'Analytique',cashiers:'Caissiers',expenses:'Dépenses','gerant-stock':'📊 Gestion de Stock','mysales':'Mes Ventes','ventes-jour':'📅 Ventes Journalières','admin-stock':'🔍 Audit Stock','commandes':'📨 Commandes Serveuses'};
+  const titles = {dashboard:'Dashboard',pos:'Point de Vente',quick:'Vente Rapide',caisse:'Caisse',products:'Produits',stock:'Gestion Stock',clients:'Clients',sales:'Ventes',settings:'Paramètres',analytics:'Analytique',cashiers:'Caissiers',expenses:'Dépenses','gerant-stock':'📊 Gestion de Stock','mysales':'Mes Ventes','ventes-jour':'📅 Ventes Journalières','admin-stock':'🔍 Audit Stock','commandes':'📨 Commandes Serveuses','ca-caissiere':'📊 CA par Caissière'};
   document.getElementById('tb-title').textContent = titles[name] || name;
+
+  // ── Vérification accès PIN (caissier / gérant) ──────────
+  if (!_checkSectionAccess(name)) return; // bloqué → modale PIN ouverte
   // Update expiry warning in topbar
   const curM = Auth.current();
   if(curM){
@@ -4809,7 +4948,7 @@ function showSection(name) {
   document.body.style.overflow = '';
   // Sync bottom nav
   _syncBottomNav('s-' + name);
-  ({dashboard:renderDashboard,pos:renderPOS,quick:renderQuick,caisse:renderCaisse,products:renderProducts,stock:renderStock,clients:renderClients,sales:renderSales,settings:renderSettings,mysales:renderMySales,analytics:renderAnalytics,cashiers:renderCashiers,expenses:renderExpenses,'gerant-stock':renderGerantStock,'ventes-jour':renderVentesJour,'admin-stock':() => { asSetTab('produits', document.getElementById('as-tab-produits')); },'commandes':() => { renderCommandes(); _cmdStartListener(Auth.current()?.id); }})[name]?.();
+  ({dashboard:renderDashboard,pos:renderPOS,quick:renderQuick,caisse:renderCaisse,products:renderProducts,stock:renderStock,clients:renderClients,sales:renderSales,settings:renderSettings,mysales:renderMySales,analytics:renderAnalytics,cashiers:renderCashiers,expenses:renderExpenses,'gerant-stock':renderGerantStock,'ventes-jour':renderVentesJour,'admin-stock':() => { asSetTab('produits', document.getElementById('as-tab-produits')); },'commandes':() => { renderCommandes(); _cmdStartListener(Auth.current()?.id); },'ca-caissiere':renderCACaissiere})[name]?.();
   if (typeof updateSubTicker === 'function') updateSubTicker();
 }
 function toggleSidebar() {
@@ -5771,11 +5910,11 @@ function processCheckout() {
       DB.update('clients', cliSel, {nom:cliNom, whatsapp:cliWA}, m.id);
     }
   }
+  const caissierNom = (Auth.currentCashier && Auth.currentCashier.nom) || _currentCashier?.nom || m.proprietaire || 'Propriétaire';
   const tot = cartTotal();
-  const sale = DB.insert('sales', {client_id:cliId, client_nom:cliNom, client_wa:cliWA, items:JSON.parse(JSON.stringify(cart)), total:tot, devise:dev}, m.id);
+  const sale = DB.insert('sales', {client_id:cliId, client_nom:cliNom, client_wa:cliWA, items:JSON.parse(JSON.stringify(cart)), total:tot, devise:dev, cashier_nom:caissierNom}, m.id);
   // Update stocks — ignore les produits libres (depuis commandes file d'attente)
   const allP = DB.get('products');
-  const caissierNom = (Auth.currentCashier && Auth.currentCashier.nom) || m.proprietaire || 'Propriétaire';
   cart.forEach(ci => {
     if (!ci.pid || ci.pid.startsWith('__free_')) return;
     const idx = allP.findIndex(p => p.id === ci.pid && p.merchant_id === m.id);
@@ -7044,6 +7183,8 @@ function renderSettings() {
   document.getElementById('s-welcome').value = cfg.message_accueil || '';
   document.getElementById('s-wa-msg').value = cfg.wa_message || '';
   document.getElementById('s-devise').value = cfg.devise || 'FCFA';
+  // Rôles / accès employés
+  if (typeof renderRolesList === 'function') renderRolesList();
   // Pied de ticket
   const tl1 = document.getElementById('s-ticket-ligne1');
   const tl2 = document.getElementById('s-ticket-ligne2');
@@ -7090,6 +7231,7 @@ function registerMerchant(e) {
     // Ouvrir la session
     sessionStorage.setItem('ds_m', JSON.stringify(merchant));
     localStorage.setItem('ds_session_m', JSON.stringify(merchant));
+    localStorage.setItem('ds_fbpwd_' + merchant.id, p);
 
     showPage('page-app');
     renderDashboard();
@@ -7219,6 +7361,8 @@ async function loginMerchant(e) {
     }
 
     // ── Connexion réussie ───────────────────────────────────
+    // Sauvegarder le mot de passe pour Firebase Auth multi-appareil
+    localStorage.setItem('ds_fbpwd_' + merchant.id, pwd);
     showPage('page-app');
     renderDashboard();
     showToast('✅ Bienvenue ' + merchant.proprietaire + ' !', 'success');
@@ -8243,6 +8387,13 @@ async function initApp(){
     _cmdStartListener(m.id);
     renderCommandes(); // pré-rendre depuis localStorage
   }, 800);
+
+  // Restaurer la session rôle (caissier/gérant) depuis sessionStorage
+  _restoreRoleSession();
+
+  // Afficher bouton logout rôle si session active
+  const roleBtn = document.getElementById('ni-logout-role');
+  if (roleBtn) roleBtn.style.display = (getRoleSession()) ? 'flex' : 'none';
   // Données chargées via Firebase onSnapshot (startFirebase) — pas d'API REST
 
   // Notification demande paiement en attente
@@ -8764,18 +8915,43 @@ function startFirebase() {
   if (!m || !_fbDb) return;
   const mid = m.id;
 
-  // Connexion anonyme pour garantir l'accès Firestore
-  _fbSignInAnon();
+  // ── Firebase Auth email/password (pas anonyme) ──────────
+  // C'est le seul moyen d'avoir un accès Firestore stable multi-appareil
+  const fbEmail = m.telephone.replace(/\D/g, '') + '@digitalesolution.app';
+  const fbPwd   = localStorage.getItem('ds_fbpwd_' + mid) || m.password || '';
 
-  // Forcer la reconnexion réseau
-  _fbDb.enableNetwork().catch(() => {});
+  const _doStart = () => {
+    _fbDb.enableNetwork().catch(() => {});
+    if (_fbListeners[mid]) {
+      _fbListeners[mid].forEach(unsub => { try { unsub(); } catch(e) {} });
+      delete _fbListeners[mid];
+    }
+    _fbListeners[mid] = [];
+    _attachListeners(mid, m);
+  };
 
-  if (_fbListeners[mid]) {
-    _fbListeners[mid].forEach(unsub => { try { unsub(); } catch(e) {} });
-    delete _fbListeners[mid];
+  if (_fbAuth) {
+    if (_fbAuth.currentUser) {
+      _doStart();
+    } else {
+      _fbAuth.signInWithEmailAndPassword(fbEmail, fbPwd)
+        .then(_doStart)
+        .catch(() => {
+          // Email inexistant → créer le compte Firebase Auth
+          _fbAuth.createUserWithEmailAndPassword(fbEmail, fbPwd)
+            .then(_doStart)
+            .catch(e => {
+              console.warn('[FB Auth] Login échoué, connexion anonyme:', e.message);
+              _fbSignInAnon().then(_doStart);
+            });
+        });
+    }
+  } else {
+    _doStart();
   }
-  _fbListeners[mid] = [];
+}
 
+function _attachListeners(mid, m) {
   const onErr = (col) => (e) => {
     if (_fbOffline || e.code === 'unavailable') return;
     console.warn('[DS] Sync "' + col + '":', e.code || e.message);
@@ -8786,23 +8962,35 @@ function startFirebase() {
   // ── Products
   const unsubProds = base().collection('products')
     .onSnapshot(snap => {
-      const prods = snap.docs.map(d => ({ ...d.data(), id: d.id, merchant_id: mid })).filter(p => p.id !== '_init');
+      const prods = snap.docs
+        .map(d => ({ ...d.data(), id: d.id, merchant_id: mid }))
+        .filter(p => p.id !== '_init' && p.nom); // ignorer docs sans nom
       const localProds = DB.forM('products', mid);
-      // Ne jamais écraser des données locales avec une réponse Firestore vide ou incomplète
+
       if (prods.length === 0 && localProds.length > 0) {
-        // Firestore vide mais local non vide → pousser le local vers Firestore
-        localProds.forEach(p => { const {image_b64, ...pLight}=p; base().collection('products').doc(p.id).set(pLight,{merge:true}).catch(()=>{}); });
+        // Firestore vide mais local non vide → uploader le local
+        localProds.forEach(p => {
+          const { image_b64, ...pLight } = p;
+          base().collection('products').doc(p.id).set(pLight, { merge: true }).catch(() => {});
+        });
+        return; // NE PAS toucher au localStorage
+      }
+
+      if (prods.length < localProds.length * 0.5 && localProds.length > 3) {
+        // Firestore retourne moins de 50% des produits locaux → suspicieux, ne pas écraser
+        console.warn('[DS] Sync products: FB retourne', prods.length, 'vs local', localProds.length, '— ignoré');
         return;
       }
-      // Fusionner : garder les locaux plus récents si Firestore n'a pas encore les derniers
+
       const fbIds  = new Set(prods.map(p => p.id));
-      const extras = localProds.filter(p => !fbIds.has(p.id)); // locaux pas encore dans FB
+      const extras = localProds.filter(p => !fbIds.has(p.id));
       const all    = DB.get('products').filter(r => r.merchant_id !== mid);
       DB.set('products', [...all, ...prods, ...extras]);
+
       const sec = _activeSec();
       if (sec === 'products') renderProducts();
-      if (sec === 'pos') renderPOS();
-      if (sec === 'stock') renderStock();
+      if (sec === 'pos')      renderPOS();
+      if (sec === 'stock')    renderStock();
       if (sec === 'gerant-stock') renderGerantStock();
     }, onErr('products'));
 
@@ -8858,7 +9046,9 @@ function startFirebase() {
   // ── Caissiers
   const unsubCashiers = base().collection('cashiers')
     .onSnapshot(snap => {
-      const cashiers      = snap.docs.map(d => ({ ...d.data(), id: d.id, merchant_id: mid }));
+      const cashiers = snap.docs
+        .filter(d => d.id !== '_list' && d.id !== '_init')
+        .map(d => ({ ...d.data(), id: d.id, merchant_id: mid }));
       const localCashiers = DB.forM('cashiers', mid);
       if (cashiers.length === 0 && localCashiers.length > 0) {
         localCashiers.forEach(c => base().collection('cashiers').doc(c.id).set(c,{merge:true}).catch(()=>{}));
@@ -8891,7 +9081,7 @@ function startFirebase() {
     }, onErr('notifs'));
 
   _fbListeners[mid] = [unsubProds, unsubSales, unsubClients, unsubConfigs, unsubCashiers, unsubDettes, unsubNotifs];
-  console.log('[Firebase] ✅ Sync temps réel complète démarrée pour:', m.nom_commerce);
+  console.log('[Firebase] ✅ Sync temps réel démarrée pour:', m.nom_commerce);
 }
 
 function _activeSec() {
@@ -10057,14 +10247,37 @@ let _editCashierId = null;
 let _clPinBuffer   = '';
 
 function getCashiers(mid) {
-  try { return JSON.parse(localStorage.getItem('ds_cashiers_' + mid) || '[]'); } catch { return []; }
+  // Source unifiée : DB.get('cashiers') filtrés par merchant_id
+  // + migration transparente depuis l'ancien format ds_cashiers_{mid}
+  const fromDB = DB.forM('cashiers', mid);
+  if (fromDB.length > 0) return fromDB;
+  // Migration : lire l'ancien format et migrer vers DB
+  try {
+    const old = JSON.parse(localStorage.getItem('ds_cashiers_' + mid) || '[]');
+    if (old.length > 0) {
+      const allC = DB.get('cashiers').filter(c => c.merchant_id !== mid);
+      const migrated = old.map(c => ({ ...c, merchant_id: mid }));
+      DB.set('cashiers', [...allC, ...migrated]);
+      // Supprimer l'ancien stockage
+      localStorage.removeItem('ds_cashiers_' + mid);
+      return migrated;
+    }
+  } catch(e) {}
+  return [];
 }
+
 function setCashiers(mid, data) {
-  localStorage.setItem('ds_cashiers_' + mid, JSON.stringify(data));
-  // Sync Firebase
+  // Sauvegarder dans le système DB unifié
+  const allC = DB.get('cashiers').filter(c => c.merchant_id !== mid);
+  DB.set('cashiers', [...allC, ...data.map(c => ({ ...c, merchant_id: mid }))]);
+  // Supprimer l'ancien format si encore présent
+  localStorage.removeItem('ds_cashiers_' + mid);
+  // Sync Firebase : chaque caissier comme document séparé
   if (_fbDb && mid) {
-    _fbDb.collection('merchants').doc(mid).collection('cashiers')
-      .doc('_list').set({ list: data, updated_at: new Date().toISOString() }).catch(() => {});
+    data.forEach(c => {
+      _fbDb.collection('merchants').doc(mid).collection('cashiers')
+        .doc(c.id).set({ ...c, merchant_id: mid }, { merge: true }).catch(() => {});
+    });
   }
 }
 
@@ -10145,29 +10358,37 @@ function saveCashier() {
   const dup = cashiers.find(x => x.login === login && x.id !== _editCashierId);
   if (dup) { err.textContent = '⚠️ Cet identifiant est déjà utilisé.'; err.classList.remove('hidden'); return; }
 
+  const rec = { nom, login, tel, role };
+  if (pin && pin.length === 4) rec.pin_hash = DB._hash(pin);
+
   if (_editCashierId) {
-    const idx = cashiers.findIndex(x => x.id === _editCashierId);
-    if (idx !== -1) {
-      cashiers[idx] = { ...cashiers[idx], nom, login, tel, role };
-      if (pin && pin.length === 4) cashiers[idx].pin_hash = DB._hash(pin);
-    }
+    DB.update('cashiers', _editCashierId, rec, m.id);
   } else {
-    cashiers.push({ id: 'cs_' + Date.now(), nom, login, tel, role, pin_hash: DB._hash(pin), created_at: new Date().toISOString(), merchant_id: m.id });
+    DB.insert('cashiers', rec, m.id);
   }
 
-  setCashiers(m.id, cashiers);
-  showToast('✅ ' + (role === 'vendeur' ? 'Vendeur' : 'Caissier') + ' ' + (_editCashierId ? 'mis à jour' : 'créé'), 'success');
+  // Sync Firebase — chaque caissier comme doc individuel
+  const saved = DB.forM('cashiers', m.id).find(c => c.login === login);
+  if (saved && _fbDb) {
+    _fbDb.collection('merchants').doc(m.id).collection('cashiers')
+      .doc(saved.id).set(saved, { merge: true }).catch(() => {});
+  }
+
+  showToast('✅ ' + (role === 'vendeur' ? 'Vendeur' : role === 'gerant' ? 'Gérant' : 'Caissier') + ' ' + (_editCashierId ? 'mis à jour' : 'créé'), 'success');
   closeMo('mo-cashier');
   renderCashiers();
+  if (typeof renderRolesList === 'function') renderRolesList();
 }
 
 function deleteCashier(id) {
   const m = Auth.current(); if (!m) return;
   if (!confirm('Supprimer ce caissier ?')) return;
-  const cashiers = getCashiers(m.id).filter(x => x.id !== id);
-  setCashiers(m.id, cashiers);
+  const all = DB.get('cashiers').filter(c => !(c.id === id && c.merchant_id === m.id));
+  DB.set('cashiers', all);
+  if (_fbDb) _fbDb.collection('merchants').doc(m.id).collection('cashiers').doc(id).delete().catch(() => {});
   showToast('🗑️ Caissier supprimé', 'success');
   renderCashiers();
+  if (typeof renderRolesList === 'function') renderRolesList();
 }
 
 // ── Session caissier
@@ -13306,6 +13527,274 @@ function _cmdMarkEncaisseeOnCheckout() {
     if (m) _cmdUpdate(window._pendingCmdId, { statut: 'encaissee' });
     window._pendingCmdId = null;
   }
+}
+
+// ============================================================
+// SYSTÈME PIN RÔLES — Caissier / Gérant
+// Session stockée dans sessionStorage (efface à la fermeture)
+// ============================================================
+
+function getRoleSession() {
+  try { return JSON.parse(sessionStorage.getItem('ds_role_session')||'null'); } catch { return null; }
+}
+function setRoleSession(user) {
+  sessionStorage.setItem('ds_role_session', JSON.stringify(user));
+}
+function clearRoleSession() {
+  sessionStorage.removeItem('ds_role_session');
+  _currentCashier = null; _currentGerant = null;
+  const av   = document.getElementById('mm-av');
+  const name = document.getElementById('mm-name');
+  const city = document.getElementById('mm-city');
+  const m    = Auth.current();
+  if (av)   av.textContent   = m ? (m.proprietaire||'P').charAt(0).toUpperCase() : 'P';
+  if (name) name.textContent = m?.proprietaire || 'Propriétaire';
+  if (city) city.textContent = m?.ville || '';
+  showToast('👋 Session terminée', 'success');
+}
+
+function _restoreRoleSession() {
+  const sess = getRoleSession(); if (!sess) return;
+  if (sess.role === 'gerant')   { _currentGerant = sess;  _updateGerantUI(sess); }
+  else                          { _currentCashier = sess; _updateCashierUI(sess); }
+}
+function _updateCashierUI(c) {
+  const lbl = {caissier:'💰 Caissier',vendeur:'🛍️ Vendeur'};
+  const av=document.getElementById('mm-av'), name=document.getElementById('mm-name'), city=document.getElementById('mm-city');
+  if(av) av.textContent=(c.nom||'C').charAt(0).toUpperCase();
+  if(name) name.textContent=c.nom;
+  if(city) city.textContent=lbl[c.role]||'Caissier';
+}
+function _updateGerantUI(g) {
+  const av=document.getElementById('mm-av'), name=document.getElementById('mm-name'), city=document.getElementById('mm-city');
+  if(av) av.textContent=(g.nom||'G').charAt(0).toUpperCase();
+  if(name) name.textContent=g.nom;
+  if(city) city.textContent='👤 Gérant';
+}
+
+// Sections nécessitant une session active (déclarées en var au début du script)
+
+function _checkSectionAccess(name) {
+  if (_CAISSIER_SECS.includes(name)) {
+    if (_currentCashier || _currentGerant) return true;
+    _pendingSection = name;
+    _openRoleLogin('caissier'); return false;
+  }
+  if (_GERANT_SECS.includes(name)) {
+    if (_currentGerant || (_currentCashier?.role === 'gerant')) return true;
+    _pendingSection = name;
+    _openRoleLogin('gerant'); return false;
+  }
+  return true;
+}
+
+function _openRoleLogin(forRole) {
+  _rlPinBuf = ''; _updateRlDots();
+  const t=document.getElementById('role-login-title'), d=document.getElementById('role-login-desc'), e=document.getElementById('rl-err'), l=document.getElementById('rl-login');
+  if(t) t.textContent = forRole==='gerant' ? '👤 Accès Gérant' : '💰 Accès Caissier';
+  if(d) d.textContent = forRole==='gerant' ? 'Identifiants gérant requis pour accéder aux produits et à la gestion de stock.' : 'Identifiants requis pour accéder au point de vente.';
+  if(e) e.textContent='';
+  if(l) { l.value=''; setTimeout(()=>l.focus(),200); }
+  const mo=document.getElementById('mo-role-login');
+  if(mo) { mo.dataset.forRole=forRole; mo.classList.remove('hidden'); }
+}
+
+function rlPinAdd(n) {
+  if(_rlPinBuf.length>=4) return;
+  _rlPinBuf += n; _updateRlDots();
+  if(_rlPinBuf.length===4) setTimeout(confirmRoleLogin,120);
+}
+function rlPinDel() { _rlPinBuf=_rlPinBuf.slice(0,-1); _updateRlDots(); }
+function _updateRlDots() {
+  [1,2,3,4].forEach(i => {
+    const d=document.getElementById('rld-'+i);
+    if(d) d.style.background = i<=_rlPinBuf.length ? 'var(--accent)' : 'var(--border)';
+  });
+}
+
+async function confirmRoleLogin() {
+  const m=Auth.current(); if(!m) return;
+  const login=(document.getElementById('rl-login')?.value||'').trim().toLowerCase();
+  const errEl=document.getElementById('rl-err');
+  const forRole=document.getElementById('mo-role-login')?.dataset.forRole||'caissier';
+  if(errEl) errEl.textContent='';
+  if(!login)            { if(errEl) errEl.textContent='❌ Entrez votre identifiant.'; return; }
+  if(_rlPinBuf.length<4){ if(errEl) errEl.textContent='❌ PIN incomplet (4 chiffres).'; return; }
+
+  let emp=getCashiers(m.id).find(c=>c.login===login);
+  if(!emp && _fbDb) {
+    if(errEl) errEl.textContent='🔄 Vérification...';
+    try {
+      const snap=await _fbDb.collection('merchants').doc(m.id).collection('cashiers').where('login','==',login).limit(1).get();
+      if(!snap.empty) {
+        emp={...snap.docs[0].data(),id:snap.docs[0].id,merchant_id:m.id};
+        const allC=DB.get('cashiers').filter(x=>!(x.login===login&&x.merchant_id===m.id));
+        allC.push(emp); DB.set('cashiers',allC);
+      }
+    } catch(e){ console.warn('[RoleLogin]',e.message); }
+    if(errEl) errEl.textContent='';
+  }
+
+  if(!emp)                             { if(errEl) errEl.textContent='❌ Identifiant introuvable.'; _rlPinBuf=''; _updateRlDots(); return; }
+  if(DB._hash(_rlPinBuf)!==emp.pin_hash){ if(errEl) errEl.textContent='❌ PIN incorrect.'; _rlPinBuf=''; _updateRlDots(); return; }
+  const empRole=emp.role||'caissier';
+  if(forRole==='gerant'&&empRole!=='gerant') { if(errEl) errEl.textContent='❌ Droits insuffisants pour le rôle Gérant.'; _rlPinBuf=''; _updateRlDots(); return; }
+
+  closeMo('mo-role-login');
+  if(empRole==='gerant') { _currentGerant=emp; _currentCashier=null; setRoleSession(emp); _updateGerantUI(emp); showToast('👤 Bonjour '+emp.nom+' — Gérant !','success'); }
+  else                   { _currentCashier=emp; _currentGerant=null; setRoleSession(emp); _updateCashierUI(emp); showToast('💰 Bonjour '+emp.nom+' — Caissier !','success'); }
+  if(_pendingSection) { const s=_pendingSection; _pendingSection=null; showSection(s); }
+}
+
+// Bouton déconnexion session rôle (dans le menu utilisateur)
+function logoutRoleSession() {
+  if(!_currentCashier && !_currentGerant) return;
+  clearRoleSession();
+  showSection('dashboard');
+}
+
+// ── Gestion accès dans Paramètres ──────────────────────────
+function renderRolesList() {
+  const m=Auth.current(); if(!m) return;
+  const cashiers=getCashiers(m.id);
+  const el=document.getElementById('roles-list'); if(!el) return;
+  if(!cashiers.length){ el.innerHTML='<p class="empty" style="padding:10px">Aucun accès configuré.</p>'; return; }
+  const rC={'caissier':'var(--accent)','gerant':'#4FC3F7','vendeur':'var(--success)'};
+  const rL={'caissier':'💰 Caissier','gerant':'👤 Gérant','vendeur':'🛍️ Vendeur'};
+  el.innerHTML=cashiers.map(c=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm)">
+      <div style="width:34px;height:34px;border-radius:50%;background:rgba(232,115,12,.12);display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">${(c.nom||'?').charAt(0).toUpperCase()}</div>
+      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:.88rem">${c.nom}</div><div style="font-size:.72rem;color:var(--text-muted)">Login : <code>${c.login}</code></div></div>
+      <span style="font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:100px;background:rgba(0,0,0,.1);color:${rC[c.role]||'var(--text)'}">${rL[c.role]||c.role}</span>
+      <button class="tbtn" onclick="editRoleAccess('${c.id}')">✏️</button>
+      <button class="tbtn d" onclick="deleteRoleAccess('${c.id}')">🗑️</button>
+    </div>`).join('');
+}
+
+function saveRoleAccess() {
+  const m=Auth.current(); if(!m) return;
+  const nom=document.getElementById('role-nom')?.value.trim();
+  const login=document.getElementById('role-login')?.value.trim().toLowerCase();
+  const role=document.getElementById('role-type')?.value||'caissier';
+  const pin=document.getElementById('role-pin')?.value||'';
+  const editId=document.getElementById('role-edit-id')?.value||'';
+  if(!nom||!login){ showToast('⚠️ Nom et login requis','error'); return; }
+  if(!editId&&pin.length!==4){ showToast('⚠️ PIN 4 chiffres requis','error'); return; }
+  if(pin.length>0&&!/^\d+$/.test(pin)){ showToast('⚠️ PIN = chiffres uniquement','error'); return; }
+  const cashiers=getCashiers(m.id);
+  if(cashiers.find(c=>c.login===login&&c.id!==editId)){ showToast('⚠️ Login déjà utilisé','error'); return; }
+  const rec={nom,login,role,merchant_id:m.id};
+  if(pin.length===4) rec.pin_hash=DB._hash(pin);
+  editId ? DB.update('cashiers',editId,rec,m.id) : DB.insert('cashiers',rec,m.id);
+  const saved=DB.forM('cashiers',m.id).find(c=>c.login===login);
+  if(saved&&_fbDb) _fbDb.collection('merchants').doc(m.id).collection('cashiers').doc(saved.id).set(saved,{merge:true}).catch(()=>{});
+  showToast('✅ Accès '+(editId?'mis à jour':'créé')+' — '+nom,'success');
+  resetRoleForm(); renderRolesList(); renderCashiers();
+}
+
+function editRoleAccess(id) {
+  const m=Auth.current(); if(!m) return;
+  const c=getCashiers(m.id).find(x=>x.id===id); if(!c) return;
+  document.getElementById('role-edit-id').value=id;
+  document.getElementById('role-nom').value=c.nom;
+  document.getElementById('role-login').value=c.login;
+  document.getElementById('role-type').value=c.role||'caissier';
+  document.getElementById('role-pin').value='';
+  const t=document.getElementById('roles-form-title'); if(t) t.textContent='✏️ Modifier l\'accès';
+}
+
+function deleteRoleAccess(id) {
+  const m=Auth.current(); if(!m) return;
+  if(!confirm('Supprimer cet accès ?')) return;
+  DB.set('cashiers',DB.get('cashiers').filter(c=>!(c.id===id&&c.merchant_id===m.id)));
+  if(_fbDb) _fbDb.collection('merchants').doc(m.id).collection('cashiers').doc(id).delete().catch(()=>{});
+  renderRolesList(); renderCashiers(); showToast('🗑️ Accès supprimé','success');
+}
+
+function resetRoleForm() {
+  ['role-edit-id','role-nom','role-login','role-pin'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  const t=document.getElementById('role-type'); if(t) t.value='caissier';
+  const ti=document.getElementById('roles-form-title'); if(ti) ti.textContent='+ Nouvel accès';
+}
+
+// ── Module CA par Caissière (Gérant) ───────────────────────
+function renderCACaissiere() {
+  const m=Auth.current(); if(!m) return;
+  const dev=getConfig()?.devise||'FCFA';
+  const period=document.getElementById('cac-period')?.value||'week';
+  const sales=DB.forM('sales',m.id).filter(s=>s.statut!=='cancelled');
+  const prods=DB.forM('products',m.id);
+  const cashiers=getCashiers(m.id);
+  const now=new Date(), today=now.toISOString().slice(0,10);
+  const wkS=new Date(now); wkS.setDate(now.getDate()-((now.getDay()+6)%7)); wkS.setHours(0,0,0,0);
+  const mS=new Date(now.getFullYear(),now.getMonth(),1);
+  const inP=s=>{ const d=new Date(s.created_at||0); if(period==='today') return s.created_at?.slice(0,10)===today; if(period==='week') return d>=wkS; if(period==='month') return d>=mS; return true; };
+  const filtered=sales.filter(inP);
+  const byEmp={};
+  filtered.forEach(s=>{
+    const key=s.cashier_nom||s.caissier||s.serveur||'Non identifié';
+    if(!byEmp[key]) byEmp[key]={nom:key,nb:0,ca:0,cout:0,sales:[]};
+    byEmp[key].nb++; byEmp[key].ca+=s.total||0; byEmp[key].sales.push(s);
+    (s.items||[]).forEach(it=>{ const p=prods.find(x=>x.id===it.pid||x.nom===it.nom); if(p?.cout) byEmp[key].cout+=p.cout*(it.qty||1); });
+  });
+  const empList=Object.values(byEmp).sort((a,b)=>b.ca-a.ca);
+  const totCA=empList.reduce((a,e)=>a+e.ca,0), totNb=empList.reduce((a,e)=>a+e.nb,0), totM=empList.reduce((a,e)=>a+(e.ca-e.cout),0);
+  const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.innerHTML=v; };
+  set('cac-kpi-ca',fmtMoney(totCA,dev)); set('cac-kpi-nb',totNb);
+  set('cac-kpi-marge',`<span style="color:${totM>=0?'var(--success)':'var(--danger)'}">${fmtMoney(totM,dev)}</span>`);
+  const tbody=document.getElementById('cac-tbody'); if(!tbody) return;
+  if(!empList.length){ tbody.innerHTML='<tr><td colspan="8" class="empty">Aucune vente sur cette période.</td></tr>'; return; }
+  tbody.innerHTML=empList.map(e=>{
+    const mg=e.ca-e.cout, mgP=e.ca>0?Math.round((mg/e.ca)*100):0, avg=e.nb>0?Math.round(e.ca/e.nb):0;
+    const mc=mg>=0?'var(--success)':'var(--danger)';
+    const cash=cashiers.find(c=>c.nom===e.nom||c.login===e.nom);
+    const rL={'caissier':'💰','gerant':'👤','vendeur':'🛍️'};
+    const roleLbl=cash?(rL[cash.role]||'')+' '+(cash.role||''):'—';
+    return `<tr>
+      <td><strong>${e.nom}</strong></td>
+      <td style="font-size:.72rem;color:var(--text-muted)">${roleLbl}</td>
+      <td style="text-align:center">${e.nb}</td>
+      <td><strong style="color:var(--accent)">${fmtMoney(e.ca,dev)}</strong></td>
+      <td style="color:${mc}">${e.cout>0?fmtMoney(mg,dev):'—'}</td>
+      <td style="color:${mc}">${e.cout>0?mgP+'%':'—'}</td>
+      <td>${fmtMoney(avg,dev)}</td>
+      <td><button class="tbtn" onclick="showCACDetail('${e.nom}')">🔍 Voir</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function showCACDetail(nom) {
+  const m=Auth.current(); if(!m) return;
+  const dev=getConfig()?.devise||'FCFA';
+  const period=document.getElementById('cac-period')?.value||'week';
+  const sales=DB.forM('sales',m.id).filter(s=>s.statut!=='cancelled');
+  const now=new Date(), today=now.toISOString().slice(0,10);
+  const wkS=new Date(now); wkS.setDate(now.getDate()-((now.getDay()+6)%7)); wkS.setHours(0,0,0,0);
+  const mS=new Date(now.getFullYear(),now.getMonth(),1);
+  const inP=s=>{ const d=new Date(s.created_at||0); if(period==='today') return s.created_at?.slice(0,10)===today; if(period==='week') return d>=wkS; if(period==='month') return d>=mS; return true; };
+  const empSales=sales.filter(s=>inP(s)&&(s.cashier_nom||s.caissier||s.serveur||'Non identifié')===nom).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+  const title=document.getElementById('cac-detail-title'), list=document.getElementById('cac-detail-list');
+  if(title) title.textContent='🔍 Ventes de '+nom;
+  if(list) list.innerHTML=empSales.map(s=>{
+    const t=new Date(s.created_at).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const items=(s.items||[]).map(it=>it.nom+' ×'+(it.qty||1)).join(', ');
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border);font-size:.82rem">
+      <div><div style="font-weight:600">${s.client_nom||'Client'}</div><div style="color:var(--text-dim);font-size:.72rem">${items}</div><div style="color:var(--text-dim);font-size:.7rem">${t}</div></div>
+      <strong style="color:var(--accent)">${fmtMoney(s.total,dev)}</strong>
+    </div>`;
+  }).join('')||'<div class="empty" style="padding:24px">Aucune vente.</div>';
+  document.getElementById('cac-detail').style.display='block';
+}
+
+function cacExportCSV() {
+  const m=Auth.current(); if(!m) return;
+  const dev=getConfig()?.devise||'FCFA';
+  const rows=[['Employé','Nb ventes','CA ('+dev+')','Marge','Taux','Panier moyen']];
+  document.querySelectorAll('#cac-tbody tr').forEach(tr=>{ const c=[...tr.querySelectorAll('td')].map(td=>td.textContent.trim()); if(c.length>1) rows.push([c[0],c[2],c[3],c[4],c[5],c[6]]); });
+  const csv='\uFEFF'+rows.map(r=>r.join(';')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+  a.download='ca_caissiere_'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+  showToast('📥 CSV exporté','success');
 }
 
 _startPatronDashboard = function() {
