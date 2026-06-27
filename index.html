@@ -7210,13 +7210,13 @@ function confirmReset() {
 }
 
 // ---- AUTH HANDLERS ----
-function registerMerchant(e) {
+async function registerMerchant(e) {
   e.preventDefault();
   const er = document.getElementById('reg-err'); er.classList.add('hidden');
   const p = document.getElementById('reg-pwd').value, p2 = document.getElementById('reg-pwd2').value;
   if (p !== p2) { er.textContent = 'Les mots de passe ne correspondent pas.'; er.classList.remove('hidden'); return; }
   const btn = e.target.querySelector('button[type="submit"]');
-  if (btn) { btn.disabled = true; btn.textContent = 'Création...'; }
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Création...'; }
 
   try {
     const merchant = Auth.register({
@@ -7233,22 +7233,50 @@ function registerMerchant(e) {
     localStorage.setItem('ds_session_m', JSON.stringify(merchant));
     localStorage.setItem('ds_fbpwd_' + merchant.id, p);
 
+    // ── Initialiser Firebase si pas encore fait ──────────────
+    if (!_fbDb) {
+      try { initFirestoreWith(getFirebaseConfig()); } catch(e) {}
+    }
+
+    // ── Attendre Firebase et pousser les données ─────────────
+    if (_fbDb || typeof initFirestoreWith === 'function') {
+      // Attendre max 4s que Firebase soit prêt
+      await new Promise(res => {
+        let t = 0;
+        const iv = setInterval(() => {
+          t += 200;
+          if (_fbDb || t >= 4000) { clearInterval(iv); res(); }
+        }, 200);
+      });
+    }
+
+    if (_fbDb) {
+      if (btn) btn.textContent = '⏳ Synchronisation...';
+      try {
+        // 1. Créer le document marchand dans Firestore
+        await _fbDb.collection('merchants').doc(merchant.id).set({ ...merchant }, { merge: true });
+
+        // 2. Créer la config par défaut dans Firestore
+        const cfg = DB.forM('configs', merchant.id)[0];
+        if (cfg) await _fbDb.collection('merchants').doc(merchant.id).collection('configs').doc(cfg.id || 'default').set(cfg, { merge: true });
+
+        // 3. Créer le compte Firebase Auth
+        const fbEmail = merchant.telephone.replace(/\D/g,'') + '@digitalesolution.app';
+        await fbSignInWithEmail(fbEmail, p).catch(() => {});
+
+        showToast('🎉 Compte créé et synchronisé dans le cloud !', 'success');
+      } catch(fbErr) {
+        console.warn('[Register] Firebase push:', fbErr.message);
+        showToast('🎉 Compte créé ! (Sync cloud en attente de connexion)', 'success');
+      }
+      startFirebase();
+    } else {
+      showToast('🎉 Bienvenue sur Digitale Solution !', 'success');
+    }
+
     showPage('page-app');
     renderDashboard();
-    showToast('🎉 Bienvenue sur Digitale Solution !', 'success');
 
-    // Pousser le nouveau marchand dans Firebase si connecté
-    if (_fbDb) {
-      fbInitMerchant(merchant.id);
-      // Créer le doc marchand dans Firestore
-      _fbDb.collection('merchants').doc(merchant.id).set({
-        ...merchant, created_at: merchant.created_at || new Date().toISOString()
-      }, { merge: true }).catch(() => {});
-      startFirebase();
-      // Créer le compte Firebase Auth
-      const fbEmail = merchant.telephone.replace(/\D/g,'') + '@digitalesolution.app';
-      fbSignInWithEmail(fbEmail, p).catch(() => {});
-    }
   } catch(err) {
     er.textContent = err.message;
     er.classList.remove('hidden');
@@ -7307,23 +7335,39 @@ async function loginMerchant(e) {
       if (fbStatus) fbStatus.textContent = '🔄 Recherche du compte...';
 
       // Chercher par téléphone dans Firestore
+      // Essayer d'abord sans index (lecture collection complète si nécessaire)
       const cleanTel = tel.replace(/\D/g, '');
       let snap = null;
+      let fbData = null;
+      let mid = null;
+
       try {
+        // Tentative 1 : query par téléphone (nécessite un index si > 300 docs)
         snap = await _fbDb.collection('merchants').where('telephone', '==', tel).limit(1).get();
         if (snap.empty && cleanTel !== tel) {
           snap = await _fbDb.collection('merchants').where('telephone', '==', cleanTel).limit(1).get();
         }
+        if (!snap.empty) {
+          fbData = snap.docs[0].data();
+          mid    = snap.docs[0].id;
+        }
       } catch(queryErr) {
-        throw new Error('Erreur réseau. Vérifiez votre connexion et réessayez.');
+        // Pas d'index — lire tous les marchands et filtrer côté client
+        try {
+          const allSnap = await _fbDb.collection('merchants').limit(50).get();
+          const found = allSnap.docs.find(d => {
+            const t = d.data().telephone || '';
+            return t === tel || t === cleanTel || t.replace(/\D/g,'') === cleanTel;
+          });
+          if (found) { fbData = found.data(); mid = found.id; }
+        } catch(e2) {
+          throw new Error('Erreur réseau. Vérifiez votre connexion et réessayez.');
+        }
       }
 
-      if (!snap || snap.empty) {
+      if (!fbData || !mid) {
         throw new Error('Aucun compte trouvé pour ce numéro de téléphone.');
       }
-
-      const fbData = snap.docs[0].data();
-      const mid    = snap.docs[0].id;
 
       // Vérifier le mot de passe (hash SHA-256)
       if (fbData.password && fbData.password !== DB._hash(pwd)) {
