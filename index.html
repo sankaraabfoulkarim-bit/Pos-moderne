@@ -504,6 +504,8 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 .pin-display{display:flex;gap:10px;justify-content:center;margin:20px 0}
 .pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border-accent);transition:background .2s}
 .pin-dot.filled{background:var(--accent)}
+.pin-key{padding:15px;font-size:1.25rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer;transition:background var(--tr)}
+.pin-key:active{background:var(--accent);color:#fff}
 .pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:240px;margin:0 auto}
 .pin-btn{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);padding:16px;font-size:1.2rem;font-weight:700;cursor:pointer;transition:all var(--tr);color:var(--text)}
 .pin-btn:hover{background:var(--accent);color:white;border-color:var(--accent)}
@@ -2775,49 +2777,42 @@ window.addEventListener('load', checkApiStatus);
       </div>
     </div>
 
-    <!-- MODAL CONNEXION RÔLE (CAISSIER / GÉRANT) -->
+    <!-- MODAL CONNEXION RÔLE — PIN UNIQUEMENT -->
     <div id="mo-role-login" class="mo hidden" onclick="closeMoOv(event,'mo-role-login')">
-      <div class="modal" style="max-width:380px">
+      <div class="modal" style="max-width:320px">
         <div class="mhdr">
           <h3 id="role-login-title">🔑 Connexion</h3>
           <button class="mcls" onclick="closeMo('mo-role-login')">✕</button>
         </div>
-        <div class="mbody">
-          <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:16px" id="role-login-desc">Entrez votre identifiant et votre PIN pour accéder à cette section.</p>
-          <div class="fg"><label>Identifiant</label>
-            <input id="rl-login" placeholder="Ex: fatou" autocomplete="off" oninput="this.value=this.value.toLowerCase().replace(/\s/g,'')"
-              style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:12px 14px;font-size:1rem;width:100%"/>
+        <div class="mbody" style="text-align:center;padding:20px 16px">
+          <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:20px" id="role-login-desc">Entrez votre PIN</p>
+          <!-- Dots PIN -->
+          <div style="display:flex;gap:16px;justify-content:center;margin-bottom:24px">
+            <div id="rld-1" style="width:16px;height:16px;border-radius:50%;background:var(--border);transition:background .15s"></div>
+            <div id="rld-2" style="width:16px;height:16px;border-radius:50%;background:var(--border);transition:background .15s"></div>
+            <div id="rld-3" style="width:16px;height:16px;border-radius:50%;background:var(--border);transition:background .15s"></div>
+            <div id="rld-4" style="width:16px;height:16px;border-radius:50%;background:var(--border);transition:background .15s"></div>
           </div>
-          <div class="fg"><label>PIN</label>
-            <!-- Dots visuels -->
-            <div style="display:flex;gap:12px;justify-content:center;margin-bottom:12px" id="rl-dots">
-              <div class="pin-dot" id="rld-1"></div><div class="pin-dot" id="rld-2"></div>
-              <div class="pin-dot" id="rld-3"></div><div class="pin-dot" id="rld-4"></div>
-            </div>
-          <!-- Clavier numérique -->
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" id="rl-keypad">
-            <button onclick="rlPinAdd(1)" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">1</button>
-            <button onclick="rlPinAdd(2)" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">2</button>
-            <button onclick="rlPinAdd(3)" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">3</button>
-            <button onclick="rlPinAdd(4)" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">4</button>
-            <button onclick="rlPinAdd(5)" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">5</button>
-            <button onclick="rlPinAdd(6)" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">6</button>
-            <button onclick="rlPinAdd(7)" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">7</button>
-            <button onclick="rlPinAdd(8)" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">8</button>
-            <button onclick="rlPinAdd(9)" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">9</button>
-            <button disabled style="padding:14px;background:none;border:none;cursor:default;visibility:hidden">·</button>
-            <button onclick="rlPinAdd(0)" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">0</button>
-            <button onclick="rlPinDel()" style="padding:14px;font-size:1.2rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);cursor:pointer">⌫</button>
+          <!-- Clavier -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+            <button onclick="rlPinAdd(1)" class="pin-key">1</button>
+            <button onclick="rlPinAdd(2)" class="pin-key">2</button>
+            <button onclick="rlPinAdd(3)" class="pin-key">3</button>
+            <button onclick="rlPinAdd(4)" class="pin-key">4</button>
+            <button onclick="rlPinAdd(5)" class="pin-key">5</button>
+            <button onclick="rlPinAdd(6)" class="pin-key">6</button>
+            <button onclick="rlPinAdd(7)" class="pin-key">7</button>
+            <button onclick="rlPinAdd(8)" class="pin-key">8</button>
+            <button onclick="rlPinAdd(9)" class="pin-key">9</button>
+            <button disabled style="visibility:hidden"></button>
+            <button onclick="rlPinAdd(0)" class="pin-key">0</button>
+            <button onclick="rlPinDel()" class="pin-key">⌫</button>
           </div>
-          </div>
-          <div id="rl-err" style="color:var(--danger);font-size:.82rem;text-align:center;min-height:20px"></div>
-        </div>
-        <div class="mftr">
-          <button class="btn-g" onclick="closeMo('mo-role-login')">Annuler</button>
-          <button class="btn-p" onclick="confirmRoleLogin()">Connexion →</button>
+          <div id="rl-err" style="color:var(--danger);font-size:.82rem;margin-top:14px;min-height:20px"></div>
         </div>
       </div>
     </div>
+
 
     <!-- CA PAR CAISSIÈRE — MODULE GÉRANT -->
     <section id="s-ca-caissiere" class="section">
@@ -12877,6 +12872,12 @@ function _srvFinishInit(m) {
   // Init Firebase
   if (!_fbDb) initFirestoreWith(getFirebaseConfig());
 
+  // ── Authentification anonyme pour pouvoir écrire dans Firestore ──
+  // La page serveuse n'a pas de session Auth → connexion anonyme obligatoire
+  if (_fbAuth) {
+    _fbAuth.signInAnonymously().catch(e => console.warn('[SRV] Auth anon:', e.message));
+  }
+
   // Mettre à jour nom + commerce
   const nameEl = document.getElementById('srv-name-display');
   const stName = document.getElementById('srv-status-name');
@@ -12885,7 +12886,7 @@ function _srvFinishInit(m) {
   if (stName) stName.textContent = _srvName;
   if (comEl)  comEl.textContent  = m.nom_commerce || 'Commerce';
 
-  // Afficher le catalogue local immédiatement (0 délai)
+  // Afficher le catalogue local immédiatement
   srvRenderCatalogue();
 
   // Charger les produits frais depuis Firebase en arrière-plan
@@ -12894,30 +12895,19 @@ function _srvFinishInit(m) {
       .then(snap => {
         const fbProds = snap.docs
           .map(d => ({ ...d.data(), id: d.id, merchant_id: _srvMid }))
-          .filter(p => p.id !== '_init');
-
-        // ── Ne jamais écraser le local avec un résultat Firebase vide ──
+          .filter(p => p.id !== '_init' && p.nom);
         const localProds = DB.forM('products', _srvMid);
-        if (fbProds.length === 0 && localProds.length > 0) {
-          // Firestore vide — garder le local, ne rien faire
-          return;
-        }
-
-        // Fusionner : FB + locaux pas encore dans FB
+        if (fbProds.length === 0 && localProds.length > 0) return;
         const fbIds  = new Set(fbProds.map(p => p.id));
         const extras = localProds.filter(p => !fbIds.has(p.id));
         const allOther = DB.get('products').filter(p => p.merchant_id !== _srvMid);
         DB.set('products', [...allOther, ...fbProds, ...extras]);
-
-        // Re-rendre seulement si on a bien des produits
-        if (fbProds.length > 0 || extras.length > 0) {
-          srvRenderCatalogue();
-        }
+        if (fbProds.length > 0 || extras.length > 0) srvRenderCatalogue();
       })
-      .catch(() => {}); // silencieux — données locales déjà affichées
+      .catch(() => {});
   }
 
-  // Démarrer l'écoute des statuts de commandes (badge uniquement, sans toucher aux produits)
+  // Démarrer l'écoute des statuts
   _srvListenMyOrders();
 }
 
@@ -13028,11 +13018,38 @@ async function srvConfirmSend() {
   _cmdSaveLocal(cmd);
   _srvCmdId = cmd.id;
 
-  // Push Firebase
+  // Push Firebase — attendre Auth anonyme si nécessaire
   if (_fbDb) {
-    try {
-      await _fbDb.collection('merchants').doc(_srvMid).collection('commandes').doc(cmd.id).set(cmd);
-    } catch(e) { console.warn('[SRV] Firebase push failed:', e.message); }
+    const _pushCmd = async (retries = 3) => {
+      try {
+        // S'assurer qu'on est authentifié (même anonymement)
+        if (_fbAuth && !_fbAuth.currentUser) {
+          await _fbAuth.signInAnonymously();
+        }
+        await _fbDb.collection('merchants').doc(_srvMid)
+          .collection('commandes').doc(cmd.id).set(cmd);
+        console.log('[SRV] Commande envoyée Firebase ✅');
+      } catch(e) {
+        console.warn('[SRV] Firebase push attempt', 4 - retries, ':', e.message);
+        if (retries > 0) {
+          await new Promise(r => setTimeout(r, 1000));
+          return _pushCmd(retries - 1);
+        }
+        // Dernier recours : activer persistence offline Firestore
+        console.warn('[SRV] Commande en attente de sync (offline)');
+      }
+    };
+    _pushCmd();
+  } else {
+    // Firebase pas encore prêt — réessayer dans 2s
+    setTimeout(() => {
+      if (_fbDb) {
+        if (_fbAuth && !_fbAuth.currentUser) _fbAuth.signInAnonymously().catch(() => {});
+        _fbDb.collection('merchants').doc(_srvMid)
+          .collection('commandes').doc(cmd.id).set(cmd)
+          .catch(e => console.warn('[SRV] Retry push:', e.message));
+      }
+    }, 2000);
   }
 
   // Afficher écran statut
@@ -13402,11 +13419,22 @@ async function _cmdUpdate(cmdId, updates) {
   if (idx === -1) return;
   Object.assign(list[idx], updates, { updated_at: new Date().toISOString() });
   localStorage.setItem(CMD_LOCAL_KEY(m.id), JSON.stringify(list.slice(0,200)));
-  // Firebase
+  // Firebase — s'assurer d'être connecté
   if (_fbDb) {
     try {
-      await _fbDb.collection('merchants').doc(m.id).collection('commandes').doc(cmdId).update({ ...updates, updated_at: new Date().toISOString() });
-    } catch(e) { console.warn('[CMD] Firebase update:', e.message); }
+      if (_fbAuth && !_fbAuth.currentUser) await _fbAuth.signInAnonymously().catch(() => {});
+      await _fbDb.collection('merchants').doc(m.id)
+        .collection('commandes').doc(cmdId)
+        .update({ ...updates, updated_at: new Date().toISOString() });
+    } catch(e) {
+      // Retry une fois
+      await new Promise(r => setTimeout(r, 800));
+      try {
+        await _fbDb.collection('merchants').doc(m.id)
+          .collection('commandes').doc(cmdId)
+          .set({ ...list[idx] }, { merge: true });
+      } catch(e2) { console.warn('[CMD] Update Firebase:', e2.message); }
+    }
   }
   renderCommandes();
 }
@@ -13634,13 +13662,14 @@ function _checkSectionAccess(name) {
 
 function _openRoleLogin(forRole) {
   _rlPinBuf = ''; _updateRlDots();
-  const t=document.getElementById('role-login-title'), d=document.getElementById('role-login-desc'), e=document.getElementById('rl-err'), l=document.getElementById('rl-login');
-  if(t) t.textContent = forRole==='gerant' ? '👤 Accès Gérant' : '💰 Accès Caissier';
-  if(d) d.textContent = forRole==='gerant' ? 'Identifiants gérant requis pour accéder aux produits et à la gestion de stock.' : 'Identifiants requis pour accéder au point de vente.';
-  if(e) e.textContent='';
-  if(l) { l.value=''; setTimeout(()=>l.focus(),200); }
-  const mo=document.getElementById('mo-role-login');
-  if(mo) { mo.dataset.forRole=forRole; mo.classList.remove('hidden'); }
+  const t = document.getElementById('role-login-title');
+  const d = document.getElementById('role-login-desc');
+  const e = document.getElementById('rl-err');
+  if (t) t.textContent = forRole === 'gerant' ? '👤 Accès Gérant' : '💰 Accès Caissier';
+  if (d) d.textContent = forRole === 'gerant' ? 'PIN Gérant' : 'PIN Caissier';
+  if (e) e.textContent = '';
+  const mo = document.getElementById('mo-role-login');
+  if (mo) { mo.dataset.forRole = forRole; mo.classList.remove('hidden'); }
 }
 
 function rlPinAdd(n) {
@@ -13657,37 +13686,82 @@ function _updateRlDots() {
 }
 
 async function confirmRoleLogin() {
-  const m=Auth.current(); if(!m) return;
-  const login=(document.getElementById('rl-login')?.value||'').trim().toLowerCase();
-  const errEl=document.getElementById('rl-err');
-  const forRole=document.getElementById('mo-role-login')?.dataset.forRole||'caissier';
-  if(errEl) errEl.textContent='';
-  if(!login)            { if(errEl) errEl.textContent='❌ Entrez votre identifiant.'; return; }
-  if(_rlPinBuf.length<4){ if(errEl) errEl.textContent='❌ PIN incomplet (4 chiffres).'; return; }
+  const m = Auth.current(); if (!m) return;
+  const errEl   = document.getElementById('rl-err');
+  const forRole = document.getElementById('mo-role-login')?.dataset.forRole || 'caissier';
+  if (errEl) errEl.textContent = '';
 
-  let emp=getCashiers(m.id).find(c=>c.login===login);
-  if(!emp && _fbDb) {
-    if(errEl) errEl.textContent='🔄 Vérification...';
-    try {
-      const snap=await _fbDb.collection('merchants').doc(m.id).collection('cashiers').where('login','==',login).limit(1).get();
-      if(!snap.empty) {
-        emp={...snap.docs[0].data(),id:snap.docs[0].id,merchant_id:m.id};
-        const allC=DB.get('cashiers').filter(x=>!(x.login===login&&x.merchant_id===m.id));
-        allC.push(emp); DB.set('cashiers',allC);
-      }
-    } catch(e){ console.warn('[RoleLogin]',e.message); }
-    if(errEl) errEl.textContent='';
+  if (_rlPinBuf.length < 4) {
+    if (errEl) errEl.textContent = '❌ PIN incomplet (4 chiffres).';
+    return;
   }
 
-  if(!emp)                             { if(errEl) errEl.textContent='❌ Identifiant introuvable.'; _rlPinBuf=''; _updateRlDots(); return; }
-  if(DB._hash(_rlPinBuf)!==emp.pin_hash){ if(errEl) errEl.textContent='❌ PIN incorrect.'; _rlPinBuf=''; _updateRlDots(); return; }
-  const empRole=emp.role||'caissier';
-  if(forRole==='gerant'&&empRole!=='gerant') { if(errEl) errEl.textContent='❌ Droits insuffisants pour le rôle Gérant.'; _rlPinBuf=''; _updateRlDots(); return; }
+  const pinHash = DB._hash(_rlPinBuf);
 
+  // Chercher par hash PIN dans tous les employés locaux
+  let cashiers = getCashiers(m.id);
+  let emp = cashiers.find(c => c.pin_hash === pinHash);
+
+  // Si pas trouvé localement → chercher dans Firebase
+  if (!emp && _fbDb) {
+    if (errEl) errEl.textContent = '🔄 Vérification...';
+    try {
+      const snap = await _fbDb.collection('merchants').doc(m.id)
+        .collection('cashiers').get();
+      if (!snap.empty) {
+        // Mettre à jour le cache local
+        const fbCashiers = snap.docs
+          .filter(d => d.id !== '_list' && d.id !== '_init')
+          .map(d => ({ ...d.data(), id: d.id, merchant_id: m.id }));
+        const allC = DB.get('cashiers').filter(c => c.merchant_id !== m.id);
+        DB.set('cashiers', [...allC, ...fbCashiers]);
+        emp = fbCashiers.find(c => c.pin_hash === pinHash);
+      }
+    } catch(e) { console.warn('[RoleLogin]', e.message); }
+    if (errEl) errEl.textContent = '';
+  }
+
+  if (!emp) {
+    if (errEl) errEl.textContent = '❌ PIN incorrect.';
+    _rlPinBuf = ''; _updateRlDots();
+    return;
+  }
+
+  const empRole = emp.role || 'caissier';
+
+  // Vérifier que le rôle est compatible avec la section demandée
+  if (forRole === 'gerant' && empRole !== 'gerant') {
+    if (errEl) errEl.textContent = '❌ Ce PIN n\'a pas les droits Gérant.';
+    _rlPinBuf = ''; _updateRlDots();
+    return;
+  }
+
+  // ── Connexion réussie ──
   closeMo('mo-role-login');
-  if(empRole==='gerant') { _currentGerant=emp; _currentCashier=null; setRoleSession(emp); _updateGerantUI(emp); showToast('👤 Bonjour '+emp.nom+' — Gérant !','success'); }
-  else                   { _currentCashier=emp; _currentGerant=null; setRoleSession(emp); _updateCashierUI(emp); showToast('💰 Bonjour '+emp.nom+' — Caissier !','success'); }
-  if(_pendingSection) { const s=_pendingSection; _pendingSection=null; showSection(s); }
+
+  if (empRole === 'gerant') {
+    _currentGerant  = emp;
+    _currentCashier = null;
+    setRoleSession(emp);
+    _updateGerantUI(emp);
+    showToast('👤 Bonjour ' + emp.nom + ' !', 'success');
+  } else {
+    _currentCashier = emp;
+    _currentGerant  = null;
+    setRoleSession(emp);
+    _updateCashierUI(emp);
+    showToast('💰 Bonjour ' + emp.nom + ' !', 'success');
+  }
+
+  // Afficher bouton logout rôle
+  const roleBtn = document.getElementById('ni-logout-role');
+  if (roleBtn) roleBtn.style.display = 'flex';
+
+  // Naviguer vers la section demandée
+  if (_pendingSection) {
+    const s = _pendingSection; _pendingSection = null;
+    showSection(s);
+  }
 }
 
 // Bouton déconnexion session rôle (dans le menu utilisateur)
